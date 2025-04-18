@@ -1,0 +1,70 @@
+<template>
+    <div :class="{ active: focusStore.isFocused }">
+        <input type="text" :class="{ active: focusStore.isFocused }" :placeholder="showPlaceholder ? place : ''"
+            v-model="focusStore.searchValue" @focus="handleFocus" />
+    </div>
+</template>
+
+<script setup>
+import { useFocusStore } from '~/store/focusStore'
+const focusStore = useFocusStore()
+defineProps({
+    place: {
+        type: String,
+        default: ''
+    }
+})
+
+const showPlaceholder = computed(() => {
+    return !focusStore.isFocused && focusStore.searchValue === ''
+})
+
+function handleFocus() {
+    focusStore.isFocused = true
+}
+</script>
+
+<style scoped>
+div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 60%;
+    border-radius: 10px;
+    background-color: var(--background);
+    border: 1px solid var(--bg-cont);
+    transition: all 0.3s ease;
+}
+
+input {
+    width: 95%;
+    height: 30px;
+    border-radius: 10px;
+    border: 0;
+    background-color: transparent;
+    color: var(--foreground);
+    transition: all 0.3s ease;
+    
+}
+
+input.active {
+    width: 99%;
+}
+
+div.active {
+    width: 100%;
+    z-index: 2002;
+}
+
+@media (max-width: 768px) {
+    input.active {
+        width: 95%;
+    }
+
+    div.active {
+        width: 100%;
+    }
+
+}
+</style>

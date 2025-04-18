@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto';
+    color: var(--foreground);
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+textarea:focus, input:focus, button:focus {
+    outline: none;
+}
+:root {
+    --background: #ffffff;
+    --foreground: #171717;
+    --bg-cont: #f0f0f0;
+    --border-color: #c7c7c7;
+    --textfield-color: #c4c4c4;
+    --logo-url: url(./logo-light.svg);
+}
+body {
+    background-color: var(--background);
+    overflow-x: hidden;
+}
+.logo {
+    background-image: var(--logo-url);
+    width: 150px;
+    height: 150px;
+    background-color: transparent;
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+}
+::selection {
+    background: #8aa9d6;
+    color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+      --background: #2c2c2c;
+      --border-color: #181818;
+      --bg-cont: #363636;
+      --foreground: #ededed;
+      --textfield-color: #ffffff;
+      --logo-url: url(./logo-dark.png);
+    }
+  }
