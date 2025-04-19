@@ -1,32 +1,33 @@
 <template>
     <div class="dropdown" :class="{ active: languageActive }" @click.stop="OpenCloseLanguage">
         <span class="selected-language" :class="{ active: languageActive }">
-            {{ displayEmoji }}
+            <img :src="`/` + displayIcon" alt="lang" class="flag-icon" />
         </span>
         <div class="dropdown-content" :class="{ active: languageActive }">
             <div v-for="(variant, index) in variants" :key="index" class="dropdown-item"
                 @click.stop="selectVariant(variant)">
-                <span>{{ variant.text }}</span>
+                <img :src="`/` + variant.icon" alt="flag" class="flag-icon-opened" />
+                <span class="language">{{ variant.text }}</span>
             </div>
         </div>
     </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { languages } from '../lib/languages'
 
 const emit = defineEmits(['language-changed'])
 
 const props = defineProps({
     language: {
         type: String,
-        default: '🇷🇺'
+        default: 'ru.png'
     },
     variants: {
         type: Array,
         default: () => [
-            { text: '', code: '' },
+            { text: '', code: '', icon: '' },
         ]
     }
 })
@@ -34,17 +35,22 @@ const props = defineProps({
 const languageActive = ref(false)
 const selectedLanguage = ref(null)
 
-const displayEmoji = computed(() => {
+const displayIcon = computed(() => {
     if (selectedLanguage.value) {
-        return selectedLanguage.value.split(' ')[0]
+        return selectedLanguage.value.icon
     }
-    return props.language.split(' ')[0]
+    return props.language
 })
 
 onMounted(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage')
-    if (savedLanguage) {
-        selectedLanguage.value = savedLanguage
+    const savedLang = localStorage.getItem('selectedLanguage')
+    const savedCode = localStorage.getItem('languageCode')
+
+    if (savedLang && savedCode) {
+        const matched = props.variants.find(v => v.code === savedCode)
+        if (matched) {
+            selectedLanguage.value = matched
+        }
     }
 })
 
@@ -53,13 +59,14 @@ const OpenCloseLanguage = () => {
 }
 
 const selectVariant = (variant) => {
-    selectedLanguage.value = variant.text
+    selectedLanguage.value = variant
     localStorage.setItem('selectedLanguage', variant.text)
     localStorage.setItem('languageCode', variant.code)
     languageActive.value = false
     emit('language-changed', variant.code)
 }
 </script>
+
 
 <style scoped>
 .dropdown {
@@ -82,6 +89,21 @@ const selectVariant = (variant) => {
     height: 100dvh;
     transition: all 0.3s ease;
     z-index: 100;
+}
+.flag-icon {
+    width: 24px;
+    height: 18px;
+    translate: 0px 2px;
+    object-fit: contain;
+}
+.flag-icon-opened {
+    width: 24px;
+    height: 18px;
+    translate: 0px 4px;
+    object-fit: contain;
+}
+.language {
+    margin-left: 5px;
 }
 .dropdown:hover {
     -webkit-box-shadow: 0px 7px 22px -11px var(--foreground);

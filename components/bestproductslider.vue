@@ -32,9 +32,9 @@ const props = defineProps({
 const currentLanguage = computed(() => props.currentLanguage)
 
 const slides = [
-  { title: 'iPhone 16 Pro Max', price: "789 990 ₸", class: 'one', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
-  { title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
-  { title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", class: 'three', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
+  {  title: 'iPhone 16 Pro Max', price: "789 990 ₸", class: 'one', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745058784/bestproduct1_timfq2.png" },
+  {  title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
+  {  title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", class: 'three', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
 ];
 
 const current = ref(0)
