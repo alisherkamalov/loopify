@@ -18,8 +18,8 @@
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
                             <div class="cont-product">
-                                <a-tooltip title="search" @click.stop="closeInfoProduct">
-                                    <a-button shape="circle" :icon="h(SearchOutlined)" />
+                                <a-tooltip title="close" @click.stop="closeInfoProduct">
+                                    <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                                 </a-tooltip>
                             </div>
                         </div>
@@ -40,7 +40,8 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { languages } from '../lib/languages'
 import { useNotiStore } from '~/store/notificationStore'
-
+import { h } from 'vue'
+import { CloseOutlined } from '@ant-design/icons-vue'
 const props = defineProps({
     currentLanguage: {
         type: Object,
@@ -90,7 +91,6 @@ const closeInfoProduct = () => {
 const selectProduct = (product) => {
     if (focusStore.activeProduct === product) {
         const activeSearch = document.querySelector('.frame-openedsearch.active');
-
         if (activeSearch) {
             activeSearch.style.zIndex = '2001';
         }
@@ -387,5 +387,16 @@ watchEffect(() => {
     .product {
         width: 90%;
     }
+}
+@media (max-width: 650px) {
+    .product-right {
+        flex-direction: column;
+    }
+    .btn-more, .btn-incart {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        font-size: 12px;
+    }
+    
 }
 </style>

@@ -1,4 +1,7 @@
 <template>
+    <a-tooltip @click.stop="closeSearch" class="closebtn" :class="{ 'closebtn--active': focusStore.isFocused }">
+        <a-button color="white" shape="circle" :icon="h(CloseOutlined)" />
+    </a-tooltip>
     <div :class="{ active: focusStore.isFocused }">
         <input type="text" :class="{ active: focusStore.isFocused }" :placeholder="showPlaceholder ? place : ''"
             v-model="focusStore.searchValue" @focus="handleFocus" />
@@ -6,6 +9,8 @@
 </template>
 
 <script setup>
+import { h } from 'vue'
+import { CloseOutlined } from '@ant-design/icons-vue'
 import { useFocusStore } from '~/store/focusStore'
 const focusStore = useFocusStore()
 defineProps({
@@ -14,7 +19,9 @@ defineProps({
         default: ''
     }
 })
-
+const closeSearch = () => {
+    focusStore.isFocused = false
+}
 const showPlaceholder = computed(() => {
     return !focusStore.isFocused && focusStore.searchValue === ''
 })
@@ -45,9 +52,17 @@ input {
     background-color: transparent;
     color: var(--foreground);
     transition: all 0.3s ease;
-    
-}
 
+}
+.closebtn {
+    width: 30px;
+    display: none;
+    margin-right: 5px;
+}
+.closebtn--active {
+    display: block;
+    z-index: 2002;
+}
 input.active {
     width: 99%;
 }

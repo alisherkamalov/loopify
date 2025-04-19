@@ -18,6 +18,9 @@ const notificationStore = useNotiStore()
     padding: 15px;
     opacity: 0;
     pointer-events: none;
+    max-width: 90%;
+    min-width: 20%;
+    text-align: center;
     border-radius: 15px;
     background-color: var(--background);
     border: 1px solid var(--bg-cont);

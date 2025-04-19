@@ -101,9 +101,6 @@ onBeforeUnmount(() => {
 }
 .btn-more {
     width: 150px;
-    position: absolute;
-    bottom: 35px;
-    left: 35px;
 }
 .best-product-slider {
     display: flex;
