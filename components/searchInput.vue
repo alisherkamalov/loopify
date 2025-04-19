@@ -73,6 +73,9 @@ div.active {
 }
 
 @media (max-width: 768px) {
+    div {
+        width: 90%;
+    }
     input.active {
         width: 95%;
     }

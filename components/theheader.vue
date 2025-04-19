@@ -14,7 +14,13 @@
         </div>
 
         <div class="mobile">
-            <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
+            <div class="darkmode" @click="MenuOpenAndClose" :class="{ 'active': isMenu }"></div>
+            <div class="menu" :class="{'active': isMenu }">
+
+            </div>
+            <a-tooltip @click="MenuOpenAndClose" class="menubtn" :class="{ 'deactivate': focusStore.isFocused }">
+                <a-button color="white" shape="circle" :icon="h(MenuOutlined)" />
+            </a-tooltip>
             <SearchInput :place="currentLanguage.search" />
         </div>
     </header>
@@ -23,11 +29,16 @@
 <script setup>
 import { defineProps, defineEmits, watchEffect } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
-
+import { h } from 'vue'
+import { MenuOutlined } from '@ant-design/icons-vue'
 import SearchInput from './searchInput.vue'
 import HeaderButton from './headerbutton.vue'
 import CustomDropdown from './dropdown.vue'
+const isMenu = ref(false)
 
+const MenuOpenAndClose = () => {
+    isMenu.value = !isMenu.value
+}
 const focusStore = useFocusStore()
 
 const props = defineProps({
@@ -102,7 +113,47 @@ header {
     align-items: center;
     justify-content: space-between;
 }
+.menubtn.deactivate {
+    display: none;
+}
 
+.darkmode {
+    display: flex;
+    width: 100%;
+    position: absolute;
+    height: 100dvh;
+    opacity: 0;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+.darkmode.active {
+    background-color: black;
+    z-index: 9998 !important;
+    opacity: 0.5 !important;
+    pointer-events: all;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.menu {
+    display: flex;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 0px;
+    z-index: 0;
+    height: 100dvh;
+    background-color: var(--background);
+    transition: all 0.3s ease;
+}
+.menu.active {
+    width: 250px !important;
+    padding: 10px;
+    z-index: 9999 !important;
+}
 .mobile {
     display: none;
     width: 100%;
