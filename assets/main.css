@@ -16,6 +16,7 @@ textarea:focus, input:focus, button:focus {
     --foreground: #171717;
     --bg-cont: #f0f0f0;
     --border-color: #c7c7c7;
+    --blur: rgba(180, 180, 180, 0.5);
     --textfield-color: #c4c4c4;
     --logo-url: url(./logo-light.svg);
 }
@@ -44,6 +45,7 @@ body {
       --bg-cont: #363636;
       --foreground: #ededed;
       --textfield-color: #ffffff;
+      --blur: rgba(87, 87, 87, 0.5);
       --logo-url: url(./logo-dark.png);
     }
   }

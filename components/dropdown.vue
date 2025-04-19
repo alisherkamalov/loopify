@@ -6,7 +6,7 @@
         <div class="dropdown-content" :class="{ active: languageActive }">
             <div v-for="(variant, index) in variants" :key="index" class="dropdown-item"
                 @click.stop="selectVariant(variant)">
-                <img :src="`/` + variant.icon" alt="flag" class="flag-icon-opened" />
+                <img :src="`/` + variant.icon" alt="flag" class="flag-icon" />
                 <span class="language">{{ variant.text }}</span>
             </div>
         </div>
@@ -76,7 +76,6 @@ const selectVariant = (variant) => {
     align-items: center;
     padding: 2px;
     background-color: var(--background);
-    border-radius: 10px;
     border: 0;
     cursor: pointer;
     max-height: 30px;
@@ -93,13 +92,6 @@ const selectVariant = (variant) => {
 .flag-icon {
     width: 24px;
     height: 18px;
-    translate: 0px 2px;
-    object-fit: contain;
-}
-.flag-icon-opened {
-    width: 24px;
-    height: 18px;
-    translate: 0px 4px;
     object-fit: contain;
 }
 .language {
@@ -144,6 +136,6 @@ const selectVariant = (variant) => {
 }
 
 .dropdown-item:hover {
-    background-color: #d6d6d6;
+    background-color: var(--border-color);
 }
 </style>

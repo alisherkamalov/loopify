@@ -1,112 +1,44 @@
 <template>
-    <main :class="{ active: focusStore.isFocused }">
-        <header>
-            <div class="pc">
-                <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
-                <SearchInput class="search" :place="currentLanguage.search" />
-                <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
-                    <CustomButton class="profile" :text="currentLanguage.profile" />
-                    <CustomButton class="basket" :text="currentLanguage.basket" />
-                    <CustomDropdown class="language" :language="'ru.png'" :variants="[
-                        { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
-                        { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' },
-                    ]" @language-changed="changeLanguage" />
-
-                </div>
+    <main v-if="currentLanguage" :class="{ active: focusStore.isFocused }">
+        <Notification />
+        <div class="frame-all-content" :class="{ 'frame-all-content--active': notificationStore.isActive }">
+            <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
+            <openSearch :currentLanguage="currentLanguage" />
+            <div class="content">
+                <BestProductSlider :current-language="currentLanguage" />
             </div>
-            <div class="mobile">
-                <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
-                <SearchInput :place="currentLanguage.search" />
-            </div>
-
-        </header>
-        <openSearch :currentLanguage="currentLanguage" />
-
-        <div class="content">
-            <BestProductSlider :current-language="currentLanguage" />
-
         </div>
     </main>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import { languages } from '../lib/languages'
-import SearchInput from '~/components/searchInput.vue'
-import CustomButton from '~/components/button.vue'
-import CustomDropdown from '~/components/dropdown.vue'
-import openSearch from '~/components/openSearch.vue'
 import { useFocusStore } from '~/store/focusStore'
+import { useNotiStore } from '~/store/notificationStore'
+import TheHeader from '~/components/theheader.vue'
+import openSearch from '~/components/openSearch.vue'
+import Notification from '~/components/thenotification.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
+
 const focusStore = useFocusStore()
-const currentLanguage = ref(languages.ru)
+const notificationStore = useNotiStore()
+const currentLanguage = ref(null)
+
+onMounted(() => {
+    const langCode = localStorage.getItem('languageCode') || 'ru'
+    currentLanguage.value = languages[langCode] || languages.ru
+})
 
 const changeLanguage = (langCode) => {
     currentLanguage.value = languages[langCode] || languages.ru
+    localStorage.setItem('languageCode', langCode)
 }
-
-onMounted(() => {
-    const langCode = localStorage.getItem('languageCode')
-    if (langCode && languages[langCode]) {
-        currentLanguage.value = languages[langCode]
-    }
-})
-watchEffect(() => {
-    if (typeof document !== 'undefined') {
-        if (focusStore.isFocused) {
-            document.body.style.overflow = 'hidden'
-        } else {
-            document.body.style.overflow = 'auto'
-        }
-    }
-})
-
 </script>
 
 <style scoped>
-header {
-    display: flex;
-    height: 50px;
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.right {
-    display: flex;
-    gap: 10px;
-    width: 250px;
-    position: relative;
-    height: 50px;
-}
-
 main.active {
     overflow: hidden;
-}
-
-
-.profile,
-.basket {
-    position: absolute;
-    top: 10px;
-}
-
-.language {
-    top: 8px;
-}
-
-.profile {
-    left: 15px;
-}
-
-.search {
-    z-index: 2002;
-}
-
-.basket {
-    left: 100px;
 }
 
 .content {
@@ -119,38 +51,15 @@ main.active {
     border-top-right-radius: 50px;
     background-color: var(--bg-cont);
 }
-
-.pc {
+.frame-all-content {
+    width: 100%;
+    height: 100dvh;
     display: flex;
-    width: 100%;
-    height: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    background-color: var(--background);
+    transition: all 0.3s ease;
 }
-
-.mobile {
-    display: none;
-    width: 100%;
-    height: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    align-items: center;
-    justify-content: space-between;
-}
-
-@media (max-width: 768px) {
-    .pc {
-        display: none;
-    }
-
-    .mobile {
-        display: flex;
-    }
-
-    .product {
-        width: 90%;
-    }
+.frame-all-content--active {
+    filter: blur(10px);
 }
 </style>

@@ -1,7 +1,10 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
+  css: [
+    '~/assets/main.css',
+    'ant-design-vue/dist/reset.css'
+  ],
+  modules: ['@pinia/nuxt'],
+  components: true,
   devtools: { enabled: true },
-  css: ['~/assets/main.css'],
-  modules: ['@pinia/nuxt']
+  compatibilityDate: '2024-11-01',
 })

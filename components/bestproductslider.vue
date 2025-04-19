@@ -101,10 +101,13 @@ onBeforeUnmount(() => {
 }
 .btn-more {
     width: 150px;
+    position: absolute;
+    bottom: 35px;
+    left: 35px;
 }
 .best-product-slider {
     display: flex;
-    width: 98%;
+    width: 100%;
     height: 250px;
     overflow: hidden;
     border-radius: 50px;
@@ -137,7 +140,10 @@ span {
 .slide-content {
     min-width: 100%;
     min-height: 100dvh;
-    padding: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -160,6 +166,7 @@ span {
     cursor: pointer;
     z-index: 10;
     padding: 10px;
+    color: var(--foreground);
     user-select: none;
 }
 
@@ -173,15 +180,111 @@ span {
     position: absolute;
     right: 0;
 }
-
-@media (max-width: 768px) {
+@media (max-width: 1050px) {
+    .bg {
+      transform: translate(300px, -50px);
+    }
+  
+}
+@media (max-width: 970px) {
+    .bg {
+      width: 500px;
+      transform: translate(300px, -80px);
+    }
+  
+}
+@media (max-width: 860px) {
     .slider-container {
         height: 200px;
         width: 95%;
     }
     .best-product-slider {
         height: 200px;
+    }
+    .bg {
+      transform: translate(300px, -150px);
+      width: 350px;
+    }
+    span {
+      font-size: 25px;
+    }
+}
+@media (max-width: 750px) {
+    .slider-container {
+        height: 200px;
         width: 95%;
+    }
+    .best-product-slider {
+        height: 200px;
+    }
+    .bg {
+      transform: translate(250px, -150px);
+      width: 300px;
+    }
+    span {
+      font-size: 25px;
+    }
+}
+@media (max-width: 650px) {
+    .slider-container {
+        height: 200px;
+        width: 95%;
+    }
+    .best-product-slider {
+        height: 200px;
+    }
+    .bg {
+      transform: translate(180px, -150px);
+      width: 300px;
+    }
+    span {
+      font-size: 20px;
+    }
+}
+@media (max-width: 570px) {
+    .slider-container {
+        height: 200px;
+        width: 95%;
+    }
+    .best-product-slider {
+        height: 200px;
+    }
+    .bg {
+      transform: translate(150px, -170px);
+      width: 250px;
+    }
+    .slide-content {
+      gap: 10px;
+    }
+    span {
+      font-size: 20px;
+    }
+    .slide-content button {
+      width: 100px;
+      font-size: 12px;
+    }
+}
+@media (max-width: 420px) {
+    .slider-container {
+        height: 200px;
+        width: 95%;
+    }
+    .best-product-slider {
+        height: 200px;
+    }
+    .bg {
+      transform: translate(120px, -170px);
+      width: 250px;
+    }
+    .slide-content {
+      gap: 10px;
+    }
+    span {
+      font-size: 20px;
+    }
+    .slide-content button {
+      width: 100px;
+      font-size: 12px;
     }
 }
 </style>

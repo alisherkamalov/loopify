@@ -1,46 +1,91 @@
 <template>
     <div class="frame-openedsearch" :class="{ active: focusStore.isFocused }">
-            <div ref="foundProductsRef" class="foundproducts" :class="{ active: focusStore.isFocused }">
-                <template v-if="filteredProducts.length > 0">
-                    <div class="frame-product" v-for="product in filteredProducts" :key="product.title">
-                        <div :class="getProductClass(product)" @click="selectProduct(product)">
-                            <div class="product-left">
-                                <img :src="product.image" :alt="product.title" class="product-image">
-                                <div class="product-info">
-                                    {{ product.title }}
-                                    <span class="price">{{ product.price }}</span>
-                                </div>
+        <div ref="foundProductsRef" class="foundproducts" :class="{ active: focusStore.isFocused }">
+            <template v-if="filteredProducts.length > 0">
+                <div class="frame-product" v-for="product in filteredProducts" :key="product.title">
+                    <div :class="getProductClass(product)" @click="selectProduct(product)">
+                        <div v-if="focusStore.activeProduct != product" class="product-left">
+                            <img :src="product.image" :alt="product.title" class="product-image">
+                            <div class="product-info">
+                                {{ currentLanguage.devicetype[product.devicetype] }} {{ product.title }}
+                                <span class="price">{{ product.price }}</span>
                             </div>
-                            <div class="product-right">
-                                <button class="btn-more">{{ currentLanguage.more }}</button>
-                                <button class="btn-incart">{{ currentLanguage.incart }}</button>
+                        </div>
+                        <div v-if="focusStore.activeProduct != product" class="product-right">
+                            <button class="btn-more">{{ currentLanguage.more }}</button>
+                            <button @click.stop="addProductToCart(product)" class="btn-incart">{{ currentLanguage.incart
+                            }}</button>
+                        </div>
+                        <div v-else class="product-more-info" @click.stop="console.log('product active')">
+                            <div class="cont-product">
+                                <a-tooltip title="search" @click.stop="closeInfoProduct">
+                                    <a-button shape="circle" :icon="h(SearchOutlined)" />
+                                </a-tooltip>
                             </div>
                         </div>
                     </div>
-                </template>
-                <div v-else class="notfound">
-                    <span>{{ currentLanguage.notfound }}</span>
                 </div>
-            </div>
-            <div ref="frameSearchRef" class="openedsearch" :class="{ active: focusStore.isFocused }">
+            </template>
+            <div v-else class="notfound">
+                <span>{{ currentLanguage.notfound }}</span>
             </div>
         </div>
+        <div ref="frameSearchRef" class="openedsearch" :class="{ active: focusStore.isFocused }">
+        </div>
+    </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { languages } from '../lib/languages'
+import { useNotiStore } from '~/store/notificationStore'
+
 const props = defineProps({
-  currentLanguage: {
-    type: Object,
-    required: true
-  }
+    currentLanguage: {
+        type: Object,
+        required: true
+    }
 })
 const frameSearchRef = ref(null)
 const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
+const notificationStore = useNotiStore()
 const currentLanguage = computed(() => props.currentLanguage)
+
+const addProductToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || []
+    const existingProduct = cart.find(item => item.title === product.title)
+
+    if (existingProduct) {
+        notificationStore.setNotification(currentLanguage.value.alreadyInCart || 'This product is already in the cart')
+        notificationStore.setActive(true)
+        setTimeout(() => {
+            notificationStore.setActive(false)
+        }, 3000)
+        return
+    }
+
+    cart.push({ ...product, count: 1 })
+    localStorage.setItem('cart', JSON.stringify(cart))
+
+    notificationStore.setNotification(currentLanguage.value.addedtocart)
+    notificationStore.setActive(true)
+    setTimeout(() => {
+        notificationStore.setActive(false)
+    }, 3000)
+}
+
+
+const closeInfoProduct = () => {
+    const activeSearch = document.querySelector('.frame-openedsearch.active');
+
+    if (activeSearch) {
+        activeSearch.style.zIndex = '2001';
+    }
+    focusStore.setActiveProduct(null)
+    document.body.style.overflow = 'auto'
+}
 
 const selectProduct = (product) => {
     if (focusStore.activeProduct === product) {
@@ -82,9 +127,9 @@ const getProductClass = (product) => {
     };
 }
 const products = ref([
-    { title: 'iPhone 16 Pro Max', price: "789 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
-    { title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
-    { title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
+    { devicetype: "smartphone", title: 'iPhone 16 Pro Max', price: "789 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
+    { devicetype: "tv", title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
+    { devicetype: "tablet", title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
 ])
 
 const filteredProducts = computed(() => {
@@ -120,6 +165,26 @@ watchEffect(() => {
 
 
 <style scoped>
+.product-more-info {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background);
+    border-radius: 10px;
+}
+
+.cont-product {
+    width: 95%;
+    height: 95dvh;
+    border-radius: 50px;
+    background-color: var(--bg-cont);
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
 .frame-product {
     position: relative;
     width: 100%;
@@ -134,34 +199,42 @@ watchEffect(() => {
     position: relative;
     height: 50px;
 }
-.btn-more, .btn-incart {
+
+.btn-more,
+.btn-incart {
     background-color: var(--background);
     border-radius: 10px;
     border: 1px solid rgb(44, 153, 255) !important;
     color: rgb(44, 153, 255);
-    padding: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     width: 100px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
 }
+
 .btn-incart {
     color: rgb(39, 151, 82);
     border: 1px solid rgb(39, 151, 82) !important;
 }
+
 .btn-more:hover {
     background-color: rgb(44, 153, 255);
     color: white;
 }
+
 .btn-incart:hover {
     background-color: rgb(39, 151, 82);
     color: white;
 }
+
 .product-left {
     display: flex;
     align-items: center;
     gap: 10px;
 }
+
 .product-right {
     display: flex;
     gap: 5px;
@@ -225,7 +298,7 @@ watchEffect(() => {
 }
 
 .price {
-    color: var(--border-color);
+    color:rgb(170, 170, 170);
 }
 
 .foundproducts {
@@ -255,12 +328,11 @@ watchEffect(() => {
     justify-content: center;
     align-items: center;
     margin: auto;
-    background-color: var(--background);
     font-size: 20px;
 }
 
 .notfound span {
-    color: var(--border-color);
+    color:rgb(170, 170, 170);
 }
 
 .frame-openedsearch {
@@ -285,7 +357,7 @@ watchEffect(() => {
     filter: blur(10px);
     height: 100dvh;
     width: 100%;
-    background-color: rgb(211, 211, 211, 0.9);
+    background-color: var(--blur);
     pointer-events: none;
     opacity: 0;
     border-radius: 10px;
