@@ -419,12 +419,12 @@ watchEffect(() => {
         max-width: 50%;
     }
     .btn-more:hover {
-        background-color: white;
+        background-color: var(--background);
         color: rgb(44, 153, 255);
     }
 
     .btn-incart:hover {
-        background-color: white;
+        background-color: var(--background);
         color: rgb(39, 151, 82);
     }
     .btn-more:active {
