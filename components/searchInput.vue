@@ -4,7 +4,7 @@
     </a-tooltip>
     <div :class="{ active: focusStore.isFocused }">
         <input type="text" :class="{ active: focusStore.isFocused }" :placeholder="showPlaceholder ? place : ''"
-            v-model="focusStore.searchValue" @focus="handleFocus" />
+            v-model="focusStore.searchValue" @input="handleInput" @focus="handleFocus" />
     </div>
 </template>
 
@@ -25,6 +25,9 @@ const closeSearch = () => {
 const showPlaceholder = computed(() => {
     return !focusStore.isFocused && focusStore.searchValue === ''
 })
+function handleInput(event) {
+    focusStore.searchValue = event.target.value
+}
 
 function handleFocus() {
     focusStore.isFocused = true
@@ -58,6 +61,8 @@ input {
     width: 30px;
     display: none;
     margin-right: 5px;
+    background-color: var(--background);
+    border: 1px solid var(--bg-cont);
 }
 .closebtn--active {
     display: block;
@@ -74,7 +79,7 @@ div.active {
 
 @media (max-width: 768px) {
     div {
-        width: 90%;
+        width: 88%;
     }
     input.active {
         width: 95%;

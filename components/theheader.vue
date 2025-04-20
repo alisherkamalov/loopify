@@ -6,7 +6,7 @@
             <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
                 <HeaderButton class="profile" :text="currentLanguage.profile" />
                 <HeaderButton class="basket" :text="currentLanguage.basket" />
-                <CustomDropdown class="language" :language="'ru.png'" :variants="[
+                <LangDropdown class="language" :language="'ru.png'" :variants="[
                     { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
                     { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' }
                 ]" @language-changed="changeLanguage" />
@@ -24,7 +24,7 @@
                     <HeaderButton class="basket" :text="currentLanguage.basket" />
                 </div>
                 <div class="frame">
-                    <CustomDropdown class="language" :language="'ru.png'" :variants="[
+                    <LangDropdown class="language" :language="'ru.png'" :variants="[
                         { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
                         { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' }
                     ]" @language-changed="changeLanguage" />
@@ -45,7 +45,7 @@ import { h } from 'vue'
 import { MenuOutlined } from '@ant-design/icons-vue'
 import SearchInput from './searchInput.vue'
 import HeaderButton from './headerbutton.vue'
-import CustomDropdown from './dropdown.vue'
+import LangDropdown from './langdropdown.vue'
 const isMenu = ref(false)
 
 const MenuOpenAndClose = () => {
@@ -151,6 +151,10 @@ header {
 
 .menubtn.deactivate {
     display: none;
+}
+.menubtn {
+    background-color: var(--background);
+    border: 1px solid var(--bg-cont);
 }
 
 .darkmode {

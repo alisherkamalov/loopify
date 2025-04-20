@@ -30,6 +30,7 @@ const props = defineProps({
 })
 
 const currentLanguage = computed(() => props.currentLanguage)
+const isAnimating = ref(false)
 
 const slides = [
   {  title: 'iPhone 16 Pro Max', price: "789 990 ₸", class: 'one', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745058784/bestproduct1_timfq2.png" },
@@ -55,6 +56,9 @@ const prevSlide = () => {
 }
 
 const manualSlide = (direction) => {
+  if (isAnimating.value) return;
+
+  isAnimating.value = true;
   clearTimeout(timeoutId)
   clearInterval(intervalId)
   isPaused.value = true
@@ -62,11 +66,16 @@ const manualSlide = (direction) => {
   if (direction === 'next') nextSlide()
   else prevSlide()
 
+  setTimeout(() => {
+    isAnimating.value = false
+  }, 700)
+
   timeoutId = setTimeout(() => {
     isPaused.value = false
     startAutoSlide()
   }, 5000)
 }
+
 
 const startAutoSlide = () => {
   intervalId = setInterval(() => {

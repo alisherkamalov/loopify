@@ -1,13 +1,18 @@
 <template>
     <div class="frame-openedsearch" :class="{ active: focusStore.isFocused }">
         <div ref="foundProductsRef" class="foundproducts" :class="{ active: focusStore.isFocused }">
-            <template v-if="filteredProducts.length > 0">
+            <template v-if="isLoading">
+                <div class="loading">
+                    <v-progress-circular indeterminate size="49"></v-progress-circular>
+                </div>
+            </template>
+            <template v-else-if="filteredProducts.length > 0">
                 <div class="frame-product" v-for="product in filteredProducts" :key="product.title">
                     <div :class="getProductClass(product)" @click="selectProduct(product)">
                         <div v-if="focusStore.activeProduct != product" class="product-left">
                             <img :src="product.image" :alt="product.title" class="product-image">
                             <div class="product-info">
-                                {{ currentLanguage.devicetype[product.devicetype] }} {{ product.title }}
+                                <span class="product-name">{{ currentLanguage.devicetype[product.devicetype] }} {{ product.title }}</span>
                                 <span class="price">{{ product.price }}</span>
                             </div>
                         </div>
@@ -36,6 +41,7 @@
 </template>
 
 <script setup>
+import { VProgressCircular } from 'vuetify/components'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { languages } from '../lib/languages'
@@ -51,6 +57,7 @@ const props = defineProps({
 const frameSearchRef = ref(null)
 const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
+const isLoading = ref(false)
 const notificationStore = useNotiStore()
 const currentLanguage = computed(() => props.currentLanguage)
 
@@ -136,7 +143,11 @@ const filteredProducts = computed(() => {
     if (focusStore.searchValue === '') {
         return []
     }
+    isLoading.value = true
     const query = focusStore.searchValue?.toLowerCase() || ''
+    setTimeout(() => {
+        isLoading.value = false
+    }, 500);
     return products.value.filter(product =>
         product.title.toLowerCase().includes(query)
     )
@@ -174,7 +185,9 @@ watchEffect(() => {
     background-color: var(--background);
     border-radius: 10px;
 }
-
+.loading {
+    margin: auto;
+}
 .cont-product {
     width: 95%;
     height: 95dvh;
@@ -184,7 +197,12 @@ watchEffect(() => {
     justify-content: center;
     position: relative;
 }
-
+.product-name {
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
 .frame-product {
     position: relative;
     width: 100%;
@@ -233,6 +251,7 @@ watchEffect(() => {
     display: flex;
     align-items: center;
     gap: 10px;
+    max-width: 60%;
 }
 
 .product-right {
@@ -383,9 +402,14 @@ watchEffect(() => {
 }
 
 @media (max-width: 768px) {
-
+    .product-name {
+        max-width: 90%;
+    }
     .product {
         width: 90%;
+    }
+    .product-left {
+        max-width: 50%;
     }
 }
 @media (max-width: 650px) {
@@ -396,6 +420,49 @@ watchEffect(() => {
         padding-top: 5px;
         padding-bottom: 5px;
         font-size: 12px;
+    }
+    .product-info {
+        gap: 0px;
+    }
+    .product-name {
+        max-width: 60%;
+    }
+    .price {
+        font-size: 14px;
+    }
+    
+}
+@media (max-width: 450px) {
+    .product-right {
+        flex-direction: column;
+    }
+    .btn-more, .btn-incart {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        font-size: 12px;
+    }
+    .product-info {
+        gap: 0px;
+    }
+    .product-name {
+        max-width: 50%;
+    }
+    
+}
+@media (max-width: 380px) {
+    .product-right {
+        flex-direction: column;
+    }
+    .btn-more, .btn-incart {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        font-size: 12px;
+    }
+    .product-info {
+        gap: 0px;
+    }
+    .product-name {
+        max-width: 40%;
     }
     
 }
