@@ -12,14 +12,15 @@
                         <div v-if="focusStore.activeProduct != product" class="product-left">
                             <img :src="product.image" :alt="product.title" class="product-image">
                             <div class="product-info">
-                                <span class="product-name">{{ currentLanguage.devicetype[product.devicetype] }} {{ product.title }}</span>
+                                <span class="product-name">{{ currentLanguage.devicetype[product.devicetype] }} {{
+                                    product.title }}</span>
                                 <span class="price">{{ product.price }}</span>
                             </div>
                         </div>
                         <div v-if="focusStore.activeProduct != product" class="product-right">
                             <button class="btn-more">{{ currentLanguage.more }}</button>
                             <button @click.stop="addProductToCart(product)" class="btn-incart">{{ currentLanguage.incart
-                            }}</button>
+                                }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
                             <div class="cont-product">
@@ -185,9 +186,11 @@ watchEffect(() => {
     background-color: var(--background);
     border-radius: 10px;
 }
+
 .loading {
     margin: auto;
 }
+
 .cont-product {
     width: 95%;
     height: 95dvh;
@@ -197,12 +200,14 @@ watchEffect(() => {
     justify-content: center;
     position: relative;
 }
+
 .product-name {
     display: inline-block;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
+
 .frame-product {
     position: relative;
     width: 100%;
@@ -317,7 +322,7 @@ watchEffect(() => {
 }
 
 .price {
-    color:rgb(170, 170, 170);
+    color: rgb(170, 170, 170);
 }
 
 .foundproducts {
@@ -351,7 +356,7 @@ watchEffect(() => {
 }
 
 .notfound span {
-    color:rgb(170, 170, 170);
+    color: rgb(170, 170, 170);
 }
 
 .frame-openedsearch {
@@ -405,65 +410,101 @@ watchEffect(() => {
     .product-name {
         max-width: 90%;
     }
+
     .product {
         width: 90%;
     }
+
     .product-left {
         max-width: 50%;
     }
+    .btn-more:hover {
+        background-color: white;
+        color: rgb(44, 153, 255);
+    }
+
+    .btn-incart:hover {
+        background-color: white;
+        color: rgb(39, 151, 82);
+    }
+    .btn-more:active {
+        background-color: rgb(44, 153, 255);
+        color: white;
+    }
+
+    .btn-incart:active {
+        background-color: rgb(39, 151, 82);
+        color: white;
+    }
 }
+
 @media (max-width: 650px) {
     .product-right {
         flex-direction: column;
     }
-    .btn-more, .btn-incart {
+
+    .btn-more,
+    .btn-incart {
         padding-top: 5px;
         padding-bottom: 5px;
         font-size: 12px;
     }
+
     .product-info {
         gap: 0px;
     }
+
     .product-name {
         max-width: 60%;
     }
+
     .price {
         font-size: 14px;
     }
-    
+
 }
+
 @media (max-width: 450px) {
     .product-right {
         flex-direction: column;
     }
-    .btn-more, .btn-incart {
+
+    .btn-more,
+    .btn-incart {
         padding-top: 5px;
         padding-bottom: 5px;
         font-size: 12px;
     }
+
     .product-info {
         gap: 0px;
     }
+
     .product-name {
         max-width: 50%;
     }
-    
+
 }
+
 @media (max-width: 380px) {
     .product-right {
         flex-direction: column;
     }
-    .btn-more, .btn-incart {
+
+    .btn-more,
+    .btn-incart {
         padding-top: 5px;
         padding-bottom: 5px;
         font-size: 12px;
     }
+
     .product-info {
         gap: 0px;
     }
+
     .product-name {
         max-width: 40%;
     }
-    
+
 }
 </style>

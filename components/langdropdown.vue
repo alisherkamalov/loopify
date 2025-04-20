@@ -1,12 +1,12 @@
 <template>
-    <div class="dropdown" :class="{ active: languageActive }" @click.stop="OpenCloseLanguage">
+    <div class="dropdown" :class="{ active: languageActive }" @click.stop="OpenCloseLanguage" :style="dropdownStyle">
         <span class="selected-language" :class="{ active: languageActive }">
             <img :src="`/` + displayIcon" alt="lang" class="flag-icon" />
         </span>
         <div class="dropdown-content" :class="{ active: languageActive }">
             <div v-for="(variant, index) in variants" :key="index" class="dropdown-item"
                 @click.stop="selectVariant(variant)">
-                <img :src="`/` + variant.icon" alt="flag" class="flag-icon" />
+                <img :src="`/` + variant.icon" alt="flag" class="flag-icon-opened" />
                 <span class="language">{{ variant.text }}</span>
             </div>
         </div>
@@ -15,9 +15,10 @@
 
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 
 const emit = defineEmits(['language-changed'])
+const width = ref(window.innerWidth)
 
 const props = defineProps({
     language: {
@@ -42,17 +43,38 @@ const displayIcon = computed(() => {
     return props.language
 })
 
+const dropdownStyle = computed(() => {
+    const code = selectedLanguage.value?.code || localStorage.getItem('languageCode') || 'ru'
+
+    if (width.value >= 769) {
+        if (code === 'kz') {
+            return { left: '165px' }
+        } else if (code === 'ru') {
+            return { left: '185px' }
+        }
+    }
+    return {}
+})
+
+const handleResize = () => {
+    width.value = window.innerWidth
+}
+
 onMounted(() => {
     const savedLang = localStorage.getItem('selectedLanguage')
     const savedCode = localStorage.getItem('languageCode')
-
     if (savedLang && savedCode) {
         const matched = props.variants.find(v => v.code === savedCode)
         if (matched) {
             selectedLanguage.value = matched
         }
-    }
+    } 
+    window.addEventListener('resize', handleResize)
 })
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleResize)
+})
+
 
 const OpenCloseLanguage = () => {
     languageActive.value = !languageActive.value
@@ -93,6 +115,12 @@ const selectVariant = (variant) => {
     width: 24px;
     height: 18px;
     object-fit: contain;
+    translate: 0px -1px;
+}
+.flag-icon-opened {
+    width: 24px;
+    height: 18px;
+    object-fit: contain;
 }
 .language {
     margin-left: 5px;
@@ -115,7 +143,7 @@ const selectVariant = (variant) => {
     max-height: 100px;
     max-width: 150px;
     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-    left: 0px;
+    left: 0px !important;
 }
 
 .dropdown-content {

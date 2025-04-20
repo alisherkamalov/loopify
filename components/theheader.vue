@@ -111,7 +111,7 @@ header {
 .profile,
 .basket {
     position: absolute;
-    top: 10px;
+    top: 8px;
 }
 
 .frame {

@@ -18,7 +18,7 @@ defineProps({
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 7px;
+    padding: 5px;
     background-color: var(--background);
     border-radius: 10px;
     border: 1px solid var(--bg-cont) !important;
