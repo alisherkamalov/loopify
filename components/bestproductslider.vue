@@ -34,7 +34,7 @@ const isAnimating = ref(false)
 
 const slides = [
   { title: 'iPhone 16 Pro Max', price: "789 990 ₸", class: 'one', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745058784/bestproduct1_timfq2.png" },
-  { title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
+  { title: 'Apple MacBook Air Silver M2', price: "599 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745168472/macbook_sue7ry.png" },
   { title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", class: 'three', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
 ];
 
@@ -87,7 +87,7 @@ const startAutoSlide = () => {
       isAnimating.value = false
     }, 700)
 
-  }, 2000)
+  }, 5000)
 }
 
 onMounted(() => {
@@ -156,13 +156,10 @@ span {
 .slide-content {
   min-width: 100%;
   min-height: 100dvh;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  padding-left: 40px;
-  padding-right: 40px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .slide-content button {
@@ -317,7 +314,7 @@ span {
   }
 
   .slide-content {
-    gap: 10px;
+    gap: 6px;
   }
 
   span {

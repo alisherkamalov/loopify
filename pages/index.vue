@@ -6,6 +6,7 @@
             <openSearch :currentLanguage="currentLanguage" />
             <div class="content">
                 <BestProductSlider :current-language="currentLanguage" />
+                <CardProduct :current-language="currentLanguage"/>
             </div>
         </div>
     </main>
@@ -18,6 +19,7 @@ import { useFocusStore } from '~/store/focusStore'
 import { useNotiStore } from '~/store/notificationStore'
 import TheHeader from '~/components/theheader.vue'
 import openSearch from '~/components/openSearch.vue'
+import CardProduct from '~/components/cardproduct.vue'
 import Notification from '~/components/thenotification.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
 
