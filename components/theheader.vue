@@ -15,8 +15,20 @@
 
         <div class="mobile">
             <div class="darkmode" @click="MenuOpenAndClose" :class="{ 'active': isMenu }"></div>
-            <div class="menu" :class="{'active': isMenu }">
-
+            <div class="menu" :class="{ 'active': isMenu }">
+                <div class="logo mobile"></div>
+                <div class="frame">
+                    <HeaderButton class="profile" :text="currentLanguage.profile" />
+                </div>
+                <div class="frame">
+                    <HeaderButton class="basket" :text="currentLanguage.basket" />
+                </div>
+                <div class="frame">
+                    <CustomDropdown class="language" :language="'ru.png'" :variants="[
+                        { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
+                        { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' }
+                    ]" @language-changed="changeLanguage" />
+                </div>
             </div>
             <a-tooltip @click="MenuOpenAndClose" class="menubtn" :class="{ 'deactivate': focusStore.isFocused }">
                 <a-button color="white" shape="circle" :icon="h(MenuOutlined)" />
@@ -47,13 +59,23 @@ const props = defineProps({
         required: true
     }
 })
-
+function handleBackButton(event) {
+  isMenu.value = false;
+  history.pushState(null, '', location.href);
+}
 const emit = defineEmits(['language-changed'])
 
 const changeLanguage = (langCode) => {
     emit('language-changed', langCode)
 }
+onMounted(() => {
+  history.pushState(null, '', location.href);
+  window.addEventListener('popstate', handleBackButton);
+});
 
+onBeforeUnmount(() => {
+  window.removeEventListener('popstate', handleBackButton);
+});
 watchEffect(() => {
     if (typeof document !== 'undefined') {
         document.body.style.overflow = focusStore.isFocused ? 'hidden' : 'auto'
@@ -73,6 +95,11 @@ header {
     justify-content: space-between;
 }
 
+.logo.mobile {
+    height: 50px;
+    min-width: 230px;
+}
+
 .right {
     display: flex;
     gap: 10px;
@@ -85,6 +112,14 @@ header {
 .basket {
     position: absolute;
     top: 10px;
+}
+
+.frame {
+    min-width: 250px;
+    height: 50px;
+    margin-left: 10px;
+    display: flex;
+    position: relative;
 }
 
 .language {
@@ -113,6 +148,7 @@ header {
     align-items: center;
     justify-content: space-between;
 }
+
 .menubtn.deactivate {
     display: none;
 }
@@ -129,6 +165,7 @@ header {
     pointer-events: none;
     transition: all 0.3s ease;
 }
+
 .darkmode.active {
     background-color: black;
     z-index: 9998 !important;
@@ -138,22 +175,27 @@ header {
     left: 0px;
     top: 0px;
 }
+
 .menu {
     display: flex;
     position: absolute;
     left: 0px;
+    flex-direction: column;
     top: 0px;
     width: 0px;
+    overflow-x: hidden;
     z-index: 0;
     height: 100dvh;
     background-color: var(--background);
     transition: all 0.3s ease;
 }
+
 .menu.active {
     width: 250px !important;
     padding: 10px;
     z-index: 9999 !important;
 }
+
 .mobile {
     display: none;
     width: 100%;
@@ -171,6 +213,10 @@ header {
 
     .mobile {
         display: flex;
+    }
+
+    .dropdown, .profile, .basket {
+        left: 0;
     }
 }
 </style>
