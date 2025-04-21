@@ -1,13 +1,36 @@
 <template>
     <div class="cardproducts">
         <div class="centercard">
-            <div v-for="product in products" :key="product.title" class="frame-cardproduct">
+            <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct">
                 <div class="cardproduct" :class="getProductClass(product)">
-                    <div class="cardproduct__media">
-                        <video v-if="product.video" :src="product.video" class="cardproduct__video"
-                            @loadeddata="onVideoLoaded(index)" @error="onVideoError(index)" autoplay muted loop></video>
-                        <img v-else :src="product.image" alt="Product Image" class="cardproduct__img" />
-                    </div>
+                    <client-only>
+                        <Swiper 
+                            class="cardproduct__media" 
+                            :slides-per-view="1" 
+                            pagination
+                            :key="'swiper-' + index"
+                        >
+                            <SwiperSlide>
+                                <img :src="product.image" alt="Product Image" class="cardproduct__img" />
+                            </SwiperSlide>
+                            <SwiperSlide v-if="product.video">
+                                <div class="video-container">
+                                    <video 
+                                        :ref="el => initVideo(el, index)"
+                                        :src="product.video"
+                                        class="cardproduct__video"
+                                        muted
+                                        loop
+                                        :autoplay="false"
+                                        preload="metadata"
+                                    ></video>
+                                    <div class="video-control" @click.stop="toggleVideo(index)" :class="{ visible: videoStates[index]?.paused }">
+                                        <span class="iconstop" :class="{ active: videoStates[index]?.paused }">▶</span>
+                                    </div>
+                                </div>
+                            </SwiperSlide>
+                        </Swiper>
+                    </client-only>
                     <div class="cardproduct__content">
                         <div class="top">
                             <h3 class="cardproduct__title">{{ product.title }}</h3>
@@ -28,25 +51,14 @@
 
 
 <script setup>
-import { ref, computed } from 'vue'
-
+import { ref, computed, onMounted } from 'vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/pagination'
 import { useCardFocusStore } from '~/store/CardFocusStore'
 const CardFocusStore = useCardFocusStore()
-const props = defineProps({
-    currentLanguage: {
-        type: Object,
-        required: true
-    }
-})
-const currentLanguage = computed(() => props.currentLanguage)
-const getProductClass = (product) => {
-    const className = product.title.toLowerCase().replace(/\s+/g, '-');
-    return {
-        [className]: CardFocusStore.activeProduct === product,
-        'cardproduct': true,
-        'cardproduct--active': CardFocusStore.activeProduct === product,
-    };
-}
+const videoStates = ref([]);
+const videoRefs = ref([]);
 const products = ref([
     {
         devicetype: "smartphone",
@@ -70,10 +82,94 @@ const products = ref([
         video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745169201/Galaxy_Tab_A9___Tab_A9___Samsung_ophcyp.mp4"
     },
 ])
+const initVideo = (el, index) => {
+  if (!el) return;
+  
+  videoRefs.value[index] = el;
+  videoStates.value[index] = {
+    paused: true, 
+    showControl: true 
+  };
+  
+  el.pause(); 
+};
 
+const toggleVideo = (index) => {
+  const video = videoRefs.value[index];
+  if (!video) return;
+
+  const currentState = videoStates.value[index];
+  
+  if (currentState.paused) {
+    video.play();
+    currentState.showControl = false
+  } else {
+    video.pause();
+    currentState.showControl = true;
+  }
+  
+  currentState.paused = !currentState.paused;
+};
+const props = defineProps({
+    currentLanguage: {
+        type: Object,
+        required: true
+    }
+})
+const currentLanguage = computed(() => props.currentLanguage)
+const getProductClass = (product) => {
+    const className = product.title.toLowerCase().replace(/\s+/g, '-');
+    return {
+        [className]: CardFocusStore.activeProduct === product,
+        'cardproduct': true,
+        'cardproduct--active': CardFocusStore.activeProduct === product,
+    };
+}
+onMounted(() => {
+  videoRefs.value.forEach((video) => {
+    if (video) video.pause();
+  });
+});
 </script>
 
 <style scoped>
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.iconstop {
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+.iconstop.active {
+    opacity: 1;
+}
+.video-control {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.video-control.visible {
+    opacity: 0;
+}
+.video-control:hover {
+    opacity: 1;
+}
+
+.video-control span {
+    font-size: 40px;
+    color: white;
+}
 .cardproducts {
     width: 95%;
     display: flex;
@@ -97,7 +193,7 @@ const products = ref([
     justify-content: center;
     width: 100%;
     max-width: 400px;
-    flex: 1 1 400px; 
+    flex: 1 1 400px;
 }
 
 .cardproduct {
@@ -137,7 +233,9 @@ const products = ref([
 
 .cardproduct__img {
     width: 100%;
-    height: 100dvh;
+    display: flex;
+    margin-top: 50%;
+    translate: 0px -25%;
     border-radius: 20px 20px 0 0;
     object-fit: contain;
 }
@@ -174,50 +272,62 @@ const products = ref([
     border-radius: 50px;
     cursor: pointer;
 }
+
 @media (max-width: 1294px) {
     .frame-cardproduct {
         max-width: 350px;
         flex: 1 1 350px;
     }
+
     .cardproduct__content {
         height: 250px;
     }
+
     .cardproduct__media {
         width: 170px;
     }
 }
+
 @media (max-width: 1136px) {
     .frame-cardproduct {
         max-width: 40%;
         flex: 1 1 100%;
     }
+
     .cardproduct__content {
-        height: 250px;
+        min-height: 210px;
     }
+
     .cardproduct__media {
-        width: 170px;
+        min-width: 170px;
     }
 }
+
 @media (max-width: 880px) {
     .frame-cardproduct {
         max-width: 350px;
         flex: 1 1 350px;
     }
+
     .cardproduct__content {
         height: 250px;
     }
+
     .cardproduct__media {
         width: 170px;
     }
 }
+
 @media (max-width: 769px) {
     .frame-cardproduct {
         max-width: 90%;
         flex: 1 1 100%;
     }
+
     .cardproduct__media {
         width: 50%;
     }
+
     .cardproduct__content {
         width: 50%;
     }

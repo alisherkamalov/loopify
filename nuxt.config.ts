@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   build: {
     transpile: ["vuetify"],
   },
-  css: ["~/assets/main.css", "ant-design-vue/dist/reset.css"],
+  css: ["~/assets/main.css", "ant-design-vue/dist/reset.css", 'swiper/swiper-bundle.css'],
   modules: [
     "@pinia/nuxt",
     (_options, nuxt) => {
