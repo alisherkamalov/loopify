@@ -6,7 +6,7 @@
             <openSearch :currentLanguage="currentLanguage" />
             <div class="content">
                 <BestProductSlider :current-language="currentLanguage" />
-                <CardProduct :current-language="currentLanguage"/>
+                <CardProduct :current-language="currentLanguage" />
             </div>
         </div>
     </main>
@@ -28,9 +28,10 @@ const notificationStore = useNotiStore()
 const currentLanguage = ref(null)
 
 onMounted(() => {
-    const langCode = localStorage.getItem('languageCode') || 'ru'
-    currentLanguage.value = languages[langCode] || languages.ru
-})
+    const langCode = localStorage.getItem('languageCode') || 'ru';
+    currentLanguage.value = languages[langCode] || languages.ru;
+});
+
 
 const changeLanguage = (langCode) => {
     currentLanguage.value = languages[langCode] || languages.ru
@@ -47,12 +48,13 @@ main.active {
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: 1200px;
     width: 100%;
+    height: 120dvh;
     border-top-left-radius: 50px;
     border-top-right-radius: 50px;
     background-color: var(--bg-cont);
 }
+
 .frame-all-content {
     width: 100%;
     height: 100dvh;
@@ -61,7 +63,13 @@ main.active {
     background-color: var(--background);
     transition: all 0.3s ease;
 }
+
 .frame-all-content--active {
     filter: blur(10px);
+}
+@media (max-width: 768px) {
+    .content {
+        height: auto;
+    }
 }
 </style>

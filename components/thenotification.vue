@@ -4,7 +4,6 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue'
 import { useNotiStore } from '~/store/notificationStore'
 const notificationStore = useNotiStore()
 

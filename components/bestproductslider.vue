@@ -20,7 +20,7 @@
 
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, defineProps } from 'vue'
 
 const props = defineProps({
   currentLanguage: {
@@ -34,8 +34,8 @@ const isAnimating = ref(false)
 
 const slides = [
   { title: 'iPhone 16 Pro Max', price: "789 990 ₸", class: 'one', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745058784/bestproduct1_timfq2.png" },
-  { title: 'Apple MacBook Air Silver M2', price: "599 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745168472/macbook_sue7ry.png" },
-  { title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", class: 'three', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
+  { title: 'Apple MacBook Air M2', price: "599 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745237856/macbook_2_nv9e9v.png" },
+  { title: 'Samsung Tab A9', price: "129 990 ₸", class: 'three', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
 ];
 
 const current = ref(0)

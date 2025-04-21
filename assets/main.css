@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
+html {
+    overflow: hidden; 
+  }
 * {
     margin: 0;
     padding: 0;
@@ -22,8 +24,8 @@ textarea:focus, input:focus, button:focus {
 }
 body {
     background-color: var(--background);
-    overflow-x: hidden;
 }
+
 .logo {
     background-image: var(--logo-url);
     width: 150px;

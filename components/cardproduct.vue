@@ -57,18 +57,18 @@ const products = ref([
     },
     {
         devicetype: "laptop",
-        title: 'Apple MacBook Air Silver M2',
+        title: 'Apple MacBook Air M2',
         price: "599 990 ₸",
         image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745168472/macbook_sue7ry.png",
         video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745168907/MacBook_Air_with_M2_-_Product_Video_ofgvae.mp4"
     },
     {
         devicetype: "tablet",
-        title: 'Samsung Tab A9 Graphite',
+        title: 'Samsung Tab A9',
         price: "129 990 ₸",
         image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png",
         video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745169201/Galaxy_Tab_A9___Tab_A9___Samsung_ophcyp.mp4"
-    }
+    },
 ])
 
 </script>
@@ -96,8 +96,8 @@ const products = ref([
     display: flex;
     justify-content: center;
     width: 100%;
-    max-width: 300px;
-    flex: 1 1 300px; 
+    max-width: 400px;
+    flex: 1 1 400px; 
 }
 
 .cardproduct {
@@ -120,7 +120,7 @@ const products = ref([
 }
 
 .cardproduct__media {
-    width: 130px;
+    width: 190px;
     height: 280px;
     display: flex;
     justify-content: center;
@@ -146,7 +146,7 @@ const products = ref([
     text-align: left;
     max-width: 40%;
     margin-top: 10px;
-    height: 25vh;
+    height: 250px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -174,7 +174,43 @@ const products = ref([
     border-radius: 50px;
     cursor: pointer;
 }
-@media (max-width: 647px) {
+@media (max-width: 1294px) {
+    .frame-cardproduct {
+        max-width: 350px;
+        flex: 1 1 350px;
+    }
+    .cardproduct__content {
+        height: 250px;
+    }
+    .cardproduct__media {
+        width: 170px;
+    }
+}
+@media (max-width: 1136px) {
+    .frame-cardproduct {
+        max-width: 40%;
+        flex: 1 1 100%;
+    }
+    .cardproduct__content {
+        height: 250px;
+    }
+    .cardproduct__media {
+        width: 170px;
+    }
+}
+@media (max-width: 880px) {
+    .frame-cardproduct {
+        max-width: 350px;
+        flex: 1 1 350px;
+    }
+    .cardproduct__content {
+        height: 250px;
+    }
+    .cardproduct__media {
+        width: 170px;
+    }
+}
+@media (max-width: 769px) {
     .frame-cardproduct {
         max-width: 90%;
         flex: 1 1 100%;

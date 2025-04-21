@@ -5,3 +5,8 @@
     </v-app>
   </NuxtLayout>
 </template>
+<style>
+html {
+  overflow: hidden !important;
+}
+</style>
