@@ -91,7 +91,7 @@ const products = ref([
         devicetype: "laptop",
         title: 'Apple MacBook Air M2',
         price: "599 990 ₸",
-        image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745168472/macbook_sue7ry.png",
+        image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745237856/macbook_2_nv9e9v.png",
         video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745168907/MacBook_Air_with_M2_-_Product_Video_ofgvae.mp4"
     },
     {
