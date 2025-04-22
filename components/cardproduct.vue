@@ -3,34 +3,28 @@
         <div class="centercard">
             <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct">
                 <div class="cardproduct" :class="getProductClass(product)">
-                    <client-only>
-                        <Swiper 
-                            class="cardproduct__media" 
-                            :slides-per-view="1" 
-                            pagination
-                            :key="'swiper-' + index"
-                        >
-                            <SwiperSlide>
-                                <img :src="product.image" alt="Product Image" class="cardproduct__img" />
-                            </SwiperSlide>
-                            <SwiperSlide v-if="product.video">
-                                <div class="video-container">
-                                    <video 
-                                        :ref="el => initVideo(el, index)"
-                                        :src="product.video"
-                                        class="cardproduct__video"
-                                        muted
-                                        loop
-                                        :autoplay="false"
-                                        preload="metadata"
-                                    ></video>
-                                    <div class="video-control" @click.stop="toggleVideo(index)" :class="{ visible: videoStates[index]?.paused }">
-                                        <span class="iconstop" :class="{ active: videoStates[index]?.paused }">▶</span>
-                                    </div>
+                    <Swiper class="cardproduct__media" :slides-per-view="1" :modules="[Navigation]" :navigation="true"
+                        :key="`swiper-${product.title}-${index}`">
+                        <SwiperSlide>
+                            <img :src="product.image" alt="Product Image" class="cardproduct__img" />
+                        </SwiperSlide>
+                        <SwiperSlide v-if="product.video" :key="`video-${index}`">
+                            <div class="video-container">
+                                <video :ref="el => initVideo(el, index)" :src="product.video" class="cardproduct__video"
+                                    muted loop preload="metadata" @loadeddata="handleVideoLoaded(index)"
+                                    @waiting="videoStates[index].isLoading = true"
+                                    @suspend="videoStates[index].isLoading = false"></video>
+                                <v-progress-circular v-if="videoStates[index]?.isLoading" indeterminate color="primary"
+                                    size="64" width="5" class="video-loader"></v-progress-circular>
+                                <div class="video-control" @click.stop="toggleVideo(index)"
+                                    :class="{ visible: videoStates[index]?.showControl }">
+                                    <span class="iconstop">
+                                        {{ videoStates[index]?.paused ? '▶' : '⏸' }}
+                                    </span>
                                 </div>
-                            </SwiperSlide>
-                        </Swiper>
-                    </client-only>
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
                     <div class="cardproduct__content">
                         <div class="top">
                             <h3 class="cardproduct__title">{{ product.title }}</h3>
@@ -38,7 +32,7 @@
                         </div>
                         <div class="bottom">
                             <button class="cardproduct__btn">{{ currentLanguage.more }}</button>
-                            <button class="cardproduct__btn">{{ currentLanguage.incart }}</button>
+                            <button class="cardproduct__btn incart">{{ currentLanguage.incart }}</button>
                         </div>
 
                     </div>
@@ -51,14 +45,39 @@
 
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
-import 'swiper/css/pagination'
+import 'swiper/css/navigation'
+import { Navigation } from 'swiper/modules';
+import { VProgressCircular } from 'vuetify/components'
 import { useCardFocusStore } from '~/store/CardFocusStore'
 const CardFocusStore = useCardFocusStore()
-const videoStates = ref([]);
-const videoRefs = ref([]);
+const videoStates = ref({});
+const videoRefs = ref({});
+
+const initVideo = (el, index) => {
+    if (!el || videoRefs.value[index]) return;
+
+    videoRefs.value[index] = el;
+    videoStates.value[index] = {
+        paused: true,
+        showControl: true,
+        isLoading: true
+    };
+
+    // Если видео уже закешировано
+    if (el.readyState > 3) {
+        videoStates.value[index].isLoading = false;
+    }
+    
+    el.pause();
+};
+const handleVideoLoaded = (index) => {
+    if (videoRefs.value[index]?.readyState === 4) {
+        videoStates.value[index].isLoading = false;
+    }
+};
 const products = ref([
     {
         devicetype: "smartphone",
@@ -82,33 +101,24 @@ const products = ref([
         video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745169201/Galaxy_Tab_A9___Tab_A9___Samsung_ophcyp.mp4"
     },
 ])
-const initVideo = (el, index) => {
-  if (!el) return;
-  
-  videoRefs.value[index] = el;
-  videoStates.value[index] = {
-    paused: true, 
-    showControl: true 
-  };
-  
-  el.pause(); 
-};
 
 const toggleVideo = (index) => {
-  const video = videoRefs.value[index];
-  if (!video) return;
+    const video = videoRefs.value[index];
+    if (!video || !videoStates.value[index]) return;
 
-  const currentState = videoStates.value[index];
-  
-  if (currentState.paused) {
-    video.play();
-    currentState.showControl = false
-  } else {
-    video.pause();
-    currentState.showControl = true;
-  }
-  
-  currentState.paused = !currentState.paused;
+    const newState = { ...videoStates.value[index] };
+
+    if (newState.paused) {
+        video.play().catch(() => { });
+        newState.paused = false;
+        newState.showControl = false;
+    } else {
+        video.pause();
+        newState.paused = true;
+        newState.showControl = true;
+    }
+
+    videoStates.value[index] = newState;
 };
 const props = defineProps({
     currentLanguage: {
@@ -125,26 +135,44 @@ const getProductClass = (product) => {
         'cardproduct--active': CardFocusStore.activeProduct === product,
     };
 }
-onMounted(() => {
-  videoRefs.value.forEach((video) => {
-    if (video) video.pause();
-  });
-});
 </script>
 
 <style scoped>
+.video-control.visible {
+    opacity: 1;
+}
+
+.video-container:hover .video-control {
+    opacity: 1;
+}
+
+.video-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
 .video-container {
     position: relative;
     width: 100%;
     height: 100%;
 }
+
 .iconstop {
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s;
 }
-.iconstop.active {
+
+.video-control:hover .iconstop {
     opacity: 1;
 }
+
+.iconstop.active {
+    opacity: 1 !important;
+}
+
 .video-control {
     position: absolute;
     top: 0;
@@ -155,13 +183,13 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
     opacity: 0;
+    will-change: opacity;
+    backface-visibility: hidden;
     transition: opacity 0.3s;
 }
-.video-control.visible {
-    opacity: 0;
-}
+
 .video-control:hover {
     opacity: 1;
 }
@@ -170,6 +198,7 @@ onMounted(() => {
     font-size: 40px;
     color: white;
 }
+
 .cardproducts {
     width: 95%;
     display: flex;
@@ -246,6 +275,7 @@ onMounted(() => {
     margin-top: 10px;
     height: 250px;
     display: flex;
+    translate: -10px;
     flex-direction: column;
     justify-content: space-between;
 }
@@ -266,11 +296,15 @@ onMounted(() => {
     margin-top: 10px;
     padding: 8px 0px;
     width: 100%;
-    background-color: var(--accent-color, #007bff);
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 50px;
     cursor: pointer;
+}
+
+.cardproduct__btn.incart {
+    background-color: rgb(39, 151, 82);
 }
 
 @media (max-width: 1294px) {

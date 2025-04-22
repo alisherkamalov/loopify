@@ -16,6 +16,17 @@ textarea:focus, input:focus, button:focus {
 .swiper-button-prev, .swiper-button-next {
     scale: 0.5;
     color: black !important;
+    background-color: var(--background);
+    width: 70px !important;
+    height: 70px !important;
+    border-radius: 100%;
+    translate: 0px 100px !important;
+}
+.swiper-button-next {
+    right: 30px !important;
+}
+.swiper-button-prev {
+    left: 30px !important;
 }
 :root {
     --background: #ffffff;
@@ -29,7 +40,9 @@ textarea:focus, input:focus, button:focus {
 body {
     background-color: var(--background);
 }
-
+.swiper-slide {
+    margin-right: 1px;
+}
 .logo {
     background-image: var(--logo-url);
     width: 150px;

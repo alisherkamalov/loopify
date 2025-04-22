@@ -169,7 +169,7 @@ span {
   background: #0071e3;
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 50px;
 }
 
 .nav {
