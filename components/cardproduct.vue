@@ -19,7 +19,8 @@
                                 <div class="video-control" @click.stop="toggleVideo(index)"
                                     :class="{ visible: videoStates[index]?.showControl }">
                                     <span class="iconstop">
-                                        {{ videoStates[index]?.paused ? '▶' : '⏸' }}
+                                        <svg v-if="videoStates[index]?.paused" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 4v16m14-8L6 20m14-8L6 4"/></svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-width="2" d="M7 5v14M17 5v14"/></svg>
                                     </span>
                                 </div>
                             </div>
