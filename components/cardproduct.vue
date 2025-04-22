@@ -1,8 +1,10 @@
 <template>
     <div class="cardproducts">
         <div class="centercard">
-            <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct">
-                <div class="cardproduct" :class="getProductClass(product)">
+            <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct"
+            :class="{ active: activeFrameIndex === index }"
+            >
+                <div class="cardproduct" :class="{ active: activeFrameIndex === index }" >
                     <Swiper class="cardproduct__media" :slides-per-view="1" :modules="[Navigation]" :navigation="true"
                         :key="`swiper-${product.title}-${index}`">
                         <SwiperSlide>
@@ -41,53 +43,33 @@
                             <p class="cardproduct__price">{{ product.price }}</p>
                         </div>
                         <div class="bottom">
-                            <button class="cardproduct__btn">{{ currentLanguage.more }}</button>
-                            <button class="cardproduct__btn incart">{{ currentLanguage.incart }}</button>
+                            <button class="cardproduct__btn" @click.stop="openProduct(index)">{{ currentLanguage.more }}</button>
+                            <button class="cardproduct__btn incart" @click.stop="addProductToCart(product)">{{ currentLanguage.incart }}</button>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import { Navigation } from 'swiper/modules';
 import { VProgressCircular } from 'vuetify/components'
 import { useCardFocusStore } from '~/store/CardFocusStore'
+import { useNotiStore } from '~/store/notificationStore';
 const CardFocusStore = useCardFocusStore()
+const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
-
-const initVideo = (el, index) => {
-    if (!el || videoRefs.value[index]) return;
-
-    videoRefs.value[index] = el;
-    videoStates.value[index] = {
-        paused: true,
-        showControl: true,
-        isLoading: true
-    };
-
-    // Если видео уже закешировано
-    if (el.readyState > 3) {
-        videoStates.value[index].isLoading = false;
-    }
-
-    el.pause();
-};
-const handleVideoLoaded = (index) => {
-    if (videoRefs.value[index]?.readyState === 4) {
-        videoStates.value[index].isLoading = false;
-    }
-};
+const savedScrollPosition = ref(0)
+const isCardOpen = ref(false)
+const activeFrameIndex = ref(-1);
 const products = ref([
     {
         devicetype: "smartphone",
@@ -111,6 +93,63 @@ const products = ref([
         video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745169201/Galaxy_Tab_A9___Tab_A9___Samsung_ophcyp.mp4"
     },
 ])
+const addProductToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || []
+    const existingProduct = cart.find(item => item.title === product.title)
+
+    if (existingProduct) {
+        notificationStore.setNotification(currentLanguage.value.alreadyInCart || 'This product is already in the cart')
+        notificationStore.setActive(true)
+        setTimeout(() => {
+            notificationStore.setActive(false)
+        }, 3000)
+        return
+    }
+
+    cart.push({ ...product, count: 1 })
+    localStorage.setItem('cart', JSON.stringify(cart))
+
+    notificationStore.setNotification(currentLanguage.value.addedtocart)
+    notificationStore.setActive(true)
+    setTimeout(() => {
+        notificationStore.setActive(false)
+    }, 3000)
+}
+const openProduct = (index) => {
+    if (activeFrameIndex.value === index) {
+        // Закрытие карточки
+        activeFrameIndex.value = -1
+        restoreScroll()
+        disablePageScroll(false)
+    } else {
+        // Открытие карточки
+        savedScrollPosition.value = window.scrollY
+        activeFrameIndex.value = index
+        disablePageScroll(true)
+    }
+}
+const initVideo = (el, index) => {
+    if (!el || videoRefs.value[index]) return;
+
+    videoRefs.value[index] = el;
+    videoStates.value[index] = {
+        paused: true,
+        showControl: true,
+        isLoading: true
+    };
+
+    // Если видео уже закешировано
+    if (el.readyState > 3) {
+        videoStates.value[index].isLoading = false;
+    }
+
+    el.pause();
+};
+const handleVideoLoaded = (index) => {
+    if (videoRefs.value[index]?.readyState === 4) {
+        videoStates.value[index].isLoading = false;
+    }
+};
 
 const toggleVideo = (index) => {
     const video = videoRefs.value[index];
@@ -136,6 +175,11 @@ const props = defineProps({
         required: true
     }
 })
+
+
+const restoreScroll = () => {
+    window.scrollTo(0, savedScrollPosition.value)
+}
 const currentLanguage = computed(() => props.currentLanguage)
 const getProductClass = (product) => {
     const className = product.title.toLowerCase().replace(/\s+/g, '-');
@@ -145,13 +189,33 @@ const getProductClass = (product) => {
         'cardproduct--active': CardFocusStore.activeProduct === product,
     };
 }
+const disablePageScroll = (disable) => {
+    document.body.style.overflow = disable ? 'hidden' : 'auto'
+    document.documentElement.style.overflow = disable ? 'hidden' : 'auto'
+}
+onBeforeUnmount(() => {
+    disablePageScroll(false)
+    restoreScroll()
+})
 </script>
 
 <style scoped>
 .video-control.visible {
     opacity: 1 !important; 
 }
-
+.frame-cardproduct.active {
+    max-width: 100%;
+    max-height: 100dvh;
+    position: absolute;
+    translate: 0px -330px;
+    overflow-y: auto;
+    z-index: 2000;
+}
+.cardproduct.active {
+    max-width: 100% !important;
+    border-radius: 0;
+    max-height: 100dvh;
+}
 .video-control.visible .iconstop {
     opacity: 1 !important; 
 }
@@ -240,12 +304,18 @@ const getProductClass = (product) => {
     justify-content: center;
     width: 100%;
     max-width: 400px;
+    max-height: 300px;
+    height: 100dvh;
+    position: relative;
     flex: 1 1 400px;
+    transition: all 0.3s ease;
 }
 
 .cardproduct {
     width: 100%;
-    height: 300px;
+    height: 100%;
+    max-width: 380px;
+    max-height: 300px;
     border-radius: 50px;
     background-color: var(--background);
     display: flex;
@@ -253,13 +323,9 @@ const getProductClass = (product) => {
     transition: all 0.3s ease;
     overflow: hidden;
     padding: 10px;
+    position: absolute;
     gap: 20px;
     box-sizing: border-box;
-}
-
-.cardproduct--active {
-    border: 3px solid var(--accent-color, #007bff);
-    transform: scale(1.05);
 }
 
 .cardproduct__media {
@@ -271,7 +337,6 @@ const getProductClass = (product) => {
     border-radius: 50px;
     overflow: hidden;
 }
-
 .cardproduct__video {
     width: 100%;
     height: 100%;
@@ -360,7 +425,9 @@ const getProductClass = (product) => {
         max-width: 350px;
         flex: 1 1 350px;
     }
-
+    .frame-cardproduct.active {
+        translate: 0px -315px;
+    }
     .cardproduct__content {
         height: 250px;
     }
@@ -369,7 +436,22 @@ const getProductClass = (product) => {
         width: 170px;
     }
 }
+@media (max-width: 860px) {
+    .frame-cardproduct {
+        max-width: 350px;
+        flex: 1 1 350px;
+    }
+    .frame-cardproduct.active {
+        translate: 0px -280px;
+    }
+    .cardproduct__content {
+        height: 250px;
+    }
 
+    .cardproduct__media {
+        width: 170px;
+    }
+}
 @media (max-width: 769px) {
     .frame-cardproduct {
         max-width: 90%;
@@ -379,7 +461,9 @@ const getProductClass = (product) => {
     .cardproduct__media {
         width: 50%;
     }
-
+    .frame-cardproduct.active {
+        translate: 0px -280px;
+    }
     .cardproduct__content {
         width: 50%;
     }
