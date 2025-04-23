@@ -16,7 +16,7 @@
                     <v-progress-circular indeterminate size="49"></v-progress-circular>
                 </div>
             </template>
-            <template v-else-if="filteredProducts.length > 0">
+            <template v-else-if="displayedProducts.length > 0">
                 <div class="frame-product" v-for="product in filteredProducts" :key="product.title">
                     <div :class="getProductClass(product)" @click="selectProduct(product)">
                         <div v-if="focusStore.activeProduct != product" class="product-left">
@@ -180,17 +180,9 @@ const products = ref([
     { devicetype: "tablet", title: 'Samsung Tab A9', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
 ])
 
-const filteredProducts = computed(() => {
+const displayedProducts = computed(() => {
     const query = focusStore.searchValue?.toLowerCase() || ''
-    if (query === '') {
-        return []
-    }
-    isLoading.value = true
-    setTimeout(() => {
-        isLoading.value = false
-    }, 500)
-
-    let result = products.value
+    let result = [...products.value]
 
     if (selectedDeviceType.value) {
         result = result.filter(product => product.devicetype === selectedDeviceType.value)
@@ -200,8 +192,11 @@ const filteredProducts = computed(() => {
         result = result.filter(product => product.title.toLowerCase().includes(query))
     }
 
+    result.reverse()
+
     return result
 })
+
 
 
 onMounted(() => {
