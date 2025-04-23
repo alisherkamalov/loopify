@@ -2,51 +2,69 @@
     <div class="cardproducts">
         <div class="centercard">
             <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct"
-            :class="{ active: activeFrameIndex === index }"
-            >
-                <div class="cardproduct" :class="{ active: activeFrameIndex === index }" >
-                    <Swiper class="cardproduct__media" :slides-per-view="1" :modules="[Navigation]" :navigation="true"
-                        :key="`swiper-${product.title}-${index}`">
-                        <SwiperSlide>
-                            <img :src="product.image" alt="Product Image" class="cardproduct__img" />
-                        </SwiperSlide>
-                        <SwiperSlide v-if="product.video" :key="`video-${index}`">
-                            <div class="video-container">
-                                <video :ref="el => initVideo(el, index)" :src="product.video" class="cardproduct__video"
-                                    muted loop preload="metadata" @loadeddata="handleVideoLoaded(index)"
-                                    @waiting="videoStates[index].isLoading = true"
-                                    @suspend="videoStates[index].isLoading = false"></video>
-                                <v-progress-circular v-if="videoStates[index]?.isLoading" indeterminate color="primary"
-                                    size="64" width="5" class="video-loader"></v-progress-circular>
-                                <div class="video-control" @click.stop="toggleVideo(index)"
-                                    :class="{ visible: videoStates[index]?.showControl }">
-                                    <span class="iconstop">
-                                        <svg v-if="videoStates[index]?.paused" xmlns="http://www.w3.org/2000/svg"
-                                            width="24" height="24" viewBox="0 0 24 24">
-                                            <path fill="none" stroke="#ffffff" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2"
-                                                d="M6 4v16m14-8L6 20m14-8L6 4" />
-                                        </svg>
-                                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24">
-                                            <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-width="2"
-                                                d="M7 5v14M17 5v14" />
-                                        </svg>
-                                    </span>
+                :class="{ active: activeFrameIndex === index }" :ref="el => frameRefs[index] = el">
+                <div class="cardproduct" :class="{ active: activeFrameIndex === index }">
+                    <a-tooltip class="btnclose" title="close" @click.stop="openProduct"
+                        :class="{ active: activeFrameIndex === index }">
+                        <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
+                    </a-tooltip>
+                    <div class="mini-info" :class="{ active: activeFrameIndex === index }">
+                        <Swiper class="cardproduct__media" :class="{ active: activeFrameIndex === index }"
+                            :slides-per-view="1" :modules="[Pagination]"
+                            :pagination="true"
+                            :key="`swiper-${product.title}-${index}`">
+                            <SwiperSlide>
+                                <img :src="product.image" alt="Product Image" class="cardproduct__img"
+                                    :class="{ active: activeFrameIndex === index }" />
+                            </SwiperSlide>
+                            <SwiperSlide v-if="product.video" :key="`video-${index}`">
+                                <div class="video-container">
+                                    <video :ref="el => initVideo(el, index)" :src="product.video"
+                                        class="cardproduct__video" muted loop preload="metadata"
+                                        @loadeddata="handleVideoLoaded(index)"
+                                        @waiting="videoStates[index].isLoading = true"
+                                        @suspend="videoStates[index].isLoading = false"></video>
+                                    <v-progress-circular v-if="videoStates[index]?.isLoading" indeterminate
+                                        color="primary" size="64" width="5" class="video-loader"></v-progress-circular>
+                                    <div class="video-control" @click.stop="toggleVideo(index)"
+                                        :class="{ visible: videoStates[index]?.showControl }">
+                                        <span class="iconstop">
+                                            <svg v-if="videoStates[index]?.paused" xmlns="http://www.w3.org/2000/svg"
+                                                width="24" height="24" viewBox="0 0 24 24">
+                                                <path fill="none" stroke="#ffffff" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 4v16m14-8L6 20m14-8L6 4" />
+                                            </svg>
+                                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24">
+                                                <path fill="none" stroke="#ffffff" stroke-linecap="round"
+                                                    stroke-width="2" d="M7 5v14M17 5v14" />
+                                            </svg>
+                                        </span>
+                                    </div>
                                 </div>
+                            </SwiperSlide>
+                        </Swiper>
+                        <div class="cardproduct__content" :class="{ active: activeFrameIndex === index }">
+                            <div class="top">
+                                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[product.devicetype] }} {{
+                                    product.title }}</h3>
+                                <p class="cardproduct__price">{{ product.price }}</p>
                             </div>
-                        </SwiperSlide>
-                    </Swiper>
-                    <div class="cardproduct__content">
-                        <div class="top">
-                            <h3 class="cardproduct__title">{{ product.title }}</h3>
-                            <p class="cardproduct__price">{{ product.price }}</p>
-                        </div>
-                        <div class="bottom">
-                            <button class="cardproduct__btn" @click.stop="openProduct(index)">{{ currentLanguage.more }}</button>
-                            <button class="cardproduct__btn incart" @click.stop="addProductToCart(product)">{{ currentLanguage.incart }}</button>
+                            <div class="bottom">
+                                <button class="cardproduct__btn more" @click.stop="openProduct(index)"
+                                    :class="{ active: activeFrameIndex === index }">{{ currentLanguage.more
+                                    }}</button>
+                                <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
+                                    @click.stop="addProductToCart(product)">{{
+                                        currentLanguage.incart }}</button>
+                            </div>
                         </div>
                     </div>
+                    <div class="more-info">
+                        
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -55,21 +73,21 @@
 
 
 <script setup>
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { h } from 'vue'
+import { CloseOutlined } from '@ant-design/icons-vue'
 import 'swiper/css'
-import 'swiper/css/navigation'
-import { Navigation } from 'swiper/modules';
+import 'swiper/css/pagination'
+import { Pagination } from 'swiper/modules';
 import { VProgressCircular } from 'vuetify/components'
-import { useCardFocusStore } from '~/store/CardFocusStore'
 import { useNotiStore } from '~/store/notificationStore';
-const CardFocusStore = useCardFocusStore()
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const savedScrollPosition = ref(0)
-const isCardOpen = ref(false)
 const activeFrameIndex = ref(-1);
+const frameRefs = ref([]);
 const products = ref([
     {
         devicetype: "smartphone",
@@ -115,19 +133,21 @@ const addProductToCart = (product) => {
         notificationStore.setActive(false)
     }, 3000)
 }
-const openProduct = (index) => {
+const openProduct = async (index) => {
     if (activeFrameIndex.value === index) {
-        // Закрытие карточки
-        activeFrameIndex.value = -1
-        restoreScroll()
-        disablePageScroll(false)
+        activeFrameIndex.value = -1;
+        if (typeof document !== 'undefined') {
+            document.body.style.overflow = 'auto'
+        }
+        await nextTick();
+        frameRefs.value[index]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     } else {
-        // Открытие карточки
-        savedScrollPosition.value = window.scrollY
-        activeFrameIndex.value = index
-        disablePageScroll(true)
+        activeFrameIndex.value = index;
     }
-}
+};
 const initVideo = (el, index) => {
     if (!el || videoRefs.value[index]) return;
 
@@ -135,7 +155,7 @@ const initVideo = (el, index) => {
     videoStates.value[index] = {
         paused: true,
         showControl: true,
-        isLoading: true
+        isLoading: false
     };
 
     // Если видео уже закешировано
@@ -175,53 +195,80 @@ const props = defineProps({
         required: true
     }
 })
-
-
-const restoreScroll = () => {
-    window.scrollTo(0, savedScrollPosition.value)
+function handleBackButton(event) {
+  openProduct()
+  history.pushState(null, '', location.href);
 }
 const currentLanguage = computed(() => props.currentLanguage)
-const getProductClass = (product) => {
-    const className = product.title.toLowerCase().replace(/\s+/g, '-');
-    return {
-        [className]: CardFocusStore.activeProduct === product,
-        'cardproduct': true,
-        'cardproduct--active': CardFocusStore.activeProduct === product,
-    };
-}
-const disablePageScroll = (disable) => {
-    document.body.style.overflow = disable ? 'hidden' : 'auto'
-    document.documentElement.style.overflow = disable ? 'hidden' : 'auto'
-}
+onMounted(() => {
+  history.pushState(null, '', location.href);
+  window.addEventListener('popstate', handleBackButton);
+});
+
 onBeforeUnmount(() => {
-    disablePageScroll(false)
-    restoreScroll()
-})
+  window.removeEventListener('popstate', handleBackButton);
+});
 </script>
 
 <style scoped>
 .video-control.visible {
-    opacity: 1 !important; 
+    opacity: 1 !important;
 }
+
+.cardproduct__btn.more.active {
+    display: none;
+}
+
+.btnclose {
+    display: none;
+}
+
+.btnclose.active {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
 .frame-cardproduct.active {
     max-width: 100%;
     max-height: 100dvh;
-    position: absolute;
+    position: fixed;
+    border-radius: 0px;
     translate: 0px -330px;
-    overflow-y: auto;
     z-index: 2000;
 }
+
+.cardproduct__img.active {
+    translate: 0px -50%;
+}
+
+.cardproduct__media.active {
+    width: 100%;
+    max-width: 400px;
+    height: 400px;
+    margin: 25px !important;
+}
+
+.cardproduct__content.active {
+    justify-content: start;
+    flex-direction: column;
+    margin-left: 35px;
+}
+
 .cardproduct.active {
     max-width: 100% !important;
     border-radius: 0;
+    align-items: start;
     max-height: 100dvh;
 }
+
 .video-control.visible .iconstop {
-    opacity: 1 !important; 
+    opacity: 1 !important;
 }
 
 .video-container:hover .video-control:not(.visible) {
-    opacity: 1; 
+    opacity: 1;
 }
 
 .video-container:hover .video-control {
@@ -308,9 +355,25 @@ onBeforeUnmount(() => {
     height: 100dvh;
     position: relative;
     flex: 1 1 400px;
+    border-radius: 50px;
+    background-color: var(--background);
     transition: all 0.3s ease;
 }
-
+.mini-info {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: 380px;
+    max-height: 300px;
+    align-items: center;
+    gap: 20px;
+}
+.mini-info.active {
+    flex-direction: column;
+    align-items: start;
+    max-width: 90%;
+    max-height: 400px;
+}
 .cardproduct {
     width: 100%;
     height: 100%;
@@ -319,12 +382,10 @@ onBeforeUnmount(() => {
     border-radius: 50px;
     background-color: var(--background);
     display: flex;
-    align-items: center;
     transition: all 0.3s ease;
     overflow: hidden;
     padding: 10px;
     position: absolute;
-    gap: 20px;
     box-sizing: border-box;
 }
 
@@ -337,6 +398,7 @@ onBeforeUnmount(() => {
     border-radius: 50px;
     overflow: hidden;
 }
+
 .cardproduct__video {
     width: 100%;
     height: 100%;
@@ -420,14 +482,25 @@ onBeforeUnmount(() => {
     }
 }
 
-@media (max-width: 880px) {
+@media (max-width: 910px) {
     .frame-cardproduct {
         max-width: 350px;
         flex: 1 1 350px;
     }
+
     .frame-cardproduct.active {
-        translate: 0px -315px;
+        translate: 0px -330px;
     }
+
+    .cardproduct__title {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        overflow: hidden;
+
+    }
+
     .cardproduct__content {
         height: 250px;
     }
@@ -436,14 +509,17 @@ onBeforeUnmount(() => {
         width: 170px;
     }
 }
+
 @media (max-width: 860px) {
     .frame-cardproduct {
         max-width: 350px;
         flex: 1 1 350px;
     }
+
     .frame-cardproduct.active {
         translate: 0px -280px;
     }
+
     .cardproduct__content {
         height: 250px;
     }
@@ -452,7 +528,34 @@ onBeforeUnmount(() => {
         width: 170px;
     }
 }
+
 @media (max-width: 769px) {
+    .cardproduct__img.active {
+        translate: 0px -50%;
+    }
+
+    .cardproduct__media.active {
+        width: 70%;
+        height: 400px;
+    }
+
+    .cardproduct.active {
+        max-width: 100% !important;
+        border-radius: 0;
+        max-height: 100dvh;
+        flex-direction: column;
+    }
+
+    .cardproduct__content.active {
+        flex-direction: row;
+        width: 100%;
+        max-width: 90%;
+        gap: 15px;
+        margin-left: 35px;
+
+    }
+
+
     .frame-cardproduct {
         max-width: 90%;
         flex: 1 1 100%;
@@ -460,10 +563,17 @@ onBeforeUnmount(() => {
 
     .cardproduct__media {
         width: 50%;
+        margin-top: 15px;
     }
+
+    .cardproduct__btn.incart.active {
+        padding: 12px;
+    }
+
     .frame-cardproduct.active {
         translate: 0px -280px;
     }
+
     .cardproduct__content {
         width: 50%;
     }
