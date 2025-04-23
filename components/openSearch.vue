@@ -242,10 +242,9 @@ watchEffect(() => {
 }
 
 .btn-sortingproduct {
-    background-color: var(--background);
+    background-color: var(--bg-cont);
     border-radius: 50px;
-    background-color: #f4f4f4;
-    color: #5b6167;
+    color: #919191;
     padding: 5px 10px;
     cursor: pointer;
     font-size: 14px;
@@ -254,10 +253,10 @@ watchEffect(() => {
 }
 
 .btn-sortingproduct:hover {
-    background-color: #d9dcde;
+    background-color: var(--border-color);
 }
 .btn-sortingproduct.active {
-    background-color: #d9dcde !important;
+    background-color: var(--border-color);
 }
 .sortingproduct {
     overflow-x: auto;
