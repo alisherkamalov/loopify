@@ -17,7 +17,7 @@
                 </div>
             </template>
             <template v-else-if="displayedProducts.length > 0">
-                <div class="frame-product" v-for="product in filteredProducts" :key="product.title">
+                <div class="frame-product" v-for="product in displayedProducts" :key="product.title">
                     <div :class="getProductClass(product)" @click="selectProduct(product)">
                         <div v-if="focusStore.activeProduct != product" class="product-left">
                             <img :src="product.image" :alt="product.title" class="product-image">
@@ -66,6 +66,11 @@ const props = defineProps({
         required: true
     }
 })
+const products = ref([
+    { devicetype: "smartphone", title: 'iPhone 16 Pro Max', price: "789 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
+    { devicetype: "tv", title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
+    { devicetype: "tablet", title: 'Samsung Tab A9', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
+])
 const sortingproducts = ref([
     {
         devicetype: "smartphone",
@@ -174,13 +179,9 @@ const getProductClass = (product) => {
         'product--active': focusStore.activeProduct === product,
     };
 }
-const products = ref([
-    { devicetype: "smartphone", title: 'iPhone 16 Pro Max', price: "789 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
-    { devicetype: "tv", title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
-    { devicetype: "tablet", title: 'Samsung Tab A9', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
-])
 
 const displayedProducts = computed(() => {
+    isLoading.value = true
     const query = focusStore.searchValue?.toLowerCase() || ''
     let result = [...products.value]
 
@@ -193,7 +194,9 @@ const displayedProducts = computed(() => {
     }
 
     result.reverse()
-
+    setTimeout(() => {
+        isLoading.value = false
+    }, 1000)
     return result
 })
 
