@@ -10,6 +10,9 @@ html {
     outline: none;
     -webkit-tap-highlight-color: transparent;
 }
+main {
+    background-color: var(--background);
+}
 textarea:focus, input:focus, button:focus {
     outline: none;
 }

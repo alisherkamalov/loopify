@@ -4,14 +4,13 @@
             <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct"
                 :class="{ active: activeFrameIndex === index }" :ref="el => frameRefs[index] = el">
                 <div class="cardproduct" :class="{ active: activeFrameIndex === index }">
-                    <a-tooltip class="btnclose" title="close" @click.stop="openProduct"
+                    <a-tooltip class="btnclose" title="close" @click.stop="closeProduct(activeFrameIndex)"
                         :class="{ active: activeFrameIndex === index }">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                     </a-tooltip>
                     <div class="mini-info" :class="{ active: activeFrameIndex === index }">
                         <Swiper class="cardproduct__media" :class="{ active: activeFrameIndex === index }"
-                            :slides-per-view="1" :modules="[Pagination]"
-                            :pagination="true"
+                            :slides-per-view="1" :modules="[Pagination]" :pagination="true"
                             :key="`swiper-${product.title}-${index}`">
                             <SwiperSlide>
                                 <img :src="product.image" alt="Product Image" class="cardproduct__img"
@@ -62,7 +61,7 @@
                         </div>
                     </div>
                     <div class="more-info">
-                        
+
                     </div>
 
                 </div>
@@ -135,18 +134,38 @@ const addProductToCart = (product) => {
 }
 const openProduct = async (index) => {
     if (activeFrameIndex.value === index) {
-        activeFrameIndex.value = -1;
-        if (typeof document !== 'undefined') {
-            document.body.style.overflow = 'auto'
-        }
-        await nextTick();
-        frameRefs.value[index]?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
+        // Закрытие карточки
+        await closeProduct(index);
     } else {
+        // Открытие карточки
         activeFrameIndex.value = index;
+        savedScrollPosition.value = window.scrollY;
+        window.scrollTo({ top: 0, behavior: 'auto' });
+
+        if (typeof document !== 'undefined') {
+            document.body.style.overflow = 'hidden';
+        }
     }
+};
+
+const closeProduct = async (index) => {
+    activeFrameIndex.value = -1;
+
+    if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'auto';
+    }
+
+    await nextTick();
+
+    frameRefs.value[index]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+
+    window.scrollTo({
+        top: savedScrollPosition.value,
+        behavior: 'auto'
+    });
 };
 const initVideo = (el, index) => {
     if (!el || videoRefs.value[index]) return;
@@ -195,18 +214,20 @@ const props = defineProps({
         required: true
     }
 })
-function handleBackButton(event) {
-  openProduct()
-  history.pushState(null, '', location.href);
-}
 const currentLanguage = computed(() => props.currentLanguage)
+const handleBackButton = (event) => {
+    if (activeFrameIndex.value !== -1) {
+        event.preventDefault();
+        closeProduct(activeFrameIndex.value);
+    }
+};
+
 onMounted(() => {
-  history.pushState(null, '', location.href);
-  window.addEventListener('popstate', handleBackButton);
+    window.addEventListener('popstate', handleBackButton);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('popstate', handleBackButton);
+    window.removeEventListener('popstate', handleBackButton);
 });
 </script>
 
@@ -221,6 +242,7 @@ onBeforeUnmount(() => {
 
 .btnclose {
     display: none;
+    background-color: var(--background);
 }
 
 .btnclose.active {
@@ -359,6 +381,7 @@ onBeforeUnmount(() => {
     background-color: var(--background);
     transition: all 0.3s ease;
 }
+
 .mini-info {
     display: flex;
     width: 100%;
@@ -368,12 +391,14 @@ onBeforeUnmount(() => {
     align-items: center;
     gap: 20px;
 }
+
 .mini-info.active {
     flex-direction: column;
     align-items: start;
     max-width: 90%;
     max-height: 400px;
 }
+
 .cardproduct {
     width: 100%;
     height: 100%;
