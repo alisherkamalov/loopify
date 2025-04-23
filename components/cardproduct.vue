@@ -563,7 +563,6 @@ onBeforeUnmount(() => {
 
     .cardproduct__media {
         width: 50%;
-        margin-top: 15px;
     }
 
     .cardproduct__btn.incart.active {

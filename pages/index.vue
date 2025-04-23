@@ -1,13 +1,11 @@
 <template>
     <main v-if="currentLanguage" :class="{ active: focusStore.isFocused }">
         <Notification />
-        <div class="frame-all-content" :class="{ 'frame-all-content--active': notificationStore.isActive }">
-            <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
-            <openSearch :currentLanguage="currentLanguage" />
-            <div class="content">
-                <BestProductSlider :current-language="currentLanguage" />
-                <CardProduct :current-language="currentLanguage" />
-            </div>
+        <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
+        <openSearch :currentLanguage="currentLanguage" />
+        <div class="content">
+            <BestProductSlider :current-language="currentLanguage" />
+            <CardProduct :current-language="currentLanguage" />
         </div>
     </main>
 </template>
@@ -55,18 +53,7 @@ main.active {
     background-color: var(--bg-cont);
 }
 
-.frame-all-content {
-    width: 100%;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--background);
-    transition: all 0.3s ease;
-}
 
-.frame-all-content--active {
-    filter: blur(10px);
-}
 @media (max-width: 768px) {
     .content {
         height: auto;
