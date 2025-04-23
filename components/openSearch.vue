@@ -1,6 +1,16 @@
 <template>
     <div class="frame-openedsearch" :class="{ active: focusStore.isFocused }">
         <div ref="foundProductsRef" class="foundproducts" :class="{ active: focusStore.isFocused }">
+            <div class="sortingproduct">
+                <button class="btn-sortingproduct" :class="{ active: selectedDeviceType === null }"
+                    @click="selectedDeviceType = null">
+                    {{ currentLanguage.all }}
+                </button>
+                <button class="btn-sortingproduct" v-for="(sortingproduct, index) in sortingproducts"
+                    :class="{ active: selectedDeviceType === sortingproduct.devicetype }"
+                    @click="selectedDeviceType = sortingproduct.devicetype" :key="index">{{
+                        currentLanguage.devicetype[sortingproduct.devicetype] }}</button>
+            </div>
             <template v-if="isLoading">
                 <div class="loading">
                     <v-progress-circular indeterminate size="49"></v-progress-circular>
@@ -20,7 +30,7 @@
                         <div v-if="focusStore.activeProduct != product" class="product-right">
                             <button class="btn-more">{{ currentLanguage.more }}</button>
                             <button @click.stop="addProductToCart(product)" class="btn-incart">{{ currentLanguage.incart
-                                }}</button>
+                            }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
                             <div class="cont-product">
@@ -49,12 +59,42 @@ import { languages } from '../lib/languages'
 import { useNotiStore } from '~/store/notificationStore'
 import { h } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
+const selectedDeviceType = ref(null)
 const props = defineProps({
     currentLanguage: {
         type: Object,
         required: true
     }
 })
+const sortingproducts = ref([
+    {
+        devicetype: "smartphone",
+    },
+    {
+        devicetype: "tablet",
+    },
+    {
+        devicetype: "tv",
+    },
+    {
+        devicetype: "keyboard",
+    },
+    {
+        devicetype: "mouse",
+    },
+    {
+        devicetype: "monitor",
+    },
+    {
+        devicetype: "printer",
+    },
+    {
+        devicetype: "laptop",
+    },
+    {
+        devicetype: "desktop",
+    },
+])
 const frameSearchRef = ref(null)
 const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
@@ -137,22 +177,32 @@ const getProductClass = (product) => {
 const products = ref([
     { devicetype: "smartphone", title: 'iPhone 16 Pro Max', price: "789 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
     { devicetype: "tv", title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
-    { devicetype: "tablet", title: 'Samsung Tab A9 Graphite', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
+    { devicetype: "tablet", title: 'Samsung Tab A9', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
 ])
 
 const filteredProducts = computed(() => {
-    if (focusStore.searchValue === '') {
+    const query = focusStore.searchValue?.toLowerCase() || ''
+    if (query === '') {
         return []
     }
     isLoading.value = true
-    const query = focusStore.searchValue?.toLowerCase() || ''
     setTimeout(() => {
         isLoading.value = false
-    }, 500);
-    return products.value.filter(product =>
-        product.title.toLowerCase().includes(query)
-    )
+    }, 500)
+
+    let result = products.value
+
+    if (selectedDeviceType.value) {
+        result = result.filter(product => product.devicetype === selectedDeviceType.value)
+    }
+
+    if (query !== '') {
+        result = result.filter(product => product.title.toLowerCase().includes(query))
+    }
+
+    return result
 })
+
 
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
@@ -189,6 +239,49 @@ watchEffect(() => {
 
 .loading {
     margin: auto;
+}
+
+.btn-sortingproduct {
+    background-color: var(--background);
+    border-radius: 50px;
+    background-color: #f4f4f4;
+    color: #5b6167;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-sortingproduct:hover {
+    background-color: #d9dcde;
+}
+.btn-sortingproduct.active {
+    background-color: #d9dcde !important;
+}
+.sortingproduct {
+    overflow-x: auto;
+    display: flex;
+    max-width: 95%;
+    align-items: center;
+    height: 50px;
+    gap: 10px;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+.sortingproduct::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sortingproduct::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
 }
 
 .cont-product {
@@ -418,6 +511,7 @@ watchEffect(() => {
     .product-left {
         max-width: 50%;
     }
+
     .btn-more:hover {
         background-color: var(--background);
         color: rgb(44, 153, 255);
@@ -427,6 +521,7 @@ watchEffect(() => {
         background-color: var(--background);
         color: rgb(39, 151, 82);
     }
+
     .btn-more:active {
         background-color: rgb(44, 153, 255);
         color: white;
