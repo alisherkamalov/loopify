@@ -1,11 +1,16 @@
 <template>
     <main v-if="currentLanguage" :class="{ active: focusStore.isFocused }">
-        <Notification />
-        <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
-        <openSearch :currentLanguage="currentLanguage" />
-        <div class="content">
-            <BestProductSlider :current-language="currentLanguage" />
-            <CardProduct :current-language="currentLanguage" />
+        <div class="isauth"  v-if="token">
+            <Notification />
+            <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
+            <openSearch :currentLanguage="currentLanguage" />
+            <div class="content">
+                <BestProductSlider :current-language="currentLanguage" />
+                <CardProduct :current-language="currentLanguage" />
+            </div>
+        </div>
+        <div v-else>
+            <TitlePage :current-language="currentLanguage" @language-changed="changeLanguage"/>
         </div>
     </main>
 </template>
@@ -14,20 +19,21 @@
 import { ref, onMounted } from 'vue'
 import { languages } from '../lib/languages'
 import { useFocusStore } from '~/store/focusStore'
-import { useNotiStore } from '~/store/notificationStore'
+import Notification from 'ant-design-vue/es/vc-notification/Notification'
 import TheHeader from '~/components/theheader.vue'
 import openSearch from '~/components/openSearch.vue'
-import CardProduct from '~/components/cardproduct.vue'
-import Notification from '~/components/thenotification.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
-
+import CardProduct from '~/components/cardproduct.vue'
 const focusStore = useFocusStore()
-const notificationStore = useNotiStore()
+const token = ref(null)
 const currentLanguage = ref(null)
 
 onMounted(() => {
     const langCode = localStorage.getItem('languageCode') || 'ru';
     currentLanguage.value = languages[langCode] || languages.ru;
+    if (localStorage != 'undefined') {
+        token.value = localStorage.getItem('token')
+    }
 });
 
 

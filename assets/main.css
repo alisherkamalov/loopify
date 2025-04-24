@@ -1,7 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@font-face {
+    font-family: 'Bernoru';
+    src: url('@/assets/bernoru-blackultraexpanded.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Sans';
+    src: url('@/assets/sans.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Sanss';
+    src: url('@/assets/sans2.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
 html {
     overflow: hidden; 
   }
+ul {
+    list-style: none;
+}
 * {
     margin: 0;
     padding: 0;
@@ -10,6 +31,7 @@ html {
     outline: none;
     -webkit-tap-highlight-color: transparent;
 }
+
 main {
     background-color: var(--background);
 }
