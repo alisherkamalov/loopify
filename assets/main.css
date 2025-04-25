@@ -51,8 +51,14 @@ textarea:focus, input:focus, button:focus {
 .swiper-button-next {
     right: 30px !important;
 }
+.v-field.v-field--appended.v-field--center-affix.v-field--variant-solo.v-theme--light.v-locale--is-ltr {
+    background-color: var(--background);
+}
 .swiper-button-prev {
     left: 30px !important;
+}
+.v-application__wrap {
+    background-color: var(--background);
 }
 :root {
     --background: #ffffff;

@@ -11,7 +11,7 @@
                             @click="setLanguage('ru')">Рус</button></li>
                     <li><button class="btn-header kz" :class="{ active: languageCode == 'kz' }"
                             @click="setLanguage('kz')">Каз</button></li>
-                    <li><button class="btn-header">Войти</button></li>
+                    <li><button class="btn-header" @click="router.push('/signin')">{{ currentLanguage.signin }}</button></li>
                 </ul>
             </div>
         </header>
@@ -100,6 +100,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { Vue3Lottie } from 'vue3-lottie'
+const router = useRouter()
 const props = defineProps({
     currentLanguage: {
         type: Object,
@@ -141,15 +142,15 @@ const dies = computed(() => [
     {
         text: currentLanguage.value.fastdelivery,
         anim: '/fastdelivery.json',
-        width: '50px',
-        height: '50px',
+        width: '100px',
+        height: '100px',
         class: 'delivery'
     },
     {
         text: currentLanguage.value.originalproduct,
         anim: '/originalproduct.json',
-        width: '100px',
-        height: '100px',
+        width: '50px',
+        height: '50px',
         class: 'original'
     },
     {
@@ -462,7 +463,7 @@ footer {
     animation-delay: 1s;
 }
 
-.lottie-animation-container.original {
+.lottie-animation-container.delivery {
     scale: 2;
     translate: -5px -25px;
 }
@@ -592,7 +593,6 @@ header {
     height: 100dvh;
     background-color: rgba(0, 0, 0, 0.5);
 }
-
 .banner-title {
     font-size: 50px;
     color: white;
