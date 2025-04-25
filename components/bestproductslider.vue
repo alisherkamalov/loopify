@@ -6,9 +6,9 @@
       <div v-for="(slide, index) in slides" :key="index" class="slide" :class="slide.class"
         :style="getSlideStyle(index)">
         <div class="slide-content">
-          <img :src="slide.image" alt="" class="bg">
-          <span class="title-product">{{ slide.title }}</span>
-          <span class="price">{{ slide.price }}</span>
+          <img :src="slide.photoUrl" alt="" class="bg">
+          <span class="title-product">{{ slide.name }}</span>
+          <span class="price">{{ slide.price }} ₸</span>
           <button class="btn-more">{{ currentLanguage.more }}</button>
         </div>
       </div>
@@ -18,9 +18,9 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed, defineProps } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import axios from 'axios'
 
 const props = defineProps({
   currentLanguage: {
@@ -32,16 +32,31 @@ const props = defineProps({
 const currentLanguage = computed(() => props.currentLanguage)
 const isAnimating = ref(false)
 
-const slides = [
-  { title: 'iPhone 16 Pro Max', price: "789 990 ₸", class: 'one', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745058784/bestproduct1_timfq2.png" },
-  { title: 'Apple MacBook Air M2', price: "599 990 ₸", class: 'two', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745237856/macbook_2_nv9e9v.png" },
-  { title: 'Samsung Tab A9', price: "129 990 ₸", class: 'three', image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
-];
+const slides = ref([])  // Данные с сервера
 
 const current = ref(0)
 const isPaused = ref(false)
 let intervalId = null
 let timeoutId = null
+
+// Получаем данные с сервера
+const fetchSlides = async () => {
+  try {
+    const response = await axios.get('https://backendlopify.vercel.app/products',  {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+    slides.value = response.data.map(item => ({
+      name: item.name,
+      price: item.price,
+      class: item.deviceType.toLowerCase(), 
+      photoUrl: item.photoUrl
+    }));
+  } catch (error) {
+    console.error('Ошибка при загрузке данных с сервера:', error);
+  }
+}
 
 const getSlideStyle = (index) => ({
   width: current.value === index ? '100%' : '0%',
@@ -49,10 +64,10 @@ const getSlideStyle = (index) => ({
 })
 
 const nextSlide = () => {
-  current.value = (current.value + 1) % slides.length
+  current.value = (current.value + 1) % slides.value.length
 }
 const prevSlide = () => {
-  current.value = (current.value - 1 + slides.length) % slides.length
+  current.value = (current.value - 1 + slides.value.length) % slides.value.length
 }
 
 const manualSlide = (direction) => {
@@ -76,9 +91,7 @@ const manualSlide = (direction) => {
   }, 5000)
 }
 
-
 const startAutoSlide = () => {
-
   intervalId = setInterval(() => {
     if (isAnimating.value) return;
     if (!isPaused.value) nextSlide()
@@ -86,11 +99,11 @@ const startAutoSlide = () => {
     setTimeout(() => {
       isAnimating.value = false
     }, 700)
-
   }, 5000)
 }
 
 onMounted(() => {
+  fetchSlides()  // Получаем слайды с сервера при монтировании компонента
   startAutoSlide()
 })
 
@@ -99,6 +112,7 @@ onBeforeUnmount(() => {
   clearTimeout(timeoutId)
 })
 </script>
+
 
 
 

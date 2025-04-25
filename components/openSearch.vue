@@ -20,10 +20,10 @@
                 <div class="frame-product" v-for="product in displayedProducts" :key="product.title">
                     <div :class="getProductClass(product)" @click="selectProduct(product)">
                         <div v-if="focusStore.activeProduct != product" class="product-left">
-                            <img :src="product.image" :alt="product.title" class="product-image">
+                            <img :src="product.photoUrl" :alt="product.title" class="product-image">
                             <div class="product-info">
                                 <span class="product-name">{{ currentLanguage.devicetype[product.devicetype] }} {{
-                                    product.title }}</span>
+                                    product.name }}</span>
                                 <span class="price">{{ product.price }}</span>
                             </div>
                         </div>
@@ -57,8 +57,10 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { languages } from '../lib/languages'
 import { useNotiStore } from '~/store/notificationStore'
+import axios from 'axios'
 import { h } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
+
 const selectedDeviceType = ref(null)
 const props = defineProps({
     currentLanguage: {
@@ -66,40 +68,20 @@ const props = defineProps({
         required: true
     }
 })
-const products = ref([
-    { devicetype: "smartphone", title: 'iPhone 16 Pro Max', price: "789 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png" },
-    { devicetype: "tv", title: 'LG 43 LED FHD Smart Black', price: "159 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905214/bestproduct2_ax9rpx.png" },
-    { devicetype: "tablet", title: 'Samsung Tab A9', price: "129 990 ₸", image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png" }
-])
+
+const products = ref([])
 const sortingproducts = ref([
-    {
-        devicetype: "smartphone",
-    },
-    {
-        devicetype: "tablet",
-    },
-    {
-        devicetype: "tv",
-    },
-    {
-        devicetype: "keyboard",
-    },
-    {
-        devicetype: "mouse",
-    },
-    {
-        devicetype: "monitor",
-    },
-    {
-        devicetype: "printer",
-    },
-    {
-        devicetype: "laptop",
-    },
-    {
-        devicetype: "desktop",
-    },
+    { devicetype: "smartphone" },
+    { devicetype: "tablet" },
+    { devicetype: "tv" },
+    { devicetype: "keyboard" },
+    { devicetype: "mouse" },
+    { devicetype: "monitor" },
+    { devicetype: "printer" },
+    { devicetype: "laptop" },
+    { devicetype: "desktop" },
 ])
+
 const frameSearchRef = ref(null)
 const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
@@ -130,10 +112,8 @@ const addProductToCart = (product) => {
     }, 3000)
 }
 
-
 const closeInfoProduct = () => {
     const activeSearch = document.querySelector('.frame-openedsearch.active');
-
     if (activeSearch) {
         activeSearch.style.zIndex = '2001';
     }
@@ -157,28 +137,26 @@ const selectProduct = (product) => {
         focusStore.activeProduct && document.querySelector('.product--active')?.classList.remove('final-position');
         focusStore.setActiveProduct(product);
         document.body.style.overflow = 'hidden';
-
-
     }
 };
 
 function handleClickOutside(event) {
     const frame = frameSearchRef.value;
-
     const clickedInsideFrame = frame && frame.contains(event.target);
-
     if (clickedInsideFrame) {
         focusStore.isFocused = false;
     }
 }
+
 const getProductClass = (product) => {
-    const className = product.title.toLowerCase().replace(/\s+/g, '-');
+    const className = (product.title && product.title.toLowerCase().replace(/\s+/g, '-')) || ''; 
     return {
         [className]: focusStore.activeProduct === product,
         'product': true,
         'product--active': focusStore.activeProduct === product,
     };
 }
+
 
 const displayedProducts = computed(() => {
     isLoading.value = true
@@ -200,7 +178,20 @@ const displayedProducts = computed(() => {
     return result
 })
 
-
+const fetchProducts = async () => {
+    try {
+        isLoading.value = true
+        const response = await axios.get('https://backendlopify.vercel.app/products', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }})
+        products.value = response.data 
+        isLoading.value = false
+    } catch (error) {
+        console.error('Error fetching products:', error)
+        isLoading.value = false
+    }
+}
 
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
@@ -208,20 +199,15 @@ onMounted(() => {
     if (langCode && languages[langCode]) {
         currentLanguage.value = languages[langCode]
     }
+
+    fetchProducts()
 })
+
 onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
 })
-watchEffect(() => {
-    if (typeof document !== 'undefined') {
-        if (focusStore.isFocused) {
-            document.body.style.overflow = 'hidden'
-        } else {
-            document.body.style.overflow = 'auto'
-        }
-    }
-})
 </script>
+
 
 
 <style scoped>

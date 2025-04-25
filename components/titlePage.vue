@@ -306,6 +306,7 @@ ul {
     font-size: 15px;
     gap: 5px;
     align-items: center;
+    color: white;
     border: 1px solid white;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -346,6 +347,7 @@ footer {
     padding-top: 80px;
     padding-left: 20px;
     gap: 10px;
+    color: white;
     font-family: 'Sanss', 'Roboto';
     font-size: 30px;
     font-weight: 600;

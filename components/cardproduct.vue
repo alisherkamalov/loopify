@@ -11,12 +11,12 @@
                     <div class="mini-info" :class="{ active: activeFrameIndex === index }">
                         <Swiper class="cardproduct__media" :class="{ active: activeFrameIndex === index }"
                             :slides-per-view="1" :modules="[Pagination]" :pagination="true"
-                            :key="`swiper-${product.title}-${index}`">
+                            :key="`swiper-${product.name}-${index}`">
                             <SwiperSlide>
-                                <img :src="product.image" alt="Product Image" class="cardproduct__img"
+                                <img :src="product.photoUrl" alt="Product Image" class="cardproduct__img"
                                     :class="{ active: activeFrameIndex === index }" />
                             </SwiperSlide>
-                            <SwiperSlide v-if="product.video" :key="`video-${index}`">
+                            <SwiperSlide v-if="product.videoUrl" :key="`video-${index}`">
                                 <div class="video-container">
                                     <video :ref="el => initVideo(el, index)" :src="product.video"
                                         class="cardproduct__video" muted loop preload="metadata"
@@ -46,9 +46,9 @@
                         </Swiper>
                         <div class="cardproduct__content" :class="{ active: activeFrameIndex === index }">
                             <div class="top">
-                                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[product.devicetype] }} {{
-                                    product.title }}</h3>
-                                <p class="cardproduct__price">{{ product.price }}</p>
+                                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[product.deviceType] }} {{
+                                    product.name }}</h3>
+                                <p class="cardproduct__price">{{ product.price }} ₸</p>
                             </div>
                             <div class="bottom">
                                 <button class="cardproduct__btn more" @click.stop="openProduct(index)"
@@ -81,35 +81,14 @@ import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules';
 import { VProgressCircular } from 'vuetify/components'
 import { useNotiStore } from '~/store/notificationStore';
+import axios from 'axios'
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const savedScrollPosition = ref(0)
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
-const products = ref([
-    {
-        devicetype: "smartphone",
-        title: 'iPhone 16 Pro Max',
-        price: "789 990 ₸",
-        image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905453/bestproduct1_p2kg7i.png",
-        video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745165352/Introducing_iPhone_16_Pro___Apple_cbj2op.mp4"
-    },
-    {
-        devicetype: "laptop",
-        title: 'Apple MacBook Air M2',
-        price: "599 990 ₸",
-        image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1745237856/macbook_2_nv9e9v.png",
-        video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745168907/MacBook_Air_with_M2_-_Product_Video_ofgvae.mp4"
-    },
-    {
-        devicetype: "tablet",
-        title: 'Samsung Tab A9',
-        price: "129 990 ₸",
-        image: "https://res.cloudinary.com/djx6bwbep/image/upload/v1744905204/bestproduct3_qnusw0.png",
-        video: "https://res.cloudinary.com/djx6bwbep/video/upload/v1745169201/Galaxy_Tab_A9___Tab_A9___Samsung_ophcyp.mp4"
-    },
-])
+const products = ref([])
 const addProductToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart')) || []
     const existingProduct = cart.find(item => item.title === product.title)
@@ -223,6 +202,18 @@ const handleBackButton = (event) => {
 };
 
 onMounted(() => {
+    axios.get('https://backendlopify.vercel.app/products', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+        .then(response => {
+            products.value = response.data
+            console.log(products.value)
+        })
+        .catch(error => {
+            console.error('Ошибка запроса товаров:', error);
+        })
     window.addEventListener('popstate', handleBackButton);
 });
 
@@ -243,6 +234,10 @@ onBeforeUnmount(() => {
 .btnclose {
     display: none;
     background-color: var(--background);
+}
+
+.mini-info.active {
+    display: none;
 }
 
 .btnclose.active {
