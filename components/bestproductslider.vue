@@ -9,7 +9,7 @@
           <img :src="slide.photoUrl" alt="" class="bg">
           <span class="title-product">{{ slide.name }}</span>
           <span class="price">{{ slide.price }} ₸</span>
-          <button class="btn-more">{{ currentLanguage.more }}</button>
+          <button class="btn-more" @click="router.push('/moreinfoproduct')">{{ currentLanguage.more }}</button>
         </div>
       </div>
     </div>
@@ -19,9 +19,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import axios from 'axios'
-
+import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
+import { routerKey } from 'vue-router'
+import { useAllProductStore } from '~/store/fetchProductsStore'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const props = defineProps({
   currentLanguage: {
     type: Object,
@@ -29,32 +31,26 @@ const props = defineProps({
   }
 })
 
+const allproductstore = useAllProductStore()
 const currentLanguage = computed(() => props.currentLanguage)
 const isAnimating = ref(false)
 
-const slides = ref([])  // Данные с сервера
-
+const slides = ref([])
 const current = ref(0)
 const isPaused = ref(false)
 let intervalId = null
 let timeoutId = null
 
 // Получаем данные с сервера
-const fetchSlides = async () => {
-  try {
-    const response = await axios.get('https://backendlopify.vercel.app/products',  {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-    });
-    slides.value = response.data.map(item => ({
+const fetchSlides = () => {
+  const response = allproductstore.products
+  if (response.length > 0) {
+    slides.value = response.map(item => ({
       name: item.name,
       price: item.price,
-      class: item.deviceType.toLowerCase(), 
+      class: item.deviceType.toLowerCase(),
       photoUrl: item.photoUrl
     }));
-  } catch (error) {
-    console.error('Ошибка при загрузке данных с сервера:', error);
   }
 }
 
@@ -102,8 +98,18 @@ const startAutoSlide = () => {
   }, 5000)
 }
 
+// ==== самое главное — добавляем watch на products ====
+watch(
+  () => allproductstore.products,
+  (newProducts) => {
+    if (newProducts.length > 0) {
+      fetchSlides()
+    }
+  },
+  { immediate: true, deep: true }
+)
+
 onMounted(() => {
-  fetchSlides()  // Получаем слайды с сервера при монтировании компонента
   startAutoSlide()
 })
 
@@ -112,6 +118,7 @@ onBeforeUnmount(() => {
   clearTimeout(timeoutId)
 })
 </script>
+
 
 
 

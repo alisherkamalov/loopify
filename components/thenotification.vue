@@ -1,16 +1,17 @@
 <template>
-    <div class="blur" :class="{ 'active': notificationStore.isActive }">
-        <div class="notification" :class="{ 'notification--active': notificationStore.isActive }">
-        {{ notificationStore.notification }}
+    <div class="blur" :class="{ active: notificationStore.isActive }">
+        <div class="notification" :class="{ active: notificationStore.isActive }">
+            {{ notificationStore.notification }}
+        </div>
     </div>
-    </div>
-    
 </template>
+
 <script setup>
 import { useNotiStore } from '~/store/notificationStore'
-const notificationStore = useNotiStore()
 
+const notificationStore = useNotiStore()
 </script>
+
 <style scoped>
 .notification {
     position: fixed;
@@ -33,6 +34,7 @@ const notificationStore = useNotiStore()
     transition: all 0.5s ease;
     color: var(--foreground);
 }
+
 .blur {
     display: flex;
     position: fixed;
@@ -42,10 +44,12 @@ const notificationStore = useNotiStore()
     pointer-events: none;
     transition: all 0.3s ease;
 }
+
 .blur.active {
     backdrop-filter: blur(15px);
 }
-.notification--active {
+
+.notification.active {
     top: 15px;
     opacity: 1;
 }

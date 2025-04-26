@@ -1,4 +1,5 @@
 <template>
+    <Notification />
     <main v-if="currentLanguage" :class="{ active: focusStore.isFocused }">
         <!-- Проверяем, идет ли загрузка -->
         <div class="loading" :class="{ active: isLoading }">
@@ -7,7 +8,6 @@
 
         <!-- Проверяем, если есть токен и данные пользователя -->
         <div class="isauth" v-if="token">
-            <Notification />
             <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
             <openSearch :currentLanguage="currentLanguage" />
             <div class="content">
@@ -86,8 +86,10 @@ import BestProductSlider from '~/components/bestproductslider.vue'
 import CardProduct from '~/components/cardproduct.vue'
 import axios, { all } from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
+import { useNotiStore } from '~/store/notificationStore'
 const focusStore = useFocusStore()
 const token = ref(null)
+const notificationStore = useNotiStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
 const currentLanguage = ref(null)
@@ -139,6 +141,8 @@ onMounted(() => {
 const changeLanguage = (langCode) => {
     currentLanguage.value = languages[langCode] || languages.ru
     localStorage.setItem('languageCode', langCode)
+    notificationStore.setActive(false)
+    notificationStore.setNotification('')
 }
 </script>
 

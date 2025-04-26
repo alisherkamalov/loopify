@@ -8,7 +8,7 @@
                         :class="{ active: activeFrameIndex === index }">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                     </a-tooltip>
-                    <div class="mini-info" :class="{ active: activeFrameIndex === index }">
+                    <div v-if="activeFrameIndex !== index" class="mini-info" :class="{ active: activeFrameIndex === index }">
                         <Swiper class="cardproduct__media" :class="{ active: activeFrameIndex === index }"
                             :slides-per-view="1" :modules="[Pagination]" :pagination="true"
                             :key="`swiper-${product.name}-${index}`">
@@ -55,13 +55,15 @@
                                     :class="{ active: activeFrameIndex === index }">{{ currentLanguage.more
                                     }}</button>
                                 <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
-                                    @click.stop="addProductToCart(product)">{{
-                                        currentLanguage.incart }}</button>
+                                    @click.stop="addProductToCart(product)">
+                                    {{ currentLanguage.incart }}
+                                </button>
+
                             </div>
                         </div>
                     </div>
-                    <div class="more-info">
-
+                    <div v-else class="more-info">
+                        <Moreinfoproduct />
                     </div>
 
                 </div>
@@ -79,40 +81,63 @@ import { CloseOutlined } from '@ant-design/icons-vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules';
+import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import { useNotiStore } from '~/store/notificationStore';
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
+import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const savedScrollPosition = ref(0)
+const lastProductStore = useLastProductStore()
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
 const allproductstore = useAllProductStore()
-const addProductToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem('cart')) || []
-    const existingProduct = cart.find(item => item.title === product.title)
-
-    if (existingProduct) {
-        notificationStore.setNotification(currentLanguage.value.alreadyInCart || 'This product is already in the cart')
-        notificationStore.setActive(true)
+const addProductToCart = async (productId) => {
+    const token = localStorage.getItem('token')
+    try {
+        const response = await axios.post(
+            'https://backendlopify.vercel.app/basket',
+            {
+                productId: productId,
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+        notificationStore.setNotification(response.data.message || 'Товар добавлен в корзину');
+        notificationStore.setActive(true);
+        // Успешный ответ от сервера
+        console.log(response.data.message || 'Товар добавлен в корзину');
         setTimeout(() => {
-            notificationStore.setActive(false)
-        }, 3000)
-        return
+            notificationStore.setActive(false);
+        }, 3000);
+
+    } catch (error) {
+        // Ошибка при добавлении товара в корзину
+        if (error.response) {
+            // Сервер вернул ошибку
+            notificationStore.setNotification(error.response.data.message || 'Ошибка при добавлении товара');
+        } else {
+            // Ошибка с запросом
+            notificationStore.setNotification('Ошибка при отправке запроса');
+        }
+        notificationStore.setActive(true);
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
     }
+};
 
-    cart.push({ ...product, count: 1 })
-    localStorage.setItem('cart', JSON.stringify(cart))
 
-    notificationStore.setNotification(currentLanguage.value.addedtocart)
-    notificationStore.setActive(true)
-    setTimeout(() => {
-        notificationStore.setActive(false)
-    }, 3000)
-}
+
 const openProduct = async (index) => {
+    const product = allproductstore.products[index];
+
     if (activeFrameIndex.value === index) {
         // Закрытие карточки
         await closeProduct(index);
@@ -122,15 +147,18 @@ const openProduct = async (index) => {
         savedScrollPosition.value = window.scrollY;
         window.scrollTo({ top: 0, behavior: 'auto' });
 
+        // Сохраняем информацию о товаре в store
+        lastProductStore.setLastProduct(product);
+
         if (typeof document !== 'undefined') {
             document.body.style.overflow = 'hidden';
         }
     }
 };
 
+
 const closeProduct = async (index) => {
     activeFrameIndex.value = -1;
-
     if (typeof document !== 'undefined') {
         document.body.style.overflow = 'auto';
     }
@@ -146,7 +174,11 @@ const closeProduct = async (index) => {
         top: savedScrollPosition.value,
         behavior: 'auto'
     });
+    setTimeout(() => {
+        lastProductStore.setLastProduct([]);
+    }, 500);
 };
+
 const initVideo = (el, index) => {
     if (!el || videoRefs.value[index]) return;
 
@@ -224,7 +256,11 @@ onBeforeUnmount(() => {
     display: none;
     background-color: var(--background);
 }
-
+.more-info {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
 .mini-info.active {
     display: none;
 }
@@ -538,7 +574,7 @@ onBeforeUnmount(() => {
     }
 }
 
-@media (max-width: 769px) {
+@media (max-width: 500px) {
     .cardproduct__img.active {
         translate: 0px -50%;
     }

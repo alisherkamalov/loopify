@@ -4,8 +4,8 @@
             <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
             <SearchInput class="search" :place="currentLanguage.search" />
             <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
-                <HeaderButton class="profile" :text="currentLanguage.profile" />
-                <HeaderButton class="basket" :text="currentLanguage.basket" />
+                <HeaderButton class="profile" :text="currentLanguage.profile" @click="router.push('/profile')" />
+                <HeaderButton class="basket" :text="currentLanguage.basket" @click="router.push('/basket')" />
                 <LangDropdown class="language" :language="'ru.png'" :variants="[
                     { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
                     { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' }
@@ -18,10 +18,10 @@
             <div class="menu" :class="{ 'active': isMenu }">
                 <div class="logo mobile"></div>
                 <div class="frame">
-                    <HeaderButton class="profile" :text="currentLanguage.profile" />
+                    <HeaderButton class="profile" :text="currentLanguage.profile"@click="router.push('/profile')" />
                 </div>
                 <div class="frame">
-                    <HeaderButton class="basket" :text="currentLanguage.basket" />
+                    <HeaderButton class="basket" :text="currentLanguage.basket" @click="router.push('/basket')"/>
                 </div>
                 <div class="frame">
                     <LangDropdown class="language" :language="'ru.png'" :variants="[
@@ -46,6 +46,8 @@ import { MenuOutlined } from '@ant-design/icons-vue'
 import SearchInput from './searchInput.vue'
 import HeaderButton from './headerbutton.vue'
 import LangDropdown from './langdropdown.vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const isMenu = ref(false)
 
 const MenuOpenAndClose = () => {
