@@ -346,9 +346,7 @@ onMounted(() => {
     margin-top: 10px;
     height: 250px;
     display: flex;
-    translate: -10px;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 .cardproduct__title {
@@ -385,7 +383,7 @@ onMounted(() => {
 
     .cardproduct__media {
         width: 100%;
-        margin-left: 5px;
+        margin-left: 0px;
     }
 
     .cardproduct__content {

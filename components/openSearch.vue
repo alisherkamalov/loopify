@@ -572,7 +572,7 @@ onBeforeUnmount(() => {
     }
 
     .product-name {
-        max-width: 50%;
+        max-width: 60%;
     }
 
 }

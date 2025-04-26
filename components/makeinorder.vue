@@ -5,7 +5,7 @@
             <span class="titleorder">Оформление заказа</span>
             <v-text-field v-model="city" class="input" clearable :label="currentLanguage.city"
                 variant="solo"></v-text-field>
-            <v-text-field v-model="address" class="input" clearable :label="currentLanguage.street"
+            <v-text-field v-model="address" class="input" clearable :label="currentLanguage.streetandhouse"
                 variant="solo"></v-text-field>
             <button class="btn-order" @click.stop="createOrder">{{ currentLanguage.makeinorder }}</button>
         </div>
@@ -102,7 +102,8 @@ onMounted(() => {
 }
 
 .makeorder {
-    width: 400px;
+    max-width: 450px;
+    width: 90%;
     height: 300px;
     padding: 25px;
     display: flex;

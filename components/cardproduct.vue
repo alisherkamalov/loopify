@@ -8,7 +8,8 @@
                         :class="{ active: activeFrameIndex === index }">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                     </a-tooltip>
-                    <div v-if="activeFrameIndex !== index" class="mini-info" :class="{ active: activeFrameIndex === index }">
+                    <div v-if="activeFrameIndex !== index" class="mini-info"
+                        :class="{ active: activeFrameIndex === index }">
                         <Swiper class="cardproduct__media" :class="{ active: activeFrameIndex === index }"
                             :slides-per-view="1" :modules="[Pagination]" :pagination="true"
                             :key="`swiper-${product.name}-${index}`">
@@ -63,6 +64,10 @@
                         </div>
                     </div>
                     <div v-else class="more-info">
+                        <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back"
+                            @click.stop="closeProduct(activeFrameIndex)">
+                            <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
+                        </a-tooltip>
                         <Moreinfoproduct />
                     </div>
 
@@ -253,11 +258,19 @@ onBeforeUnmount(() => {
     display: none;
     background-color: var(--background);
 }
+
 .more-info {
     width: 100%;
     display: flex;
     padding-top: 20px;
     justify-content: center;
+    z-index: 3000;
+    background-color: var(--background);
+}
+.close {
+    position: absolute;
+    left: 10px;
+    top: 10px;
 }
 .mini-info.active {
     display: none;
@@ -276,7 +289,7 @@ onBeforeUnmount(() => {
     position: fixed;
     border-radius: 0px;
     translate: 0px -330px;
-    z-index: 2000;
+    z-index: 2001;
 }
 
 .cardproduct__img.active {
@@ -301,6 +314,7 @@ onBeforeUnmount(() => {
     border-radius: 0;
     align-items: start;
     max-height: 100dvh;
+    z-index: 3000;
 }
 
 .video-control.visible .iconstop {
