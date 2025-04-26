@@ -84,10 +84,11 @@ import TheHeader from '~/components/theheader.vue'
 import openSearch from '~/components/openSearch.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
 import CardProduct from '~/components/cardproduct.vue'
-import axios from 'axios'
-
+import axios, { all } from 'axios'
+import { useAllProductStore } from '~/store/fetchProductsStore'
 const focusStore = useFocusStore()
 const token = ref(null)
+const allproductstore = useAllProductStore()
 const isLoading = ref(true)
 const currentLanguage = ref(null)
 
@@ -105,7 +106,9 @@ onMounted(() => {
         })
             .then(response => {
                 if (localStorage != 'undefined') {
-                    localStorage.setItem('userdata', response.data)
+                    localStorage.setItem('userid', response.data._id)
+                    localStorage.setItem('username', response.data.nickname)
+                    localStorage.setItem('useremail', response.data.email)
                 }
             })
             .catch(error => {
@@ -118,6 +121,19 @@ onMounted(() => {
     } else {
         isLoading.value = false
     }
+    axios.get('https://backendlopify.vercel.app/products', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+        .then(response => {
+            allproductstore.setAllProducts(response.data)
+            console.log(allproductstore.products)
+        })
+        .catch(error => {
+            console.error('Ошибка запроса товаров:', error);
+        })
+
 });
 
 const changeLanguage = (langCode) => {
@@ -131,6 +147,7 @@ const changeLanguage = (langCode) => {
 main.active {
     overflow: hidden;
 }
+
 .social {
     width: 30px;
     height: 30px;
@@ -145,17 +162,21 @@ main.active {
     transition: all 0.3s ease;
     cursor: pointer;
 }
+
 .social:hover {
     width: 110px;
     border-radius: 50px;
 }
+
 .social:active {
     scale: 0.9;
 }
+
 .footersvg {
     min-width: 24px;
     margin-left: 2px;
 }
+
 .logofooter {
     translate: 0;
     width: 250px;
@@ -166,6 +187,7 @@ main.active {
     object-fit: contain;
     pointer-events: none;
 }
+
 footer {
     width: 100%;
     height: 300px;
@@ -175,6 +197,7 @@ footer {
     flex-direction: column;
     align-items: start;
 }
+
 .contentfooter {
     display: flex;
     flex-direction: column;
@@ -186,6 +209,7 @@ footer {
     font-size: 30px;
     font-weight: 600;
 }
+
 .loading {
     display: flex;
     position: fixed;
@@ -200,9 +224,11 @@ footer {
     backdrop-filter: blur(15px);
     transition: all 0.5s ease;
 }
+
 .isauth {
     height: 100dvh;
 }
+
 .loading.active {
     opacity: 1;
     pointer-events: all;

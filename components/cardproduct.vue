@@ -1,7 +1,7 @@
 <template>
     <div class="cardproducts">
         <div class="centercard">
-            <div v-for="(product, index) in products" :key="product.title" class="frame-cardproduct"
+            <div v-for="(product, index) in allproductstore.products" :key="product.title" class="frame-cardproduct"
                 :class="{ active: activeFrameIndex === index }" :ref="el => frameRefs[index] = el">
                 <div class="cardproduct" :class="{ active: activeFrameIndex === index }">
                     <a-tooltip class="btnclose" title="close" @click.stop="closeProduct(activeFrameIndex)"
@@ -18,7 +18,7 @@
                             </SwiperSlide>
                             <SwiperSlide v-if="product.videoUrl" :key="`video-${index}`">
                                 <div class="video-container">
-                                    <video :ref="el => initVideo(el, index)" :src="product.video"
+                                    <video :ref="el => initVideo(el, index)" :src="product.videoUrl"
                                         class="cardproduct__video" muted loop preload="metadata"
                                         @loadeddata="handleVideoLoaded(index)"
                                         @waiting="videoStates[index].isLoading = true"
@@ -82,13 +82,14 @@ import { Pagination } from 'swiper/modules';
 import { VProgressCircular } from 'vuetify/components'
 import { useNotiStore } from '~/store/notificationStore';
 import axios from 'axios'
+import { useAllProductStore } from '~/store/fetchProductsStore'
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const savedScrollPosition = ref(0)
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
-const products = ref([])
+const allproductstore = useAllProductStore()
 const addProductToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart')) || []
     const existingProduct = cart.find(item => item.title === product.title)
@@ -202,18 +203,6 @@ const handleBackButton = (event) => {
 };
 
 onMounted(() => {
-    axios.get('https://backendlopify.vercel.app/products', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-    })
-        .then(response => {
-            products.value = response.data
-            console.log(products.value)
-        })
-        .catch(error => {
-            console.error('Ошибка запроса товаров:', error);
-        })
     window.addEventListener('popstate', handleBackButton);
 });
 
@@ -454,7 +443,7 @@ onBeforeUnmount(() => {
 .cardproduct__price {
     margin-top: 5px;
     font-size: 1rem;
-    color: #555;
+    color: #858585;
 }
 
 .cardproduct__btn {

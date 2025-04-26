@@ -18,19 +18,20 @@
             </template>
             <template v-else-if="displayedProducts.length > 0">
                 <div class="frame-product" v-for="product in displayedProducts" :key="product.title">
+
                     <div :class="getProductClass(product)" @click="selectProduct(product)">
                         <div v-if="focusStore.activeProduct != product" class="product-left">
                             <img :src="product.photoUrl" :alt="product.title" class="product-image">
                             <div class="product-info">
-                                <span class="product-name">{{ currentLanguage.devicetype[product.devicetype] }} {{
+                                <span class="product-name">{{ currentLanguage.devicetype[product.deviceType] }} {{
                                     product.name }}</span>
-                                <span class="price">{{ product.price }}</span>
+                                <span class="price">{{ product.price }} ₸</span>
                             </div>
                         </div>
                         <div v-if="focusStore.activeProduct != product" class="product-right">
                             <button class="btn-more">{{ currentLanguage.more }}</button>
                             <button @click.stop="addProductToCart(product)" class="btn-incart">{{ currentLanguage.incart
-                            }}</button>
+                                }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
                             <div class="cont-product">
@@ -57,7 +58,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { languages } from '../lib/languages'
 import { useNotiStore } from '~/store/notificationStore'
-import axios from 'axios'
+import { useAllProductStore } from '~/store/fetchProductsStore'
 import { h } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 
@@ -69,7 +70,9 @@ const props = defineProps({
     }
 })
 
-const products = ref([])
+const allproductstore = useAllProductStore() // Используем store для всех продуктов
+const products = computed(() => allproductstore.products) // Доступ к продуктам через store
+
 const sortingproducts = ref([
     { devicetype: "smartphone" },
     { devicetype: "tablet" },
@@ -149,7 +152,7 @@ function handleClickOutside(event) {
 }
 
 const getProductClass = (product) => {
-    const className = (product.title && product.title.toLowerCase().replace(/\s+/g, '-')) || ''; 
+    const className = (product.title && product.title.toLowerCase().replace(/\s+/g, '-')) || '';
     return {
         [className]: focusStore.activeProduct === product,
         'product': true,
@@ -157,56 +160,53 @@ const getProductClass = (product) => {
     };
 }
 
-
 const displayedProducts = computed(() => {
-    isLoading.value = true
-    const query = focusStore.searchValue?.toLowerCase() || ''
-    let result = [...products.value]
+  isLoading.value = true
+  const query = focusStore.searchValue?.toLowerCase()?.trim() || ''
+  
+  let result = [...products.value]
 
-    if (selectedDeviceType.value) {
-        result = result.filter(product => product.devicetype === selectedDeviceType.value)
-    }
+  // Фильтрация по типу устройства
+  if (selectedDeviceType.value) {
+    result = result.filter(product => 
+      product.deviceType === selectedDeviceType.value
+    )
+  }
 
-    if (query !== '') {
-        result = result.filter(product => product.title.toLowerCase().includes(query))
-    }
+  // Фильтрация по поисковому запросу
+  if (query) {
+    result = result.filter(product => {
+      const searchFields = [
+        product.name,
+        product.price,
+        product.deviceType
+      ].join(' ').toLowerCase()
+      return searchFields.includes(query)
+    })
+  }
 
-    result.reverse()
-    setTimeout(() => {
-        isLoading.value = false
-    }, 1000)
-    return result
+  setTimeout(() => {
+    isLoading.value = false
+  }, 300)
+  
+  return result.reverse()
 })
 
-const fetchProducts = async () => {
-    try {
-        isLoading.value = true
-        const response = await axios.get('https://backendlopify.vercel.app/products', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-        }})
-        products.value = response.data 
-        isLoading.value = false
-    } catch (error) {
-        console.error('Error fetching products:', error)
-        isLoading.value = false
-    }
-}
-
-onMounted(() => {
+onMounted(async() => {
     document.addEventListener('click', handleClickOutside)
     const langCode = localStorage.getItem('languageCode')
     if (langCode && languages[langCode]) {
         currentLanguage.value = languages[langCode]
     }
 
-    fetchProducts()
+    
 })
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
 })
 </script>
+
 
 
 
@@ -239,9 +239,11 @@ onBeforeUnmount(() => {
 .btn-sortingproduct:hover {
     background-color: var(--border-color);
 }
+
 .btn-sortingproduct.active {
     background-color: var(--border-color);
 }
+
 .sortingproduct {
     overflow-x: auto;
     display: flex;

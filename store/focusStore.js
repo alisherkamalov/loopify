@@ -1,15 +1,15 @@
+// stores/focusStore.js
 import { defineStore } from 'pinia'
 
 export const useFocusStore = defineStore('focus', {
   state: () => ({
-    isFocused: false,
     searchValue: '',
-    activeProduct: null,
+    isFocused: false,
+    activeProduct: null
   }),
   actions: {
     setActiveProduct(product) {
-      this.activeProduct = product;
-      
+      this.activeProduct = product
     }
   }
 })
