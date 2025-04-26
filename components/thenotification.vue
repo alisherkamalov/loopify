@@ -42,6 +42,7 @@ const notificationStore = useNotiStore()
     height: 100dvh;
     z-index: 9998;
     pointer-events: none;
+    top: 0;
     transition: all 0.3s ease;
 }
 

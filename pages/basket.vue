@@ -1,4 +1,5 @@
 <template>
+    <Notification/>
     <div class="container" v-if="currentLanguage">
         <div class="header">
             <a-tooltip v-if="currentLanguage" class="btnclose" :title="currentLanguage.back" @click="router.push('/')">
@@ -47,7 +48,10 @@ import { VProgressCircular } from 'vuetify/components';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { languages } from '~/lib/languages';
 import axios from 'axios';
+import Notification from '../components/thenotification.vue'
+import { useNotiStore } from '~/store/notificationStore';
 const currentLanguage = ref(null)
+const notificationStore = useNotiStore()
 const router = useRouter();
 const displayedProducts = ref([]);
 const isLoading = ref(true)
@@ -75,13 +79,16 @@ const removeProductFromCart = async (productIdToDelete) => {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         });
-
+        notificationStore.setNotification("Вы успешно удалили товар с корзины")
         // Фильтруем по productId._id
         displayedProducts.value = displayedProducts.value.filter(product => product.productId._id !== productIdToDelete);
-
+        notificationStore.setActive(true)
         if (displayedProducts.value.length === 0) {
             isLoading.value = false;
         }
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
     } catch (error) {
         console.error("Ошибка при удалении товара из корзины", error);
     }
@@ -104,7 +111,9 @@ onMounted(() => {
     gap: 15px;
     flex-direction: column;
 }
-
+.btnclose {
+    background-color: var(--background);
+}
 .title {
     font-size: 30px;
     color: var(--foreground);
@@ -137,12 +146,17 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
+    border: 1px solid var(--bg-cont);
+    padding: 12px;
+    border-radius: 50px;
 }
 
 .product-left {
     display: flex;
 }
-
+.price {
+    color: rgb(201, 201, 201);
+}
 .product-image {
     width: 100px;
     height: 100px;
@@ -153,10 +167,6 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-.price {
-    color: #000;
 }
 
 .product-right {

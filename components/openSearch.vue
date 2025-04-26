@@ -31,13 +31,14 @@
                         <div v-if="focusStore.activeProduct != product" class="product-right">
                             <button class="btn-more">{{ currentLanguage.more }}</button>
                             <button @click.stop="addProductToCart(product)" class="btn-incart">{{ currentLanguage.incart
-                                }}</button>
+                            }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
                             <div class="cont-product">
-                                <a-tooltip title="close" @click.stop="closeInfoProduct">
+                                <a-tooltip class="btnclosesearch" title="close" @click.stop="closeInfoProduct">
                                     <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                                 </a-tooltip>
+                                <Moreinfoproduct />
                             </div>
                         </div>
                     </div>
@@ -61,7 +62,8 @@ import { useNotiStore } from '~/store/notificationStore'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { h } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
-
+import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
+import { useLastProductStore } from '~/store/lastProductStore'
 const selectedDeviceType = ref(null)
 const props = defineProps({
     currentLanguage: {
@@ -91,7 +93,7 @@ const focusStore = useFocusStore()
 const isLoading = ref(false)
 const notificationStore = useNotiStore()
 const currentLanguage = computed(() => props.currentLanguage)
-
+const lastProductStore = useLastProductStore()
 const addProductToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart')) || []
     const existingProduct = cart.find(item => item.title === product.title)
@@ -122,6 +124,7 @@ const closeInfoProduct = () => {
     }
     focusStore.setActiveProduct(null)
     document.body.style.overflow = 'auto'
+    lastProductStore.setLastProduct([]);
 }
 
 const selectProduct = (product) => {
@@ -132,7 +135,9 @@ const selectProduct = (product) => {
         }
         focusStore.setActiveProduct(null);
         document.body.style.overflow = 'auto';
+        lastProductStore.setLastProduct([]);
     } else {
+        lastProductStore.setLastProduct(product);
         const activeSearch = document.querySelector('.frame-openedsearch.active');
         if (activeSearch) {
             activeSearch.style.zIndex = '2003';
@@ -161,45 +166,45 @@ const getProductClass = (product) => {
 }
 
 const displayedProducts = computed(() => {
-  isLoading.value = true
-  const query = focusStore.searchValue?.toLowerCase()?.trim() || ''
-  
-  let result = [...products.value]
+    isLoading.value = true
+    const query = focusStore.searchValue?.toLowerCase()?.trim() || ''
 
-  // Фильтрация по типу устройства
-  if (selectedDeviceType.value) {
-    result = result.filter(product => 
-      product.deviceType === selectedDeviceType.value
-    )
-  }
+    let result = [...products.value]
 
-  // Фильтрация по поисковому запросу
-  if (query) {
-    result = result.filter(product => {
-      const searchFields = [
-        product.name,
-        product.price,
-        product.deviceType
-      ].join(' ').toLowerCase()
-      return searchFields.includes(query)
-    })
-  }
+    // Фильтрация по типу устройства
+    if (selectedDeviceType.value) {
+        result = result.filter(product =>
+            product.deviceType === selectedDeviceType.value
+        )
+    }
 
-  setTimeout(() => {
-    isLoading.value = false
-  }, 300)
-  
-  return result.reverse()
+    // Фильтрация по поисковому запросу
+    if (query) {
+        result = result.filter(product => {
+            const searchFields = [
+                product.name,
+                product.price,
+                product.deviceType
+            ].join(' ').toLowerCase()
+            return searchFields.includes(query)
+        })
+    }
+
+    setTimeout(() => {
+        isLoading.value = false
+    }, 300)
+
+    return result.reverse()
 })
 
-onMounted(async() => {
+onMounted(async () => {
     document.addEventListener('click', handleClickOutside)
     const langCode = localStorage.getItem('languageCode')
     if (langCode && languages[langCode]) {
         currentLanguage.value = languages[langCode]
     }
 
-    
+
 })
 
 onBeforeUnmount(() => {
@@ -224,7 +229,12 @@ onBeforeUnmount(() => {
 .loading {
     margin: auto;
 }
-
+.btnclosesearch {
+    position: absolute;
+    left: -15px;
+    top: -15px;
+    background-color: var(--background);
+}
 .btn-sortingproduct {
     background-color: var(--bg-cont);
     border-radius: 50px;
@@ -275,6 +285,7 @@ onBeforeUnmount(() => {
     border-radius: 50px;
     background-color: var(--bg-cont);
     display: flex;
+    padding-top: 25px;
     justify-content: center;
     position: relative;
 }

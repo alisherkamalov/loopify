@@ -1,5 +1,4 @@
 <template>
-    <Notification />
     <main v-if="currentLanguage" :class="{ active: focusStore.isFocused }">
         <!-- Проверяем, идет ли загрузка -->
         <div class="loading" :class="{ active: isLoading }">
@@ -87,9 +86,10 @@ import CardProduct from '~/components/cardproduct.vue'
 import axios, { all } from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useNotiStore } from '~/store/notificationStore'
+import { useLastProductStore } from '~/store/lastProductStore'
 const focusStore = useFocusStore()
 const token = ref(null)
-const notificationStore = useNotiStore()
+const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
 const currentLanguage = ref(null)
@@ -97,7 +97,8 @@ const currentLanguage = ref(null)
 onMounted(() => {
     const langCode = localStorage.getItem('languageCode') || 'ru';
     currentLanguage.value = languages[langCode] || languages.ru;
-
+    lastProductStore.setLastProduct([]);
+    lastProductStore.setSlider(false)
     token.value = localStorage.getItem('token')
 
     if (token.value) {
@@ -141,8 +142,6 @@ onMounted(() => {
 const changeLanguage = (langCode) => {
     currentLanguage.value = languages[langCode] || languages.ru
     localStorage.setItem('languageCode', langCode)
-    notificationStore.setActive(false)
-    notificationStore.setNotification('')
 }
 </script>
 

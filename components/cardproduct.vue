@@ -139,15 +139,12 @@ const openProduct = async (index) => {
     const product = allproductstore.products[index];
 
     if (activeFrameIndex.value === index) {
-        // Закрытие карточки
         await closeProduct(index);
     } else {
-        // Открытие карточки
         activeFrameIndex.value = index;
         savedScrollPosition.value = window.scrollY;
         window.scrollTo({ top: 0, behavior: 'auto' });
 
-        // Сохраняем информацию о товаре в store
         lastProductStore.setLastProduct(product);
 
         if (typeof document !== 'undefined') {
@@ -259,6 +256,7 @@ onBeforeUnmount(() => {
 .more-info {
     width: 100%;
     display: flex;
+    padding-top: 20px;
     justify-content: center;
 }
 .mini-info.active {

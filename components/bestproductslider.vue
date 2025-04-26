@@ -9,7 +9,7 @@
           <img :src="slide.photoUrl" alt="" class="bg">
           <span class="title-product">{{ slide.name }}</span>
           <span class="price">{{ slide.price }} ₸</span>
-          <button class="btn-more" @click="router.push('/moreinfoproduct')">{{ currentLanguage.more }}</button>
+          <button class="btn-more" @click="openmore(slide)">{{ currentLanguage.more }}</button>
         </div>
       </div>
     </div>
@@ -20,9 +20,10 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
-import { routerKey } from 'vue-router'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useRouter } from 'vue-router'
+import { useLastProductStore } from '~/store/lastProductStore'
+const lastProductStore = useLastProductStore()
 const router = useRouter()
 const props = defineProps({
   currentLanguage: {
@@ -34,7 +35,11 @@ const props = defineProps({
 const allproductstore = useAllProductStore()
 const currentLanguage = computed(() => props.currentLanguage)
 const isAnimating = ref(false)
-
+const openmore = (idprod) => {
+  lastProductStore.setLastProduct(idprod);
+  lastProductStore.setSlider(true)
+  router.push('/moreinfoproduct')
+}
 const slides = ref([])
 const current = ref(0)
 const isPaused = ref(false)
@@ -49,7 +54,8 @@ const fetchSlides = () => {
       name: item.name,
       price: item.price,
       class: item.deviceType.toLowerCase(),
-      photoUrl: item.photoUrl
+      photoUrl: item.photoUrl,
+      videoUrl: item.videoUrl,
     }));
   }
 }

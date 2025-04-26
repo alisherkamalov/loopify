@@ -1,15 +1,19 @@
 <template>
-    <Notification/>
-    <div class="container" v-if="currentLanguage">
-        <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1"
-            :modules="[Pagination]" :pagination="true" :key="`swiper-${lastProduct.name}-${index}`">
+    <Notification />
+    <Makeinorder :currentLanguage="currentLanguage"/>
+    <div class="container" v-if="currentLanguage" :class="{ active: lastProductStore.isSlider }">
+        <a-tooltip class="btnclose" title="close" @click="router.push('/')" :class="{ active: lastProductStore.isSlider }">
+            <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
+        </a-tooltip>
+        <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
+            :pagination="true" :key="`swiper-${lastProduct.name}`">
             <SwiperSlide>
                 <img :src="lastProduct.photoUrl" alt="Product Image" class="cardproduct__img" />
             </SwiperSlide>
             <SwiperSlide v-if="lastProduct.videoUrl" :key="`video-${index}`">
                 <div class="video-container">
-                    <video :ref="el => initVideo(el, index)" :src="lastProduct.videoUrl" class="cardproduct__video" muted
-                        loop preload="metadata" @loadeddata="handleVideoLoaded(index)"
+                    <video :ref="el => initVideo(el, index)" :src="lastProduct.videoUrl" class="cardproduct__video"
+                        muted loop preload="metadata" @loadeddata="handleVideoLoaded(index)"
                         @waiting="videoStates[index].isLoading = true"
                         @suspend="videoStates[index].isLoading = false"></video>
                     <v-progress-circular v-if="videoStates[index]?.isLoading" indeterminate color="primary" size="64"
@@ -33,13 +37,14 @@
         </Swiper>
         <div class="cardproduct__content">
             <div class="top">
-                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[lastProduct.deviceType] }} {{ lastProduct.name }}</h3>
+                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[lastProduct.deviceType] }} {{
+                    lastProduct.name }}</h3>
                 <p class="cardproduct__price">{{ lastProduct.price }} ₸</p>
             </div>
             <div class="bottom">
-                <button class="cardproduct__btn more" @click.stop="openProduct(index)">{{ currentLanguage.makeinorder }}</button>
-                <button class="cardproduct__btn incart"
-                    @click.stop="addProductToCart(lastProduct._id)">
+                <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{ currentLanguage.makeinorder
+                    }}</button>
+                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id)">
                     {{ currentLanguage.incart }}
                 </button>
             </div>
@@ -52,32 +57,38 @@ import { ref, computed, onMounted } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import { h } from 'vue'
+import { CloseOutlined } from '@ant-design/icons-vue'
 import Notification from '../components/thenotification.vue'
 import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
+import axios from 'axios'
 import { useNotiStore } from '~/store/notificationStore';
 import { languages } from '~/lib/languages';
+import { useRouter } from 'vue-router';
+import { useMakeOrder } from '~/store/MakeOrderStore'
+const makeorder = useMakeOrder()
 const lastProductStore = useLastProductStore();
-const lastProduct = computed(() => lastProductStore.lastproduct); 
+const lastProduct = computed(() => lastProductStore.lastproduct);
 const currentLanguage = ref(null)
 const videoStates = ref({});
+const router = useRouter()
 const notificationStore = useNotiStore()
 const videoRefs = ref({});
 const addProductToCart = async (productId) => {
     const token = localStorage.getItem('token')
-    console.log(productId)
     try {
         const response = await axios.post(
             'https://backendlopify.vercel.app/basket',
             {
+                productId: productId,
+            },
+            {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
-            },
-            {
-                productId: productId,
-            },
+            }
         );
         notificationStore.setNotification(response.data.message || 'Товар добавлен в корзину');
         notificationStore.setActive(true);
@@ -145,8 +156,8 @@ const toggleVideo = (index) => {
     videoStates.value[index] = newState;
 };
 const openProduct = (index) => {
-  // Логика открытия товара
-  console.log("Открыть товар с индексом:", index);
+    // Логика открытия товара
+    console.log("Открыть товар с индексом:", index);
 };
 onMounted(() => {
     const langCode = localStorage.getItem('languageCode') || 'ru';
@@ -158,17 +169,25 @@ onMounted(() => {
 .video-control.visible {
     opacity: 1 !important;
 }
+
 .container {
     display: flex;
     width: 90%;
     gap: 35px;
 }
-
+.container.active {
+    margin-top: 25px;
+}
 .btnclose {
     display: none;
+    position: absolute;
+    left: 10px;
+    top: 10px;
     background-color: var(--background);
 }
-
+.btnclose.active {
+    display: block;
+}
 
 
 .video-control.visible .iconstop {
@@ -358,14 +377,17 @@ onMounted(() => {
 .cardproduct__btn.incart {
     background-color: rgb(39, 151, 82);
 }
+
 @media (max-width:768px) {
     .container {
         flex-direction: column;
     }
+
     .cardproduct__media {
         width: 100%;
         margin-left: 5px;
     }
+
     .cardproduct__content {
         max-width: none;
         width: 100%;
