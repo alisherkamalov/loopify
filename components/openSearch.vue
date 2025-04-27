@@ -207,8 +207,14 @@ const displayedProducts = computed(() => {
 
     return result.reverse()
 })
+const handleBackButton = (event) => {
+    event.preventDefault();
+    closeInfoProduct();
+};
+
 
 onMounted(async () => {
+    window.addEventListener('popstate', handleBackButton);
     document.addEventListener('click', handleClickOutside)
     const langCode = localStorage.getItem('languageCode')
     if (langCode && languages[langCode]) {
@@ -219,6 +225,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+    window.removeEventListener('popstate', handleBackButton);
     document.removeEventListener('click', handleClickOutside)
 })
 </script>
