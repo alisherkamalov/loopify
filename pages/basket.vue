@@ -21,7 +21,7 @@
         <div v-else-if="displayedProducts.length > 0">
             <div class="frame-product" v-for="product in displayedProducts" :key="product._id">
                 <div class="product-left">
-                    <img :src="product.productId.photoUrl" :alt="product.productId.name" class="product-image" />
+                    <img :src="product.productId.photoUrl" loading="lazy" :alt="product.productId.name" class="product-image" />
                     <div class="product-info">
                         <span class="product-name">
                             {{ currentLanguage.devicetype[product.productId.deviceType] }} {{ product.productId.name
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="product-right">
-                    <button @click.stop="removeProductFromCart(product.productId._id)" class="btn-remove">
+                    <button @click.stop="removeProductFromCart(product.productId._id, currentLanguage)" class="btn-remove">
                         {{ currentLanguage.delete }}
                     </button>
                 </div>
@@ -48,14 +48,14 @@
                     variant="solo"></v-text-field>
                 <v-text-field v-model="address" class="input" clearable :label="currentLanguage.streetandhouse"
                     variant="solo"></v-text-field>
-                <button class="btn-order" @click.stop="payForProducts">{{ currentLanguage.makeinorder }}</button>
+                <button class="btn-order" @click.stop="payForProducts(currentLanguage)">{{ currentLanguage.makeinorder }}</button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { h } from 'vue';
 import { VProgressCircular } from 'vuetify/components';
@@ -91,18 +91,13 @@ const loadCartItems = async () => {
     isLoading.value = false;
 };
 
-const payForProducts = async () => {
+const payForProducts = async (currentLanguage) => {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            notificationStore.setNotification("Произошла ошибка, авторизуйтесь еще раз");
-            notificationStore.setActive(true);
-            setTimeout(() => notificationStore.setActive(false), 3000);
-            return;
-        }
-
+        const token = localStorage.getItem('token')
         if (displayedProducts.value.length === 0) {
-            notificationStore.setNotification("Корзина пуста");
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.basketempty);
+            }
             notificationStore.setActive(true);
             setTimeout(() => notificationStore.setActive(false), 3000);
             return;
@@ -140,20 +135,22 @@ const payForProducts = async () => {
         city.value = '';
         address.value = '';
         displayedProducts.value = [];
-        
-        notificationStore.setNotification("Заказы успешно оформлены!");
+        if (currentLanguage) {
+            notificationStore.setNotification(currentLanguage.successpaybasket);
+        }
         notificationStore.setActive(true);
         setTimeout(() => notificationStore.setActive(false), 3000);
 
     } catch (error) {
-        console.error("Ошибка при оформлении заказа", error);
-        notificationStore.setNotification("Ошибка при оформлении заказа");
+        if (currentLanguage) {
+            notificationStore.setNotification(currentLanguage.errorpayproductbasket);
+        }
         notificationStore.setActive(true);
         setTimeout(() => notificationStore.setActive(false), 3000);
     }
 };
 
-const removeProductFromCart = async (productIdToDelete) => {
+const removeProductFromCart = async (productIdToDelete, currentLanguage) => {
     try {
         await axios.delete(`https://backendlopify.vercel.app/basket/${productIdToDelete}`, {
             headers: {
@@ -161,7 +158,9 @@ const removeProductFromCart = async (productIdToDelete) => {
             }
         });
         displayedProducts.value = displayedProducts.value.filter(product => product.productId._id !== productIdToDelete);
-        notificationStore.setNotification("Вы успешно удалили товар с корзины");
+        if (currentLanguage) {
+            notificationStore.setNotification(currentLanguage.deleteproductbasket);
+        }
         notificationStore.setActive(true);
         setTimeout(() => notificationStore.setActive(false), 3000);
     } catch (error) {

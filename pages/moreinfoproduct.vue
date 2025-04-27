@@ -8,7 +8,7 @@
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
             :pagination="true" :key="`swiper-${lastProduct.name}`">
             <SwiperSlide>
-                <img :src="lastProduct.photoUrl" alt="Product Image" class="cardproduct__img" />
+                <img :src="lastProduct.photoUrl" loading="lazy" alt="Product Image" class="cardproduct__img" />
             </SwiperSlide>
             <SwiperSlide v-if="lastProduct.videoUrl" :key="`video-${index}`">
                 <div class="video-container">
@@ -44,7 +44,7 @@
             <div class="bottom">
                 <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{ currentLanguage.makeinorder
                     }}</button>
-                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id)">
+                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id, currentLanguage)">
                     {{ currentLanguage.incart }}
                 </button>
             </div>
@@ -76,7 +76,7 @@ const videoStates = ref({});
 const router = useRouter()
 const notificationStore = useNotiStore()
 const videoRefs = ref({});
-const addProductToCart = async (productId) => {
+const addProductToCart = async (productId, currentLanguage) => {
     const token = localStorage.getItem('token')
     try {
         const response = await axios.post(
@@ -90,9 +90,10 @@ const addProductToCart = async (productId) => {
                 },
             }
         );
-        notificationStore.setNotification(response.data.message || 'Товар добавлен в корзину');
+        if (currentLanguage) {
+            notificationStore.setNotification(currentLanguage.productaddedcart);
+        }
         notificationStore.setActive(true);
-        // Успешный ответ от сервера
         console.log(response.data.message || 'Товар добавлен в корзину');
         setTimeout(() => {
             notificationStore.setActive(false);
@@ -101,11 +102,13 @@ const addProductToCart = async (productId) => {
     } catch (error) {
         // Ошибка при добавлении товара в корзину
         if (error.response) {
-            // Сервер вернул ошибку
-            notificationStore.setNotification(error.response.data.message || 'Ошибка при добавлении товара');
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.errorproductaddedcart);
+            }
         } else {
-            // Ошибка с запросом
-            notificationStore.setNotification('Ошибка при отправке запроса');
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.errorfetch);
+            }
         }
         notificationStore.setActive(true);
         setTimeout(() => {

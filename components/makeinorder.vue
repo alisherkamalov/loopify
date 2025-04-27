@@ -7,7 +7,7 @@
                 variant="solo"></v-text-field>
             <v-text-field v-model="address" class="input" clearable :label="currentLanguage.streetandhouse"
                 variant="solo"></v-text-field>
-            <button class="btn-order" @click.stop="createOrder">{{ currentLanguage.makeinorder }}</button>
+            <button class="btn-order" @click.stop="createOrder(currentLanguage)">{{ currentLanguage.makeinorder }}</button>
         </div>
     </div>
 </template>
@@ -25,7 +25,7 @@ const uselastproduct = useLastProductStore()
 const makeorder = useMakeOrder()
 const city = ref('')
 const address = ref('')
-const createOrder = async () => {
+const createOrder = async (currentLanguage) => {
     const token = localStorage.getItem('token')
     const response = await axios.post(
         'https://backendlopify.vercel.app/orders',
@@ -42,7 +42,9 @@ const createOrder = async () => {
         }
     );
     makeorder.setOrder(false)
-    notificationStore.setNotification(response.data.message)
+    if (currentLanguage) {
+        notificationStore.setNotification(currentLanguage.successordercreate)
+    }
     notificationStore.setActive(true)
     setTimeout(() => {
         notificationStore.setActive(false)
@@ -61,7 +63,7 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    position: fixed;
     top: 0;
     pointer-events: none;
     opacity: 0;

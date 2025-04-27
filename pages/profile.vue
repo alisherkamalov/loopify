@@ -21,7 +21,7 @@
                 class="loading-indicator"></v-progress-circular>
             <div class="ordercont" v-else v-for="(order, index) in orders" :key="index">
                 <div class="product-left">
-                    <img :src="order.productId.photoUrl" :alt="order.productId.name" class="product-image" />
+                    <img :src="order.productId.photoUrl" loading="lazy" :alt="order.productId.name" class="product-image" />
                     <div class="product-info">
                         <span class="product-name">
                             {{ currentLanguage.devicetype[order.productId.deviceType] }} {{ order.productId.name }}

@@ -21,7 +21,7 @@
 
                     <div :class="getProductClass(product)" @click="selectProduct(product)">
                         <div v-if="focusStore.activeProduct != product" class="product-left">
-                            <img :src="product.photoUrl" :alt="product.title" class="product-image">
+                            <img :src="product.photoUrl" :alt="product.title" class="product-image" loading="lazy">
                             <div class="product-info">
                                 <span class="product-name">{{ currentLanguage.devicetype[product.deviceType] }} {{
                                     product.name }}</span>
@@ -30,7 +30,7 @@
                         </div>
                         <div v-if="focusStore.activeProduct != product" class="product-right">
                             <button class="btn-more">{{ currentLanguage.more }}</button>
-                            <button @click.stop="addProductToCart(product._id)" class="btn-incart">{{ currentLanguage.incart
+                            <button @click.stop="addProductToCart(product._id, currentLanguage)" class="btn-incart">{{ currentLanguage.incart
                             }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
@@ -95,7 +95,7 @@ const isLoading = ref(false)
 const notificationStore = useNotiStore()
 const currentLanguage = computed(() => props.currentLanguage)
 const lastProductStore = useLastProductStore()
-const addProductToCart = async (productId) => {
+const addProductToCart = async (productId, currentLanguage) => {
     const token = localStorage.getItem('token')
     try {
         const response = await axios.post(
@@ -109,7 +109,9 @@ const addProductToCart = async (productId) => {
                 },
             }
         );
-        notificationStore.setNotification(response.data.message || 'Товар добавлен в корзину');
+        if (currentLanguage) {
+            notificationStore.setNotification(currentLanguage.productaddedcart);
+        }
         notificationStore.setActive(true);
         setTimeout(() => {
             notificationStore.setActive(false);
@@ -117,9 +119,13 @@ const addProductToCart = async (productId) => {
 
     } catch (error) {
         if (error.response) {
-            notificationStore.setNotification(error.response.data.message || 'Ошибка при добавлении товара');
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.errorproductaddedcart);
+            }
         } else {
-            notificationStore.setNotification('Ошибка при отправке запроса');
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.errorfetch);
+            }
         }
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -278,7 +284,7 @@ onBeforeUnmount(() => {
     display: flex;
     max-width: 95%;
     align-items: center;
-    height: 50px;
+    min-height: 50px;
     gap: 10px;
     margin-top: 5px;
     margin-left: auto;
@@ -319,8 +325,7 @@ onBeforeUnmount(() => {
 .frame-product {
     position: relative;
     width: 100%;
-    height: 80px;
-    margin-bottom: 10px;
+    min-height: 80px;
 }
 
 .right {
@@ -387,7 +392,6 @@ onBeforeUnmount(() => {
     left: 50%;
     transform: translateX(-50%);
     border: 1px solid var(--bg-cont);
-    margin-top: 15px;
     transition:
         width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -397,7 +401,7 @@ onBeforeUnmount(() => {
 
 .product--active {
     position: fixed;
-    top: 0;
+    top: 15px;
     left: 50%;
     width: 100% !important;
     height: 100dvh;
@@ -437,7 +441,7 @@ onBeforeUnmount(() => {
     display: flex;
     width: 100px;
     min-height: 300px;
-    max-height: 10dvh;
+    height: 10dvh;
     background-color: var(--background);
     border-radius: 10px;
     position: relative;
@@ -449,6 +453,8 @@ onBeforeUnmount(() => {
     margin-left: auto;
     margin-right: auto;
     margin-top: 55px;
+    padding-bottom: 15px;
+    gap: 10px;
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease;
@@ -506,7 +512,7 @@ onBeforeUnmount(() => {
     pointer-events: all;
     opacity: 1;
     width: 90%;
-    max-height: 90dvh;
+    min-height: 90dvh;
 }
 
 .openedsearch.active {

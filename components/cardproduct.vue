@@ -15,7 +15,7 @@
                             :key="`swiper-${product.name}-${index}`">
                             <SwiperSlide>
                                 <img :src="product.photoUrl" alt="Product Image" class="cardproduct__img"
-                                    :class="{ active: activeFrameIndex === index }" />
+                                    :class="{ active: activeFrameIndex === index }" loading="lazy" />
                             </SwiperSlide>
                             <SwiperSlide v-if="product.videoUrl" :key="`video-${index}`">
                                 <div class="video-container">
@@ -56,7 +56,7 @@
                                     :class="{ active: activeFrameIndex === index }">{{ currentLanguage.more
                                     }}</button>
                                 <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
-                                    @click.stop="addProductToCart(product)">
+                                    @click.stop="addProductToCart(product, currentLanguage)">
                                     {{ currentLanguage.incart }}
                                 </button>
 
@@ -103,7 +103,7 @@ const lastProductStore = useLastProductStore()
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
 const allproductstore = useAllProductStore()
-const addProductToCart = async (productId) => {
+const addProductToCart = async (productId, currentLanguage) => {
     const token = localStorage.getItem('token')
     try {
         const response = await axios.post(
@@ -117,22 +117,25 @@ const addProductToCart = async (productId) => {
                 },
             }
         );
-        notificationStore.setNotification(response.data.message || 'Товар добавлен в корзину');
+        console.log(response.data)
+        if (currentLanguage) {
+
+        }
+        notificationStore.setNotification(currentLanguage.productaddedcart);
         notificationStore.setActive(true);
-        // Успешный ответ от сервера
-        console.log(response.data.message || 'Товар добавлен в корзину');
         setTimeout(() => {
             notificationStore.setActive(false);
         }, 3000);
 
     } catch (error) {
-        // Ошибка при добавлении товара в корзину
         if (error.response) {
-            // Сервер вернул ошибку
-            notificationStore.setNotification(error.response.data.message || 'Ошибка при добавлении товара');
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.errorproductaddedcart);
+            }
         } else {
-            // Ошибка с запросом
-            notificationStore.setNotification('Ошибка при отправке запроса');
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.errorfetch);
+            }
         }
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -270,11 +273,13 @@ onBeforeUnmount(() => {
     z-index: 3000;
     background-color: var(--background);
 }
+
 .close {
     position: absolute;
     left: 10px;
     top: 10px;
 }
+
 .mini-info.active {
     display: none;
 }

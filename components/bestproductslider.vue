@@ -6,7 +6,7 @@
       <div v-for="(slide, index) in slides" :key="index" class="slide" :class="slide.class"
         :style="getSlideStyle(index)">
         <div class="slide-content">
-          <img :src="slide.photoUrl" alt="" class="bg">
+          <img :src="slide.photoUrl" alt="" class="bg" loading="lazy">
           <span class="title-product">{{ slide.name }}</span>
           <span class="price">{{ slide.price }} ₸</span>
           <button class="btn-more" @click="openmore(slide)">{{ currentLanguage.more }}</button>

@@ -14,7 +14,7 @@
                 variant="solo"></v-text-field>
             <v-text-field v-model="password" class="input" clearable :label="currentLanguage.password"
                 variant="solo"></v-text-field>
-            <button class="btnsignup" @click="registration">{{ currentLanguage.signup }}</button>
+            <button class="btnsignup" @click="registration(currentLanguage)">{{ currentLanguage.signup }}</button>
         </div>
         <button v-if="currentLanguage" class="btnsignin" @click="router.push('/signin')">{{ currentLanguage.signin
             }}</button>
@@ -37,7 +37,7 @@ const nickname = ref('');
 const email = ref('');
 const password = ref('');
 
-const registration = () => {
+const registration = (currentLanguage) => {
     const payload = {
         nickname: nickname.value,
         email: email.value,
@@ -45,7 +45,9 @@ const registration = () => {
     };
     axios.post('https://backendlopify.vercel.app/register', payload)
         .then(response => {
-            notificationStore.setNotification(response.data.message)
+            if (currentLanguage) {
+                notificationStore.setNotification(currentLanguage.successsignup)
+            }
             notificationStore.setActive(true)
             setTimeout(() => {
                 notificationStore.setActive(false)
