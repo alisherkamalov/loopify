@@ -78,7 +78,7 @@ input {
 }
 .closebtn--active {
     display: block;
-    z-index: 2002;
+    z-index: 2003;
 }
 input.active {
     width: 99%;
@@ -86,7 +86,7 @@ input.active {
 
 div.active {
     width: 100%;
-    z-index: 2002;
+    z-index: 2003;
 }
 
 @media (max-width: 768px) {

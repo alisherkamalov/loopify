@@ -138,7 +138,7 @@ const addProductToCart = async (productId, currentLanguage) => {
 const closeInfoProduct = () => {
     const activeSearch = document.querySelector('.frame-openedsearch.active');
     if (activeSearch) {
-        activeSearch.style.zIndex = '2003';
+        activeSearch.style.zIndex = '2001';
     }
     focusStore.setActiveProduct(null)
     document.body.style.overflow = 'auto'
