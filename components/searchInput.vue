@@ -32,18 +32,6 @@ function handleInput(event) {
 function handleFocus() {
     focusStore.isFocused = true
 }
-function handleBackButton(event) {
-    focusStore.isFocused = false;
-    history.pushState(null, '', location.href);
-}
-onMounted(() => {
-  history.pushState(null, '', location.href);
-  window.addEventListener('popstate', handleBackButton);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('popstate', handleBackButton);
-});
 </script>
 
 <style scoped>
