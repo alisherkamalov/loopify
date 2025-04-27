@@ -357,6 +357,7 @@ span {
     min-height: 50dvh;
     border-radius: 35px;
     background-color: var(--bg-cont);
+    margin-bottom: 15px;
 }
 
 .avatar {
