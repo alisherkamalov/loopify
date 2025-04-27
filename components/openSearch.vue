@@ -30,7 +30,7 @@
                         </div>
                         <div v-if="focusStore.activeProduct != product" class="product-right">
                             <button class="btn-more">{{ currentLanguage.more }}</button>
-                            <button @click.stop="addProductToCart(product)" class="btn-incart">{{ currentLanguage.incart
+                            <button @click.stop="addProductToCart(product._id)" class="btn-incart">{{ currentLanguage.incart
                             }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
@@ -94,28 +94,39 @@ const isLoading = ref(false)
 const notificationStore = useNotiStore()
 const currentLanguage = computed(() => props.currentLanguage)
 const lastProductStore = useLastProductStore()
-const addProductToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem('cart')) || []
-    const existingProduct = cart.find(item => item.title === product.title)
-
-    if (existingProduct) {
-        notificationStore.setNotification(currentLanguage.value.alreadyInCart || 'This product is already in the cart')
-        notificationStore.setActive(true)
+const addProductToCart = async (productId) => {
+    const token = localStorage.getItem('token')
+    try {
+        const response = await axios.post(
+            'https://backendlopify.vercel.app/basket',
+            {
+                productId: productId,
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            }
+        );
+        notificationStore.setNotification(response.data.message || 'Товар добавлен в корзину');
+        notificationStore.setActive(true);
         setTimeout(() => {
-            notificationStore.setActive(false)
-        }, 3000)
-        return
+            notificationStore.setActive(false);
+        }, 3000);
+
+    } catch (error) {
+        if (error.response) {
+            notificationStore.setNotification(error.response.data.message || 'Ошибка при добавлении товара');
+        } else {
+            notificationStore.setNotification('Ошибка при отправке запроса');
+        }
+        notificationStore.setActive(true);
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
     }
+};
 
-    cart.push({ ...product, count: 1 })
-    localStorage.setItem('cart', JSON.stringify(cart))
-
-    notificationStore.setNotification(currentLanguage.value.addedtocart)
-    notificationStore.setActive(true)
-    setTimeout(() => {
-        notificationStore.setActive(false)
-    }, 3000)
-}
 
 const closeInfoProduct = () => {
     const activeSearch = document.querySelector('.frame-openedsearch.active');
