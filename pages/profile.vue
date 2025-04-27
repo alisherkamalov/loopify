@@ -1,4 +1,5 @@
 <template>
+    <Notification />
     <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back" @click="router.push('/')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
@@ -16,25 +17,41 @@
         </div>
         <div class="contentprofile">
             <span class="myorderstitle">{{ currentLanguage.myorders }}</span>
-            <div class="ordercont" v-for="(order, index) in orders" :key="index">
+            <v-progress-circular v-if="isLoading" indeterminate color="primary" size="70"
+                class="loading-indicator"></v-progress-circular>
+            <div class="ordercont" v-else v-for="(order, index) in orders" :key="index">
                 <div class="product-left">
                     <img :src="order.productId.photoUrl" :alt="order.productId.name" class="product-image" />
                     <div class="product-info">
                         <span class="product-name">
-                            {{ currentLanguage.devicetype[order.productId.deviceType] }} {{ order.productId.name
-                            }}
+                            {{ currentLanguage.devicetype[order.productId.deviceType] }} {{ order.productId.name }}
                         </span>
                         <span class="price">{{ order.productId.price }} ₸</span>
                     </div>
                 </div>
                 <div class="product-right">
-
-
+                    <span :style="getStatusStyle(order.status)">
+                        {{ order.status === 'pending' ? currentLanguage.pending : order.status === 'delivered' ?
+                            currentLanguage.delivered : '' }}
+                    </span>
+                    <button class="btn-delivered" v-if="order.status !== 'delivered'" @click="openMarkDelivered(order)">
+                        {{ currentLanguage.markisdelivered }}
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+    <div class="containerorder" v-if="currentLanguage" :class="{ active: isOpenMark }" @click="closeMarkDelivered">
+        <div class="makeorder" @click.stop="console.log('stopped')">
+            <span class="titleorder">{{ currentLanguage.isdelivered }}</span>
+            <span class="infotext">{{ currentLanguage.warningdelivered }}</span>
+            <button class="btn-order" @click.stop="closeMarkDelivered">{{ currentLanguage.closedelivered }}</button>
+            <button class="btn-order" @click.stop="markAsDelivered(selectedOrder._id, currentLanguage)">{{
+                currentLanguage.successdelivered }}</button>
+        </div>
+    </div>
 </template>
+
 <script setup>
 import { languages } from '../lib/languages'
 import { onMounted } from 'vue';
@@ -42,17 +59,25 @@ import { h } from 'vue';
 import axios from 'axios';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
+import Notification from '../components/thenotification.vue'
+import { useNotiStore } from '~/store/notificationStore';
 const username = ref('')
 const email = ref('')
+const notificationStore = useNotiStore()
 const router = useRouter()
+const isOpenMark = ref(false)
 const currentLanguage = ref(null)
 const orders = ref([])
+const isLoading = ref(true)
+const selectedOrder = ref(null)  // Новая переменная для хранения выбранного заказа
+
 onMounted(() => {
     if (localStorage != 'undefined') {
         username.value = localStorage.getItem('username')
         email.value = localStorage.getItem('useremail')
     }
 })
+
 onMounted(async () => {
     const langCode = localStorage.getItem('languageCode') || 'ru';
     currentLanguage.value = languages[langCode] || languages.ru;
@@ -64,9 +89,73 @@ onMounted(async () => {
             },
         }
     );
+    isLoading.value = false
     orders.value = response.data
 });
+
+const openMarkDelivered = (order) => {
+    selectedOrder.value = order;  // Сохраняем выбранный заказ
+    if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'hidden';
+    }
+    isOpenMark.value = true
+}
+
+const closeMarkDelivered = () => {
+    if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'auto';
+    }
+    isOpenMark.value = false
+}
+
+const markAsDelivered = async (orderId, currentLanguage) => {
+    try {
+        const response = await axios.put(
+            `https://backendlopify.vercel.app/orders/${orderId}/delivered`,
+            {},
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            }
+        );
+        if (response.status === 200) {
+            const updatedOrders = orders.value.map((order) => {
+                if (order._id === orderId) {
+                    order.status = 'delivered';
+                }
+                return order;
+            });
+            orders.value = updatedOrders;
+        }
+        closeMarkDelivered()
+        if (currentLanguage) {
+            notificationStore.setNotification(currentLanguage.successchangedstatus)
+        }
+        notificationStore.setActive(true)
+        setTimeout(() => {
+            notificationStore.setActive(false)
+        }, 3000);
+    } catch (error) {
+        notificationStore.setNotification('Ошибка при обновлении статуса')
+        notificationStore.setActive(true)
+        setTimeout(() => {
+            notificationStore.setActive(false)
+        }, 3000);
+    }
+};
+
+
+const getStatusStyle = (status) => {
+    if (status === 'pending') {
+        return { color: 'rgb(255, 176, 30)' };
+    } else if (status === 'delivered') {
+        return { color: 'green' };
+    }
+    return {};
+};
 </script>
+
 <style scoped>
 .containerprofile {
     width: 100%;
@@ -76,6 +165,75 @@ onMounted(async () => {
     align-items: center;
     overflow-x: hidden;
     background-color: var(--background);
+}
+
+.containerorder {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    pointer-events: none;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+    z-index: 9998;
+}
+
+.containerorder.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.loading-indicator {
+    margin: auto;
+}
+.input {
+    width: 100%;
+    max-height: 50px;
+}
+
+.btn-order {
+    width: 90%;
+    height: 50px;
+    border-radius: 50px;
+    border: 1px solid var(--foreground);
+    transition: all 0.3s ease;
+}
+
+.btn-order:hover {
+    background-color: var(--foreground);
+    color: var(--background);
+}
+
+.btn-order:active {
+    scale: 0.95;
+}
+
+.makeorder {
+    max-width: 450px;
+    width: 90%;
+    height: 300px;
+    padding: 25px;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    border-radius: 15px;
+    background-color: var(--background);
+
+}
+
+.titleorder {
+    font-size: 30px;
+    color: var(--foreground);
+}
+
+.infotext {
+    font-size: 15px;
 }
 
 .ordercont {
@@ -95,6 +253,7 @@ onMounted(async () => {
 
 .price {
     color: rgb(201, 201, 201);
+    text-align: start;
 }
 
 .product-image {
@@ -110,6 +269,24 @@ onMounted(async () => {
     margin-left: 10px;
 }
 
+span {
+    text-align: center;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.btn-delivered {
+    font-size: 12px;
+    border-radius: 15px;
+    padding: 5px;
+    border: 1px solid rgb(39, 151, 82);
+    transition: all 0.3s ease;
+}
+
+.btn-delivered:hover {
+    background-color: rgb(39, 151, 82);
+}
+
 .product-name {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -117,6 +294,7 @@ onMounted(async () => {
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
     overflow: hidden;
+    text-align: start;
     width: 90%;
 }
 
@@ -144,7 +322,7 @@ onMounted(async () => {
 }
 
 .myorderstitle {
-    font-size: 30px;
+    font-size: 20px;
     border-radius: 50px;
     width: fit-content;
     padding: 0px 12px;
@@ -215,6 +393,16 @@ onMounted(async () => {
 @media (max-width: 768px) {
     .avatar {
         transform: translateX(30%);
+    }
+}
+
+@media (max-width: 500px) {
+    span {
+        font-size: 12px;
+    }
+
+    .btn-delivered {
+        padding: 0px;
     }
 }
 </style>

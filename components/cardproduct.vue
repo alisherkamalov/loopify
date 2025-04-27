@@ -89,12 +89,15 @@ import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import { useNotiStore } from '~/store/notificationStore';
+import { useFocusStore } from '~/store/focusStore'
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
+
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
+const focusStore = useFocusStore()
 const savedScrollPosition = ref(0)
 const lastProductStore = useLastProductStore()
 const activeFrameIndex = ref(-1);
@@ -164,7 +167,7 @@ const closeProduct = async (index) => {
     if (typeof document !== 'undefined') {
         document.body.style.overflow = 'auto';
     }
-
+    focusStore.isFocused = false
     await nextTick();
 
     frameRefs.value[index]?.scrollIntoView({
@@ -289,7 +292,7 @@ onBeforeUnmount(() => {
     position: fixed;
     border-radius: 0px;
     translate: 0px -330px;
-    z-index: 2001;
+    z-index: 2003;
 }
 
 .cardproduct__img.active {
@@ -410,6 +413,7 @@ onBeforeUnmount(() => {
     position: relative;
     flex: 1 1 400px;
     border-radius: 50px;
+    z-index: 0;
     background-color: var(--background);
     transition: all 0.3s ease;
 }

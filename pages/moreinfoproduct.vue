@@ -174,6 +174,8 @@ onMounted(() => {
     display: flex;
     width: 90%;
     gap: 35px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .container.active {
     margin-top: 25px;

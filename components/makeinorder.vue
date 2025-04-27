@@ -2,7 +2,7 @@
     <div class="containerorder" v-if="currentLanguage" :class="{ active: makeorder.isOrder }"
         @click="makeorder.setOrder(false)">
         <div class="makeorder" @click.stop="console.log('stopped')">
-            <span class="titleorder">Оформление заказа</span>
+            <span class="titleorder">{{ currentLanguage.makeinorderr }}</span>
             <v-text-field v-model="city" class="input" clearable :label="currentLanguage.city"
                 variant="solo"></v-text-field>
             <v-text-field v-model="address" class="input" clearable :label="currentLanguage.streetandhouse"
@@ -24,7 +24,6 @@ const notificationStore = useNotiStore()
 const uselastproduct = useLastProductStore()
 const makeorder = useMakeOrder()
 const city = ref('')
-
 const address = ref('')
 const createOrder = async () => {
     const token = localStorage.getItem('token')

@@ -53,6 +53,7 @@ const fetchSlides = () => {
     slides.value = response.map(item => ({
       name: item.name,
       price: item.price,
+      _id: item._id,
       class: item.deviceType.toLowerCase(),
       photoUrl: item.photoUrl,
       videoUrl: item.videoUrl,
