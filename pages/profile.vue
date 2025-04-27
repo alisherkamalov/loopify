@@ -285,6 +285,7 @@ span {
 
 .btn-delivered:hover {
     background-color: rgb(39, 151, 82);
+    color: white;
 }
 
 .product-name {

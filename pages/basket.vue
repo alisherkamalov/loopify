@@ -74,19 +74,6 @@ const city = ref('');
 const isOpenOrder = ref(false);
 const address = ref('');
 
-const totalPrice = computed(() => {
-  return displayedProducts.value.reduce((sum, product) => {
-    const price = Number(product?.productId?.price);
-    return sum + (isNaN(price) ? 0 : price);
-  }, 0);
-});
-
-
-
-const formatPrice = (price) => {
-    if (typeof price !== 'number') return '0';
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-};
 
 const loadCartItems = async () => {
     try {
@@ -221,6 +208,7 @@ onMounted(() => {
 }
 .btn-pay:hover {
     background-color: rgb(39, 151, 82);
+    color: white;
 }
 .infotitle {
     display: flex;
