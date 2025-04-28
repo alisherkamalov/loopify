@@ -117,10 +117,14 @@ onMounted(() => {
                 token.value = null;
             })
             .finally(() => {
-                isLoading.value = false
+                setTimeout(() => {
+                    isLoading.value = false
+                }, 1000);
             })
     } else {
-        isLoading.value = false
+        setTimeout(() => {
+            isLoading.value = false
+        }, 2000);
     }
     axios.get('https://backendlopify.vercel.app/products', {
         headers: {

@@ -392,9 +392,12 @@ span {
     background-color: black;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 838px) {
     .avatar {
         transform: translateX(30%);
+    }
+    .infoacctext {
+        font-size: 15px;
     }
 }
 
@@ -402,7 +405,6 @@ span {
     span {
         font-size: 12px;
     }
-
     .btn-delivered {
         padding: 0px;
     }
