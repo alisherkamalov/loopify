@@ -65,6 +65,9 @@ import axios from 'axios'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
 import { useLastProductStore } from '~/store/lastProductStore'
+import { usePageStore } from '~/store/PagesRoutesStore'
+
+const store = usePageStore()
 const selectedDeviceType = ref(null)
 const props = defineProps({
     currentLanguage: {
@@ -146,15 +149,13 @@ const closeInfoProduct = () => {
 }
 
 const selectProduct = (product) => {
+    store.nextPage(2)
     if (focusStore.activeProduct === product) {
-        const activeSearch = document.querySelector('.frame-openedsearch.active');
-        if (activeSearch) {
-            activeSearch.style.zIndex = '2001';
-        }
+        store.prevPage()
         focusStore.setActiveProduct(null);
-        document.body.style.overflow = 'auto';
         lastProductStore.setLastProduct([]);
     } else {
+        store.nextPage(2)
         lastProductStore.setLastProduct(product);
         const activeSearch = document.querySelector('.frame-openedsearch.active');
         if (activeSearch) {

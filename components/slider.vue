@@ -11,7 +11,7 @@
         v-for="(page, index) in pages"
         :key="index"
         class="slider-page"
-        :class="slideClass"
+        :class="getSlideClass(index)"
         :style="{ width: `${width}px` }"
       >
         <slot :name="`page-${index}`" />
@@ -33,36 +33,38 @@ const containerRef = ref(null)
 const { width: containerWidth } = useElementBounding(containerRef)
 const width = computed(() => containerWidth.value || 0)
 
-const pages = computed(() => ['page-0', 'page-1', 'page-2'])
+const pages = computed(() => ['page-0', 'page-1', 'page-2']) // или динамически
 const totalPages = computed(() => pages.value.length)
 
-const isStep1 = ref(false) 
-const isStep2 = ref(false) 
-const isStep3 = ref(false) 
-
-const slideClass = computed(() => {
-  return {
-    'step-1': isStep1.value,
-    'step-2': isStep2.value,
-    'step-3': isStep3.value,
-  }
-})
+// Глобальные шаги анимации применяются ко всем слайдам
+const globalStep = ref('') // '', 'step-1', 'step-2', 'step-3'
 
 watch(currentPage, () => {
-  isStep1.value = true
-  isStep2.value = false
-  isStep3.value = false
+  globalStep.value = 'step-1'
 
   setTimeout(() => {
-    isStep1.value = false
-    isStep2.value = true
+    globalStep.value = 'step-2'
   }, 300)
 
   setTimeout(() => {
-    isStep2.value = false
-    isStep3.value = true
-  }, 500)
+    globalStep.value = 'step-3'
+  }, 600)
 })
+
+// Классы для каждого слайда
+const getSlideClass = (index) => {
+  const classes = []
+
+  if (globalStep.value) {
+    classes.push(globalStep.value)
+  }
+
+  if (store.softenedSlides.has(index)) {
+    classes.push('softened')
+  }
+
+  return classes
+}
 </script>
 
 <style scoped>
@@ -85,6 +87,7 @@ watch(currentPage, () => {
   overflow-x: hidden;
 }
 
+/* Шаги применяются ко всем */
 .slider-page.step-1 {
   transform: scale(0.8);
   border-radius: 50px;
@@ -98,5 +101,11 @@ watch(currentPage, () => {
 .slider-page.step-3 {
   transform: scale(1);
   border-radius: 0;
+}
+
+/* softened — только к активному вручную */
+.slider-page.softened {
+  transform: scale(0.9);
+  border-radius: 50px;
 }
 </style>

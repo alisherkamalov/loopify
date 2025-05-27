@@ -1,9 +1,9 @@
 <template>
     <Notification />
-    <Makeinorder :currentLanguage="currentLanguage"/>
+    <Makeinorder :currentLanguage="currentLanguage" />
     <div class="container" v-if="currentLanguage" :class="{ active: lastProductStore.isSlider }">
-        <a-tooltip class="btnclose" title="close" @click="router.push('/')" :class="{ active: lastProductStore.isSlider }">
-            <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
+        <a-tooltip v-if="currentLanguage" class="btnclose" :title="currentLanguage.back">
+            <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(CloseOutlined)" />
         </a-tooltip>
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
             :pagination="true" :key="`swiper-${lastProduct.name}`">
@@ -42,9 +42,11 @@
                 <p class="cardproduct__price">{{ lastProduct.price }} ₸</p>
             </div>
             <div class="bottom">
-                <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{ currentLanguage.makeinorder
+                <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{
+                    currentLanguage.makeinorder
                     }}</button>
-                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id, currentLanguage)">
+                <button class="cardproduct__btn incart"
+                    @click.stop="addProductToCart(lastProduct._id, currentLanguage)">
                     {{ currentLanguage.incart }}
                 </button>
             </div>
@@ -68,6 +70,9 @@ import { useNotiStore } from '~/store/notificationStore';
 import { languages } from '~/lib/languages';
 import { useRouter } from 'vue-router';
 import { useMakeOrder } from '~/store/MakeOrderStore'
+import { usePageStore } from '~/store/PagesRoutesStore'
+
+const store = usePageStore()
 const makeorder = useMakeOrder()
 const lastProductStore = useLastProductStore();
 const lastProduct = computed(() => lastProductStore.lastproduct);
@@ -76,6 +81,9 @@ const videoStates = ref({});
 const router = useRouter()
 const notificationStore = useNotiStore()
 const videoRefs = ref({});
+const closeProduct = () => {
+    store.prevPage()
+};
 const addProductToCart = async (productId, currentLanguage) => {
     const token = localStorage.getItem('token')
     try {
@@ -181,19 +189,23 @@ onMounted(() => {
     margin-left: auto;
     margin-right: auto;
 }
+
 .container.active {
     margin-top: 25px;
 }
+
 .bottom {
     margin-top: 45px;
 }
+
 .btnclose {
-    display: none;
     position: absolute;
     left: 10px;
     top: 10px;
+    z-index: 10;
     background-color: var(--background);
 }
+
 .btnclose.active {
     display: block;
 }

@@ -73,11 +73,6 @@
                 </div>
             </template>
         </Slider>
-        <div class="flex justify-center gap-4 mt-4">
-            анимации BETA
-            <button @click="prev">← Назад</button>
-            <button @click="next">Вперёд →</button>
-        </div>
 
         <!-- Если нет токена или данных, показываем страницу для входа -->
         <!-- <div v-else> -->
@@ -100,12 +95,6 @@ import axios, { all } from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
 import Slider from '~/components/slider.vue';
-import { usePageStore } from '~/store/PagesRoutesStore'
-
-const store = usePageStore()
-
-const next = () => store.nextPage(2)
-const prev = () => store.prevPage()
 const focusStore = useFocusStore()
 const token = ref(null)
 const lastProductStore = useLastProductStore()

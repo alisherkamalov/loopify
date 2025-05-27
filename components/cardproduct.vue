@@ -2,8 +2,8 @@
     <div class="cardproducts">
         <div class="centercard">
             <div v-for="(product, index) in allproductstore.products" :key="product.title" class="frame-cardproduct"
-                :ref="el => frameRefs[index] = el" :class="{ active: activeFrameIndex === index }">
-                <div class="cardproduct" :class="{ active: activeFrameIndex === index }">
+                :ref="el => frameRefs[index] = el">
+                <div class="cardproduct">
                     <a-tooltip class="btnclose" title="close" @click.stop="closeProduct(activeFrameIndex)"
                         :class="{ active: activeFrameIndex === index }">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
@@ -52,7 +52,7 @@
                                 <p class="cardproduct__price">{{ product.price }} ₸</p>
                             </div>
                             <div class="bottom">
-                                <button class="cardproduct__btn more" @click.stop="openProduct(index)"
+                                <button class="cardproduct__btn more" @click.stop="openProduct()"
                                     :class="{ active: activeFrameIndex === index }">{{ currentLanguage.more
                                     }}</button>
                                 <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
@@ -62,12 +62,6 @@
 
                             </div>
                         </div>
-                    </div>
-                    <div v-else class="more-info">
-                        <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back">
-                            <a-button @click.stop="closeProduct(activeFrameIndex)" color="black" shape="circle" :icon="h(CloseOutlined)" />
-                        </a-tooltip>
-                        <Moreinfoproduct />
                     </div>
 
                 </div>
@@ -92,15 +86,16 @@ import { useFocusStore } from '~/store/focusStore'
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
+import { usePageStore } from '~/store/PagesRoutesStore'
+
+const store = usePageStore()
+
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const focusStore = useFocusStore()
-const savedScrollPosition = ref(0)
-const lastProductStore = useLastProductStore()
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
-const originalPositions = ref({});
 const allproductstore = useAllProductStore()
 const addProductToCart = async (productId, currentLanguage) => {
     const token = localStorage.getItem('token')
@@ -142,23 +137,8 @@ const addProductToCart = async (productId, currentLanguage) => {
         }, 3000);
     }
 };
-const openProduct = (index) => {
-    if (activeFrameIndex.value !== -1) {
-        closeProduct(activeFrameIndex.value);
-    }
-    activeFrameIndex.value = index;
-    focusStore.setFocus(true);
-    savedScrollPosition.value = window.scrollY;
-    originalPositions.value[index] = frameRefs.value[index].getBoundingClientRect();
-    document.body.style.overflow = 'hidden';
-};
-const closeProduct = (index) => {
-    if (activeFrameIndex.value === index) {
-        activeFrameIndex.value = -1;
-        focusStore.setFocus(false);
-        document.body.style.overflow = '';
-        window.scrollTo(0, savedScrollPosition.value);
-    }
+const openProduct = () => {
+    store.nextPage(2)
 };
 
 const initVideo = (el, index) => {
