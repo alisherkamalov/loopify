@@ -3,7 +3,7 @@
     <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back" @click="router.push('/')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
-    <div class="containerprofile" v-if="currentLanguage">
+    <div class="containerprofile" v-if="currentLanguage" :class="{ active: isAuth }">
         <div class="header">
             <div class="content">
                 <div class="avatar">
@@ -21,7 +21,8 @@
                 class="loading-indicator"></v-progress-circular>
             <div class="ordercont" v-else v-for="(order, index) in orders" :key="index">
                 <div class="product-left">
-                    <img :src="order.productId.photoUrl" loading="lazy" :alt="order.productId.name" class="product-image" />
+                    <img :src="order.productId.photoUrl" loading="lazy" :alt="order.productId.name"
+                        class="product-image" />
                     <div class="product-info">
                         <span class="product-name">
                             {{ currentLanguage.devicetype[order.productId.deviceType] }} {{ order.productId.name }}
@@ -67,12 +68,18 @@ const notificationStore = useNotiStore()
 const router = useRouter()
 const isOpenMark = ref(false)
 const currentLanguage = ref(null)
+const isAuth = ref(false);
 const orders = ref([])
 const isLoading = ref(true)
 const selectedOrder = ref(null)  // Новая переменная для хранения выбранного заказа
 
 onMounted(() => {
     if (localStorage != 'undefined') {
+        if (localStorage.getItem('token') === null) {
+            router.push('/signin')
+            return
+        }
+        isAuth.value = true
         username.value = localStorage.getItem('username')
         email.value = localStorage.getItem('useremail')
     }
@@ -165,8 +172,14 @@ const getStatusStyle = (status) => {
     align-items: center;
     overflow-x: hidden;
     background-color: var(--background);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
 }
-
+.containerprofile.active {
+    opacity: 1;
+    pointer-events: all;
+}
 .containerorder {
     width: 100%;
     height: 100dvh;
@@ -187,9 +200,11 @@ const getStatusStyle = (status) => {
     opacity: 1;
     pointer-events: all;
 }
+
 .loading-indicator {
     margin: auto;
 }
+
 .input {
     width: 100%;
     max-height: 50px;
@@ -396,6 +411,7 @@ span {
     .avatar {
         transform: translateX(30%);
     }
+
     .infoacctext {
         font-size: 15px;
     }
@@ -405,6 +421,7 @@ span {
     span {
         font-size: 12px;
     }
+
     .btn-delivered {
         padding: 0px;
     }

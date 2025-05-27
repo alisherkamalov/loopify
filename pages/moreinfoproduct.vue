@@ -175,13 +175,17 @@ onMounted(() => {
 
 .container {
     display: flex;
-    width: 90%;
+    width: 100%;
+    height: 100dvh;
     gap: 35px;
     margin-left: auto;
     margin-right: auto;
 }
 .container.active {
     margin-top: 25px;
+}
+.bottom {
+    margin-top: 45px;
 }
 .btnclose {
     display: none;
@@ -319,8 +323,6 @@ onMounted(() => {
 }
 
 .cardproduct__media {
-    width: 400px;
-    height: 400px;
     display: flex;
     margin-left: 40px;
     margin-right: 30px;
@@ -358,6 +360,7 @@ onMounted(() => {
     font-size: 1.2rem;
     font-weight: bold;
     white-space: wrap;
+    min-width: 144px;
 }
 
 .cardproduct__price {

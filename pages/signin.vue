@@ -1,9 +1,9 @@
 <template>
     <Notification />
-    <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back" @click="router.push('/')">
+    <a-tooltip v-if="currentLanguage" class="closesignin" :title="currentLanguage.back" @click="router.push('/')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
-    <div class="container">
+    <div class="containersignin">
         <span class="title">
             <span class="textlogo">LOOPIFY</span>
         </span>
@@ -12,7 +12,7 @@
             <v-text-field v-model="password" class="input" clearable :label="currentLanguage.password" variant="solo"></v-text-field>
             <button class="btnsign" @click="authorization(currentLanguage)">{{ currentLanguage.signin }}</button>
         </div>
-        <button v-if="currentLanguage" class="btnsignup" @click="router.push('/signup')">{{ currentLanguage.signup }}</button>
+        <div class="signupbtn" v-if="currentLanguage" @click="router.push('/signup')">{{ currentLanguage.notaccount }}</div>
     </div>
 </template>
 <script setup>
@@ -77,10 +77,18 @@ onMounted(() => {
 });
 </script>
 <style scoped>
+@keyframes opacityanimate {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 main {
     background-color: var(--background);
 }
-.container {
+.containersignin {
     background-color: var(--background);
     display: flex;
     align-items: center;
@@ -88,8 +96,12 @@ main {
     width: 100%;
     gap: 15px;
 }
-.close {
-    margin: 15px;
+.closesignin {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    z-index: 99;
+    animation: opacityanimate 2s ease forwards;
     background-color: var(--background);
 }
 .input {
@@ -112,13 +124,12 @@ main {
     background-color: var(--foreground);
     color: var(--background);
 }
-.btnsignup {
-    border-radius: 50px;
-    padding: 12px;
-    background-color: var(--background);
-    border: 1px solid var(--border-color);
+.signupbtn {
     color: var(--foreground);
-    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration-line: underline;
+    text-decoration-color: var(--foreground);
+    text-decoration-thickness: 2px;
 }
 .btnsignup:hover {
     background-color: var(--foreground);

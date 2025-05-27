@@ -2,7 +2,7 @@
     <div class="cardproducts">
         <div class="centercard">
             <div v-for="(product, index) in allproductstore.products" :key="product.title" class="frame-cardproduct"
-                :class="{ active: activeFrameIndex === index }" :ref="el => frameRefs[index] = el">
+                :ref="el => frameRefs[index] = el" :class="{ active: activeFrameIndex === index }">
                 <div class="cardproduct" :class="{ active: activeFrameIndex === index }">
                     <a-tooltip class="btnclose" title="close" @click.stop="closeProduct(activeFrameIndex)"
                         :class="{ active: activeFrameIndex === index }">
@@ -64,9 +64,8 @@
                         </div>
                     </div>
                     <div v-else class="more-info">
-                        <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back"
-                            @click.stop="closeProduct(activeFrameIndex)">
-                            <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
+                        <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back">
+                            <a-button @click.stop="closeProduct(activeFrameIndex)" color="black" shape="circle" :icon="h(CloseOutlined)" />
                         </a-tooltip>
                         <Moreinfoproduct />
                     </div>
@@ -93,7 +92,6 @@ import { useFocusStore } from '~/store/focusStore'
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
-
 const notificationStore = useNotiStore()
 const videoStates = ref({});
 const videoRefs = ref({});
@@ -102,6 +100,7 @@ const savedScrollPosition = ref(0)
 const lastProductStore = useLastProductStore()
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
+const originalPositions = ref({});
 const allproductstore = useAllProductStore()
 const addProductToCart = async (productId, currentLanguage) => {
     const token = localStorage.getItem('token')
@@ -143,48 +142,23 @@ const addProductToCart = async (productId, currentLanguage) => {
         }, 3000);
     }
 };
-
-
-
-const openProduct = async (index) => {
-    const product = allproductstore.products[index];
-
-    if (activeFrameIndex.value === index) {
-        await closeProduct(index);
-    } else {
-        activeFrameIndex.value = index;
-        savedScrollPosition.value = window.scrollY;
-        window.scrollTo({ top: 0, behavior: 'auto' });
-
-        lastProductStore.setLastProduct(product);
-
-        if (typeof document !== 'undefined') {
-            document.body.style.overflow = 'hidden';
-        }
+const openProduct = (index) => {
+    if (activeFrameIndex.value !== -1) {
+        closeProduct(activeFrameIndex.value);
     }
+    activeFrameIndex.value = index;
+    focusStore.setFocus(true);
+    savedScrollPosition.value = window.scrollY;
+    originalPositions.value[index] = frameRefs.value[index].getBoundingClientRect();
+    document.body.style.overflow = 'hidden';
 };
-
-
-const closeProduct = async (index) => {
-    activeFrameIndex.value = -1;
-    if (typeof document !== 'undefined') {
-        document.body.style.overflow = 'auto';
+const closeProduct = (index) => {
+    if (activeFrameIndex.value === index) {
+        activeFrameIndex.value = -1;
+        focusStore.setFocus(false);
+        document.body.style.overflow = '';
+        window.scrollTo(0, savedScrollPosition.value);
     }
-    focusStore.isFocused = false
-    await nextTick();
-
-    frameRefs.value[index]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-    });
-
-    window.scrollTo({
-        top: savedScrollPosition.value,
-        behavior: 'auto'
-    });
-    setTimeout(() => {
-        lastProductStore.setLastProduct([]);
-    }, 500);
 };
 
 const initVideo = (el, index) => {
@@ -259,14 +233,17 @@ onBeforeUnmount(() => {
 .cardproduct__btn.more.active {
     display: none;
 }
-
+.cardproduct.active {
+    max-width: 100%;
+    max-height: 100dvh;
+}
 .btnclose {
     display: none;
     background-color: var(--background);
 }
 
 .more-info {
-    width: 100%;
+    width: 100% !important;
     display: flex;
     padding-top: 20px;
     justify-content: center;
@@ -292,14 +269,17 @@ onBeforeUnmount(() => {
 }
 
 .frame-cardproduct.active {
-    max-width: 100%;
-    max-height: 100dvh;
     position: fixed;
-    border-radius: 0px;
-    translate: 0px -330px;
     z-index: 2003;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
 }
-
 .cardproduct__img.active {
     translate: 0px -50%;
 }
@@ -315,14 +295,6 @@ onBeforeUnmount(() => {
     justify-content: start;
     flex-direction: column;
     margin-left: 35px;
-}
-
-.cardproduct.active {
-    max-width: 100% !important;
-    border-radius: 0;
-    align-items: start;
-    max-height: 100dvh;
-    z-index: 3000;
 }
 
 .video-control.visible .iconstop {
@@ -415,18 +387,20 @@ onBeforeUnmount(() => {
     max-width: 400px;
     max-height: 300px;
     height: 100dvh;
-    position: relative;
     flex: 1 1 400px;
     border-radius: 50px;
     z-index: 0;
+    margin-right: 25px;
     background-color: var(--background);
-    transition: all 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top left;
 }
 
 .mini-info {
     display: flex;
     width: 100%;
     height: 100%;
+    background-color: var(--background);
     max-width: 380px;
     max-height: 300px;
     align-items: center;
@@ -448,11 +422,11 @@ onBeforeUnmount(() => {
     border-radius: 50px;
     background-color: var(--background);
     display: flex;
-    transition: all 0.3s ease;
     overflow: hidden;
     padding: 10px;
     position: absolute;
     box-sizing: border-box;
+    transition: none;
 }
 
 .cardproduct__media {
@@ -495,6 +469,7 @@ onBeforeUnmount(() => {
     font-size: 1.2rem;
     font-weight: bold;
     white-space: wrap;
+    min-width: 144px;
 }
 
 .cardproduct__price {
@@ -519,10 +494,6 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 1294px) {
-    .frame-cardproduct {
-        max-width: 350px;
-        flex: 1 1 350px;
-    }
 
     .cardproduct__content {
         height: 250px;
@@ -554,10 +525,6 @@ onBeforeUnmount(() => {
         flex: 1 1 350px;
     }
 
-    .frame-cardproduct.active {
-        translate: 0px -330px;
-    }
-
     .cardproduct__title {
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -582,10 +549,6 @@ onBeforeUnmount(() => {
         flex: 1 1 350px;
     }
 
-    .frame-cardproduct.active {
-        translate: 0px -280px;
-    }
-
     .cardproduct__content {
         height: 250px;
     }
@@ -599,15 +562,15 @@ onBeforeUnmount(() => {
     .cardproduct__img.active {
         translate: 0px -50%;
     }
-
     .cardproduct__media.active {
         width: 70%;
         height: 400px;
     }
-
+    .frame-cardproduct {
+        margin-right: 0;
+    }
     .cardproduct.active {
         max-width: 100% !important;
-        border-radius: 0;
         max-height: 100dvh;
         flex-direction: column;
     }
@@ -633,10 +596,6 @@ onBeforeUnmount(() => {
 
     .cardproduct__btn.incart.active {
         padding: 12px;
-    }
-
-    .frame-cardproduct.active {
-        translate: 0px -280px;
     }
 
     .cardproduct__content {

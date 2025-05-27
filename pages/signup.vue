@@ -3,7 +3,7 @@
     <a-tooltip class="close" title="назад" @click="router.push('/signin')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
-    <div class="container">
+    <div class="containersignup">
         <span class="title">
             <span class="textlogo">LOOPIFY</span>
         </span>
@@ -16,8 +16,7 @@
                 variant="solo"></v-text-field>
             <button class="btnsignup" @click="registration(currentLanguage)">{{ currentLanguage.signup }}</button>
         </div>
-        <button v-if="currentLanguage" class="btnsignin" @click="router.push('/signin')">{{ currentLanguage.signin
-            }}</button>
+        <div class="signinbtn" v-if="currentLanguage" @click="router.push('/signin')">{{ currentLanguage.haveaccount }}</div>
     </div>
 </template>
 <script setup>
@@ -86,7 +85,7 @@ main {
     background-color: var(--background);
 }
 
-.container {
+.containersignup {
     background-color: var(--background);
     display: flex;
     align-items: center;
@@ -120,16 +119,13 @@ main {
     background-color: var(--foreground);
     color: var(--background);
 }
-
-.btnsignin {
-    border-radius: 50px;
-    padding: 12px;
-    background-color: var(--background);
-    border: 1px solid var(--border-color);
+.signinbtn {
     color: var(--foreground);
-    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration-line: underline;
+    text-decoration-color: var(--foreground);
+    text-decoration-thickness: 2px;
 }
-
 .btnsignin:hover {
     background-color: var(--foreground);
     color: var(--background);

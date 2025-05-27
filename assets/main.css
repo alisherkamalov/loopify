@@ -17,6 +17,23 @@
     font-weight: normal;
     font-style: normal;
   }
+@keyframes opacityanimate {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.container {
+    background-color: var(--background);
+}
+.isauth, .containersignin, .containersignup {
+    animation: opacityanimate 1s ease forwards;
+}
+.loading {
+    animation: opacityanimate 1s ease;
+}
 html {
     overflow: hidden; 
   }
@@ -64,6 +81,7 @@ textarea:focus, input:focus, button:focus {
 }
 .close {
     background-color: var(--background);
+    transition: all 1s ease !important;
 }
 :root {
     --background: #ffffff;
