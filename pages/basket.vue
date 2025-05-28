@@ -1,16 +1,16 @@
 <template>
     <Notification />
-    <div class="container" v-if="currentLanguage">
+    <div class="container">
         <div class="header">
-            <a-tooltip v-if="currentLanguage" class="btnclose" :title="currentLanguage.back" @click="router.push('/')">
+            <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back" @click="router.push('/')">
                 <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
             </a-tooltip>
             <div class="infotitle">
-                <span class="title">{{ currentLanguage.mycart }}</span>
+                <span class="title">{{ languageStore.currentLanguage.mycart }}</span>
             </div>
             <div v-if="displayedProducts.length > 0" class="pay-button-container">
                 <button class="btn-pay" @click="isOpenOrder = true">
-                    {{ currentLanguage.payallitems }}
+                    {{ languageStore.currentLanguage.payallitems }}
                 </button>
             </div>
         </div>
@@ -24,31 +24,31 @@
                     <img :src="product.productId.photoUrl" loading="lazy" :alt="product.productId.name" class="product-image" />
                     <div class="product-info">
                         <span class="product-name">
-                            {{ currentLanguage.devicetype[product.productId.deviceType] }} {{ product.productId.name
+                            {{ languageStore.currentLanguage.devicetype[product.productId.deviceType] }} {{ product.productId.name
                             }}
                         </span>
                         <span class="price">{{ product.productId.price }} ₸</span>
                     </div>
                 </div>
                 <div class="product-right">
-                    <button @click.stop="removeProductFromCart(product.productId._id, currentLanguage)" class="btn-remove">
-                        {{ currentLanguage.delete }}
+                    <button @click.stop="removeProductFromCart(product.productId._id)" class="btn-remove">
+                        {{ languageStore.currentLanguage.delete }}
                     </button>
                 </div>
             </div>
         </div>
         <!-- Если корзина пуста -->
         <div v-else class="empty-cart">
-            {{ currentLanguage.emptycart }}
+            {{ languageStore.currentLanguage.emptycart }}
         </div>
         <div class="containerorder" :class="{ active: isOpenOrder }" @click="isOpenOrder = false">
             <div class="makeorder" @click.stop="console.log('stopped')">
-                <span class="titleorder">{{ currentLanguage.makeinorderr }}</span>
-                <v-text-field v-model="city" class="input" clearable :label="currentLanguage.city"
+                <span class="titleorder">{{ languageStore.currentLanguage.makeinorderr }}</span>
+                <v-text-field v-model="city" class="input" clearable :label="languageStore.currentLanguage.city"
                     variant="solo"></v-text-field>
-                <v-text-field v-model="address" class="input" clearable :label="currentLanguage.streetandhouse"
+                <v-text-field v-model="address" class="input" clearable :label="languageStore.currentLanguage.streetandhouse"
                     variant="solo"></v-text-field>
-                <button class="btn-order" @click.stop="payForProducts(currentLanguage)">{{ currentLanguage.makeinorder }}</button>
+                <button class="btn-order" @click.stop="payForProducts()">{{ languageStore.currentLanguage.makeinorder }}</button>
             </div>
         </div>
     </div>
@@ -60,14 +60,14 @@ import { useRouter } from 'vue-router';
 import { h } from 'vue';
 import { VProgressCircular } from 'vuetify/components';
 import { CloseOutlined } from '@ant-design/icons-vue';
-import { languages } from '~/lib/languages';
+import { useLanguageStore } from '~/store/languagesStore';
 import axios from 'axios';
 import Notification from '../components/thenotification.vue'
 import { useNotiStore } from '~/store/notificationStore';
 
-const currentLanguage = ref(null);
 const notificationStore = useNotiStore();
 const router = useRouter();
+const languageStore = useLanguageStore();
 const displayedProducts = ref([]);
 const isLoading = ref(true);
 const city = ref('');
@@ -91,13 +91,11 @@ const loadCartItems = async () => {
     isLoading.value = false;
 };
 
-const payForProducts = async (currentLanguage) => {
+const payForProducts = async () => {
     try {
         const token = localStorage.getItem('token')
         if (displayedProducts.value.length === 0) {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.basketempty);
-            }
+            notificationStore.setNotification(languageStore.currentLanguage.basketempty);
             notificationStore.setActive(true);
             setTimeout(() => notificationStore.setActive(false), 3000);
             return;
@@ -135,22 +133,18 @@ const payForProducts = async (currentLanguage) => {
         city.value = '';
         address.value = '';
         displayedProducts.value = [];
-        if (currentLanguage) {
-            notificationStore.setNotification(currentLanguage.successpaybasket);
-        }
+        notificationStore.setNotification(languageStore.currentLanguage.successpaybasket);
         notificationStore.setActive(true);
         setTimeout(() => notificationStore.setActive(false), 3000);
 
     } catch (error) {
-        if (currentLanguage) {
-            notificationStore.setNotification(currentLanguage.errorpayproductbasket);
-        }
+        notificationStore.setNotification(languageStore.currentLanguage.errorpayproductbasket);
         notificationStore.setActive(true);
         setTimeout(() => notificationStore.setActive(false), 3000);
     }
 };
 
-const removeProductFromCart = async (productIdToDelete, currentLanguage) => {
+const removeProductFromCart = async (productIdToDelete) => {
     try {
         await axios.delete(`https://backendlopify.vercel.app/basket/${productIdToDelete}`, {
             headers: {
@@ -158,9 +152,7 @@ const removeProductFromCart = async (productIdToDelete, currentLanguage) => {
             }
         });
         displayedProducts.value = displayedProducts.value.filter(product => product.productId._id !== productIdToDelete);
-        if (currentLanguage) {
-            notificationStore.setNotification(currentLanguage.deleteproductbasket);
-        }
+        notificationStore.setNotification(languageStore.currentLanguage.deleteproductbasket);
         notificationStore.setActive(true);
         setTimeout(() => notificationStore.setActive(false), 3000);
     } catch (error) {
@@ -169,8 +161,6 @@ const removeProductFromCart = async (productIdToDelete, currentLanguage) => {
 };
 
 onMounted(() => {
-    const langCode = localStorage.getItem('languageCode') || 'ru';
-    currentLanguage.value = languages[langCode] || languages.ru;
     loadCartItems();
 });
 </script>

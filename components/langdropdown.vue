@@ -1,7 +1,7 @@
 <template>
     <div class="dropdown" :class="{ active: languageActive }" @click.stop="OpenCloseLanguage" :style="dropdownStyle">
         <span class="selected-language" :class="{ active: languageActive }">
-            <img :src="`/` + displayIcon" alt="lang" class="flag-icon" />
+            <img :src="`/` + currentVariant.icon" alt="lang" class="flag-icon" />
         </span>
         <div class="dropdown-content" :class="{ active: languageActive }">
             <div v-for="(variant, index) in variants" :key="index" class="dropdown-item"
@@ -13,79 +13,72 @@
     </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useLanguageStore } from '~/store/languagesStore'
 
-const emit = defineEmits(['language-changed'])
-const width = ref(window.innerWidth)
+const languageStore = useLanguageStore()
+const languageActive = ref(false)
+const width = ref(0) // Начальное значение для SSR
 
 const props = defineProps({
-    language: {
-        type: String,
-        default: 'ru.png'
-    },
     variants: {
         type: Array,
         default: () => [
-            { text: '', code: '', icon: '' },
+            { text: 'Русский', code: 'ru', icon: 'ru.png' },
+            { text: 'Казахский', code: 'kz', icon: 'kz.png' }
         ]
     }
 })
 
-const languageActive = ref(false)
-const selectedLanguage = ref(null)
-
-const displayIcon = computed(() => {
-    if (selectedLanguage.value) {
-        return selectedLanguage.value.icon
-    }
-    return props.language
+// Получаем текущий вариант языка из хранилища
+const currentVariant = computed(() => {
+    return props.variants.find(v => v.code === languageStore.languageCode) || props.variants[0]
 })
 
+// Стили для позиционирования (работает только на клиенте)
 const dropdownStyle = computed(() => {
-    const code = selectedLanguage.value?.code || localStorage.getItem('languageCode') || 'ru'
-
+    if (width.value === 0) return {} // Не применяем стили во время SSR
+    
+    const code = languageStore.languageCode
     if (width.value >= 769) {
-        if (code === 'kz') {
-            return { left: '165px' }
-        } else if (code === 'ru') {
-            return { left: '185px' }
-        }
+        if (code === 'kz') return { left: '165px' }
+        if (code === 'ru') return { left: '185px' }
     }
     return {}
 })
 
+// Обработчик изменения размера окна
 const handleResize = () => {
-    width.value = window.innerWidth
+    if (typeof window !== 'undefined') {
+        width.value = window.innerWidth
+    }
 }
 
 onMounted(() => {
-    const savedLang = localStorage.getItem('selectedLanguage')
-    const savedCode = localStorage.getItem('languageCode')
-    if (savedLang && savedCode) {
-        const matched = props.variants.find(v => v.code === savedCode)
-        if (matched) {
-            selectedLanguage.value = matched
-        }
-    } 
-    window.addEventListener('resize', handleResize)
+    // Инициализируем только на клиенте
+    if (typeof window !== 'undefined') {
+        width.value = window.innerWidth
+        window.addEventListener('resize', handleResize)
+    }
 })
+
 onBeforeUnmount(() => {
-    window.removeEventListener('resize', handleResize)
+    // Убираем обработчик только на клиенте
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+    }
 })
 
-
+// Переключение видимости меню
 const OpenCloseLanguage = () => {
     languageActive.value = !languageActive.value
 }
 
+// Выбор языка
 const selectVariant = (variant) => {
-    selectedLanguage.value = variant
-    localStorage.setItem('selectedLanguage', variant.text)
-    localStorage.setItem('languageCode', variant.code)
+    languageStore.setLanguage(variant.code)
     languageActive.value = false
-    emit('language-changed', variant.code)
 }
 </script>
 

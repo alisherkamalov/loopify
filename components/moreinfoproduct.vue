@@ -1,8 +1,8 @@
 <template>
     <Notification />
-    <Makeinorder :currentLanguage="currentLanguage" />
-    <div class="container" v-if="currentLanguage" :class="{ active: lastProductStore.isSlider }">
-        <a-tooltip v-if="currentLanguage" class="btnclose" :title="currentLanguage.back">
+    <Makeinorder />
+    <div class="container" :class="{ active: lastProductStore.isSlider }">
+        <a-tooltip class="btnclose" :title="currentLanguage.back">
             <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(CloseOutlined)" />
         </a-tooltip>
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
@@ -67,8 +67,6 @@ import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import axios from 'axios'
 import { useNotiStore } from '~/store/notificationStore';
-import { languages } from '~/lib/languages';
-import { useRouter } from 'vue-router';
 import { useMakeOrder } from '~/store/MakeOrderStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 
@@ -76,16 +74,28 @@ const store = usePageStore()
 const makeorder = useMakeOrder()
 const lastProductStore = useLastProductStore();
 const lastProduct = computed(() => lastProductStore.lastproduct);
-const currentLanguage = ref(null)
+import { useLanguageStore } from '~/store/languagesStore'
+const languageStore = useLanguageStore()
+const currentLanguage = computed(() => languageStore.currentLanguage)
 const videoStates = ref({});
-const router = useRouter()
 const notificationStore = useNotiStore()
 const videoRefs = ref({});
 const closeProduct = () => {
     store.prevPage()
+    setTimeout(() => {
+        lastProductStore.setLastProduct([]);
+    }, 500);
 };
-const addProductToCart = async (productId, currentLanguage) => {
+const addProductToCart = async (productId) => {
     const token = localStorage.getItem('token')
+    if (!token) {
+        notificationStore.setNotification(currentLanguage.authonwebsite);
+        notificationStore.setActive(true);
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
+        return;
+    }
     try {
         const response = await axios.post(
             'https://backendlopify.vercel.app/basket',
@@ -98,9 +108,7 @@ const addProductToCart = async (productId, currentLanguage) => {
                 },
             }
         );
-        if (currentLanguage) {
-            notificationStore.setNotification(currentLanguage.productaddedcart);
-        }
+        notificationStore.setNotification(currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         console.log(response.data.message || 'Товар добавлен в корзину');
         setTimeout(() => {
@@ -110,13 +118,9 @@ const addProductToCart = async (productId, currentLanguage) => {
     } catch (error) {
         // Ошибка при добавлении товара в корзину
         if (error.response) {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.errorproductaddedcart);
-            }
+            notificationStore.setNotification(currentLanguage.errorproductaddedcart);
         } else {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.errorfetch);
-            }
+            notificationStore.setNotification(currentLanguage.errorfetch);
         }
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -166,14 +170,6 @@ const toggleVideo = (index) => {
 
     videoStates.value[index] = newState;
 };
-const openProduct = (index) => {
-    // Логика открытия товара
-    console.log("Открыть товар с индексом:", index);
-};
-onMounted(() => {
-    const langCode = localStorage.getItem('languageCode') || 'ru';
-    currentLanguage.value = languages[langCode] || languages.ru;
-});
 </script>
 
 <style scoped>
@@ -186,12 +182,13 @@ onMounted(() => {
     width: 100%;
     height: 100dvh;
     gap: 35px;
+    padding-top: 25px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .container.active {
-    margin-top: 25px;
+    padding-top: 25px;
 }
 
 .bottom {
@@ -336,6 +333,8 @@ onMounted(() => {
 
 .cardproduct__media {
     display: flex;
+    width: 400px;
+    height: 400px;
     margin-left: 40px;
     margin-right: 30px;
     justify-content: center;
@@ -402,13 +401,16 @@ onMounted(() => {
     }
 
     .cardproduct__media {
-        width: 100%;
-        margin-left: 0px;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .cardproduct__content {
         max-width: none;
-        width: 100%;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 </style>

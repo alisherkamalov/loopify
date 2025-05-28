@@ -1,13 +1,13 @@
 <template>
-    <div class="containerorder" v-if="currentLanguage" :class="{ active: makeorder.isOrder }"
+    <div class="containerorder" :class="{ active: makeorder.isOrder }"
         @click="makeorder.setOrder(false)">
         <div class="makeorder" @click.stop="console.log('stopped')">
-            <span class="titleorder">{{ currentLanguage.makeinorderr }}</span>
-            <v-text-field v-model="city" class="input" clearable :label="currentLanguage.city"
+            <span class="titleorder">{{ languageStore.currentLanguage.makeinorderr }}</span>
+            <v-text-field v-model="city" class="input" clearable :label="languageStore.currentLanguage.city"
                 variant="solo"></v-text-field>
-            <v-text-field v-model="address" class="input" clearable :label="currentLanguage.streetandhouse"
+            <v-text-field v-model="address" class="input" clearable :label="languageStore.currentLanguage.streetandhouse"
                 variant="solo"></v-text-field>
-            <button class="btn-order" @click.stop="createOrder(currentLanguage)">{{ currentLanguage.makeinorder }}</button>
+            <button class="btn-order" @click.stop="createOrder()">{{ languageStore.currentLanguage.makeinorder }}</button>
         </div>
     </div>
 </template>
@@ -16,17 +16,25 @@ import { VTextField } from 'vuetify/components';
 import { useMakeOrder } from '~/store/MakeOrderStore';
 import { useLastProductStore } from '~/store/lastProductStore';
 import { useNotiStore } from '~/store/notificationStore';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
-import { languages } from '../lib/languages'
-const currentLanguage = ref(null)
+import { useLanguageStore } from '~/store/languagesStore';
 const notificationStore = useNotiStore()
+const languageStore = useLanguageStore();
 const uselastproduct = useLastProductStore()
 const makeorder = useMakeOrder()
 const city = ref('')
 const address = ref('')
-const createOrder = async (currentLanguage) => {
+const createOrder = async () => {
     const token = localStorage.getItem('token')
+    if (!token) {
+        notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
+        notificationStore.setActive(true);
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
+        return;
+    }
     const response = await axios.post(
         'https://backendlopify.vercel.app/orders',
         {
@@ -42,19 +50,13 @@ const createOrder = async (currentLanguage) => {
         }
     );
     makeorder.setOrder(false)
-    if (currentLanguage) {
-        notificationStore.setNotification(currentLanguage.successordercreate)
-    }
+    notificationStore.setNotification(languageStore.currentLanguage.successordercreate)
     notificationStore.setActive(true)
     setTimeout(() => {
         notificationStore.setActive(false)
     }, 3000);
 
 }
-onMounted(() => {
-    const langCode = localStorage.getItem('languageCode') || 'ru';
-    currentLanguage.value = languages[langCode] || languages.ru;
-});
 </script>
 <style scoped>
 .containerorder {

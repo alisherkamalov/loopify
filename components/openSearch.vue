@@ -4,12 +4,12 @@
             <div class="sortingproduct">
                 <button class="btn-sortingproduct" :class="{ active: selectedDeviceType === null }"
                     @click="selectedDeviceType = null">
-                    {{ currentLanguage.all }}
+                    {{ languageStore.currentLanguage.all }}
                 </button>
                 <button class="btn-sortingproduct" v-for="(sortingproduct, index) in sortingproducts"
                     :class="{ active: selectedDeviceType === sortingproduct.devicetype }"
                     @click="selectedDeviceType = sortingproduct.devicetype" :key="index">{{
-                        currentLanguage.devicetype[sortingproduct.devicetype] }}</button>
+                        languageStore.currentLanguage.devicetype[sortingproduct.devicetype] }}</button>
             </div>
             <template v-if="isLoading">
                 <div class="loading">
@@ -23,19 +23,20 @@
                         <div v-if="focusStore.activeProduct != product" class="product-left">
                             <img :src="product.photoUrl" :alt="product.title" class="product-image" loading="lazy">
                             <div class="product-info">
-                                <span class="product-name">{{ currentLanguage.devicetype[product.deviceType] }} {{
+                                <span class="product-name">{{ languageStore.currentLanguage.devicetype[product.deviceType] }} {{
                                     product.name }}</span>
                                 <span class="price">{{ product.price }} ₸</span>
                             </div>
                         </div>
                         <div v-if="focusStore.activeProduct != product" class="product-right">
-                            <button class="btn-more">{{ currentLanguage.more }}</button>
-                            <button @click.stop="addProductToCart(product._id, currentLanguage)" class="btn-incart">{{ currentLanguage.incart
-                            }}</button>
+                            <button class="btn-more">{{ languageStore.currentLanguage.more }}</button>
+                            <button @click.stop="addProductToCart(product._id)" class="btn-incart">{{
+                                languageStore.currentLanguage.incart
+                                }}</button>
                         </div>
                         <div v-else class="product-more-info" @click.stop="console.log('product active')">
                             <div class="cont-product">
-                                <a-tooltip class="btnclosesearch" title="close" @click.stop="closeInfoProduct">
+                                <a-tooltip class="btnclosesearch" :title="languageStore.currentLanguage.back" @click.stop="closeInfoProduct">
                                     <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                                 </a-tooltip>
                                 <Moreinfoproduct />
@@ -45,7 +46,7 @@
                 </div>
             </template>
             <div v-else class="notfound">
-                <span>{{ currentLanguage.notfound }}</span>
+                <span>{{ languageStore.currentLanguage.notfound }}</span>
             </div>
         </div>
         <div ref="frameSearchRef" class="openedsearch" :class="{ active: focusStore.isFocused }">
@@ -63,21 +64,17 @@ import { useAllProductStore } from '~/store/fetchProductsStore'
 import { h } from 'vue'
 import axios from 'axios'
 import { CloseOutlined } from '@ant-design/icons-vue'
-import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
+import Moreinfoproduct from '~/components/moreinfoproduct.vue'
 import { useLastProductStore } from '~/store/lastProductStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
+import { useLanguageStore } from '~/store/languagesStore'
 
 const store = usePageStore()
+const languageStore = useLanguageStore();
 const selectedDeviceType = ref(null)
-const props = defineProps({
-    currentLanguage: {
-        type: Object,
-        required: true
-    }
-})
 
-const allproductstore = useAllProductStore() // Используем store для всех продуктов
-const products = computed(() => allproductstore.products) // Доступ к продуктам через store
+const allproductstore = useAllProductStore()
+const products = computed(() => allproductstore.products)
 
 const sortingproducts = ref([
     { devicetype: "smartphone" },
@@ -96,10 +93,17 @@ const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
 const isLoading = ref(false)
 const notificationStore = useNotiStore()
-const currentLanguage = computed(() => props.currentLanguage)
 const lastProductStore = useLastProductStore()
-const addProductToCart = async (productId, currentLanguage) => {
+const addProductToCart = async (productId,) => {
     const token = localStorage.getItem('token')
+    if (!token) {
+        notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
+        notificationStore.setActive(true);
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
+        return;
+    }
     try {
         const response = await axios.post(
             'https://backendlopify.vercel.app/basket',
@@ -112,9 +116,7 @@ const addProductToCart = async (productId, currentLanguage) => {
                 },
             }
         );
-        if (currentLanguage) {
-            notificationStore.setNotification(currentLanguage.productaddedcart);
-        }
+        notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         setTimeout(() => {
             notificationStore.setActive(false);
@@ -122,13 +124,9 @@ const addProductToCart = async (productId, currentLanguage) => {
 
     } catch (error) {
         if (error.response) {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.errorproductaddedcart);
-            }
+            notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
         } else {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.errorfetch);
-            }
+            notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
         }
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -139,31 +137,25 @@ const addProductToCart = async (productId, currentLanguage) => {
 
 
 const closeInfoProduct = () => {
-    const activeSearch = document.querySelector('.frame-openedsearch.active');
-    if (activeSearch) {
-        activeSearch.style.zIndex = '2001';
-    }
     focusStore.setActiveProduct(null)
-    document.body.style.overflow = 'auto'
-    lastProductStore.setLastProduct([]);
+    store.prevPage()
+    setTimeout(() => {
+        lastProductStore.setLastProduct([]);
+    }, 500);
 }
 
 const selectProduct = (product) => {
-    store.nextPage(2)
     if (focusStore.activeProduct === product) {
         store.prevPage()
         focusStore.setActiveProduct(null);
-        lastProductStore.setLastProduct([]);
+        store.prevPage()
+        setTimeout(() => {
+            lastProductStore.setLastProduct([]);
+        }, 500);
     } else {
-        store.nextPage(2)
+        store.goToPage(1)
         lastProductStore.setLastProduct(product);
-        const activeSearch = document.querySelector('.frame-openedsearch.active');
-        if (activeSearch) {
-            activeSearch.style.zIndex = '2003';
-        }
         focusStore.activeProduct && document.querySelector('.product--active')?.classList.remove('final-position');
-        focusStore.setActiveProduct(product);
-        document.body.style.overflow = 'hidden';
     }
 };
 
@@ -224,12 +216,6 @@ const handleBackButton = (event) => {
 onMounted(async () => {
     window.addEventListener('popstate', handleBackButton);
     document.addEventListener('click', handleClickOutside)
-    const langCode = localStorage.getItem('languageCode')
-    if (langCode && languages[langCode]) {
-        currentLanguage.value = languages[langCode]
-    }
-
-
 })
 
 onBeforeUnmount(() => {
@@ -255,12 +241,14 @@ onBeforeUnmount(() => {
 .loading {
     margin: auto;
 }
+
 .btnclosesearch {
     position: absolute;
     left: -25px;
     top: -5px;
     background-color: var(--background);
 }
+
 .btn-sortingproduct {
     background-color: var(--bg-cont);
     border-radius: 50px;
@@ -400,24 +388,6 @@ onBeforeUnmount(() => {
     will-change: transform, width, height;
 }
 
-.product--active {
-    position: fixed;
-    top: 15px;
-    left: 50%;
-    width: 100% !important;
-    height: 100dvh;
-    transform: translate(-50%, -15px);
-    display: flex;
-    align-items: center;
-    border: 0;
-    justify-content: center;
-    background-color: var(--background);
-    z-index: 2003;
-    transition:
-        width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
-}
 
 .product-info {
     display: flex;
@@ -460,7 +430,12 @@ onBeforeUnmount(() => {
     pointer-events: none;
     transition: all 0.3s ease;
 }
-
+.foundproducts.active {
+    opacity: 1;
+    pointer-events: all;
+    width: 90%;
+    height: 90dvh;
+}
 .notfound {
     width: 100%;
     display: flex;
@@ -485,6 +460,7 @@ onBeforeUnmount(() => {
     z-index: 1001;
     pointer-events: none;
     opacity: 0;
+    transition: all 0.5s ease;
 }
 
 .openedsearch {
@@ -507,36 +483,35 @@ onBeforeUnmount(() => {
 .frame-openedsearch.active {
     pointer-events: all;
     opacity: 1;
-}
-
-.foundproducts.active {
-    pointer-events: all;
-    opacity: 1;
-    width: 90%;
-    min-height: 90dvh;
+    z-index: 2001;
 }
 
 .openedsearch.active {
     pointer-events: all;
     opacity: 1;
 }
+
 @media(max-width: 1000px) {
     .btnclosesearch {
         left: -15px;
     }
 }
+
 @media (max-width: 800px) {
     .btnclosesearch {
         left: -13px;
     }
 }
+
 @media (max-width: 768px) {
     .product-name {
         max-width: 90%;
     }
+
     .btnclosesearch {
         left: -12px;
     }
+
     .product {
         width: 90%;
     }
@@ -570,6 +545,7 @@ onBeforeUnmount(() => {
     .btnclosesearch {
         left: -11px;
     }
+
     .product-right {
         flex-direction: column;
     }
@@ -594,18 +570,22 @@ onBeforeUnmount(() => {
     }
 
 }
+
 @media(max-width: 570px) {
     .btnclosesearch {
         left: -9px;
     }
 }
+
 @media (max-width: 450px) {
     .product-right {
         flex-direction: column;
     }
+
     .btnclosesearch {
         left: -6px;
     }
+
     .btn-more,
     .btn-incart {
         padding-top: 5px;

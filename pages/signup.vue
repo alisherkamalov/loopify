@@ -1,27 +1,26 @@
 <template>
     <Notification />
-    <a-tooltip class="close" title="назад" @click="router.push('/signin')">
+    <a-tooltip class="close" :title="languageStore.currentLanguage.back" @click="router.push('/signin')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
     <div class="containersignup">
         <span class="title">
             <span class="textlogo">LOOPIFY</span>
         </span>
-        <div class="content" v-if="currentLanguage">
-            <v-text-field v-model="nickname" class="input" clearable :label="currentLanguage.nameandsurname"
+        <div class="content">
+            <v-text-field v-model="nickname" class="input" clearable :label="languageStore.currentLanguage.nameandsurname"
                 variant="solo"></v-text-field>
-            <v-text-field v-model="email" class="input" clearable :label="currentLanguage.email"
+            <v-text-field v-model="email" class="input" clearable :label="languageStore.currentLanguage.email"
                 variant="solo"></v-text-field>
-            <v-text-field v-model="password" class="input" clearable :label="currentLanguage.password"
+            <v-text-field v-model="password" class="input" clearable :label="languageStore.currentLanguage.password"
                 variant="solo"></v-text-field>
-            <button class="btnsignup" @click="registration(currentLanguage)">{{ currentLanguage.signup }}</button>
+            <button class="btnsignup" @click="registration()">{{ languageStore.currentLanguage.signup }}</button>
         </div>
-        <div class="signinbtn" v-if="currentLanguage" @click="router.push('/signin')">{{ currentLanguage.haveaccount }}</div>
+        <div class="signinbtn" @click="router.push('/signin')">{{ languageStore.currentLanguage.haveaccount }}</div>
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
-import { languages } from '../lib/languages'
+import { ref } from 'vue';
 import { h } from 'vue'
 import axios from 'axios';
 import Notification from '../components/thenotification.vue'
@@ -29,14 +28,15 @@ import { CloseOutlined } from '@ant-design/icons-vue'
 import { VTextField } from 'vuetify/components';
 import { useRouter } from 'vue-router';
 import { useNotiStore } from '~/store/notificationStore';
+import { useLanguageStore } from '~/store/languagesStore';
 const notificationStore = useNotiStore()
 const router = useRouter()
-const currentLanguage = ref(null)
+const languageStore = useLanguageStore();
 const nickname = ref('');
 const email = ref('');
 const password = ref('');
 
-const registration = (currentLanguage) => {
+const registration = () => {
     const payload = {
         nickname: nickname.value,
         email: email.value,
@@ -44,9 +44,7 @@ const registration = (currentLanguage) => {
     };
     axios.post('https://backendlopify.vercel.app/register', payload)
         .then(response => {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.successsignup)
-            }
+            notificationStore.setNotification(languageStore.currentLanguage.successsignup)
             notificationStore.setActive(true)
             setTimeout(() => {
                 notificationStore.setActive(false)
@@ -64,7 +62,7 @@ const registration = (currentLanguage) => {
                 const firstError = res.errors[0]?.msg || 'Ошибка данных';
                 notificationStore.setNotification(firstError);
             } else {
-                notificationStore.setNotification('Произошла ошибка при регистрации');
+                notificationStore.setNotification(languageStore.currentLanguage.errorbyreg);
             }
 
             notificationStore.setActive(true);
@@ -73,12 +71,6 @@ const registration = (currentLanguage) => {
             }, 2000);
         });
 }
-
-
-onMounted(() => {
-    const langCode = localStorage.getItem('languageCode') || 'ru';
-    currentLanguage.value = languages[langCode] || languages.ru;
-});
 </script>
 <style scoped>
 main {

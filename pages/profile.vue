@@ -1,9 +1,9 @@
 <template>
     <Notification />
-    <a-tooltip v-if="currentLanguage" class="close" :title="currentLanguage.back" @click="router.push('/')">
+    <a-tooltip class="close" :title="languageStore.currentLanguage.back" @click="router.push('/')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
-    <div class="containerprofile" v-if="currentLanguage" :class="{ active: isAuth }">
+    <div class="containerprofile" :class="{ active: isAuth }">
         <div class="header">
             <div class="content">
                 <div class="avatar">
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="contentprofile">
-            <span class="myorderstitle">{{ currentLanguage.myorders }}</span>
+            <span class="myorderstitle">{{ languageStore.currentLanguage.myorders }}</span>
             <v-progress-circular v-if="isLoading" indeterminate color="primary" size="70"
                 class="loading-indicator"></v-progress-circular>
             <div class="ordercont" v-else v-for="(order, index) in orders" :key="index">
@@ -25,41 +25,41 @@
                         class="product-image" />
                     <div class="product-info">
                         <span class="product-name">
-                            {{ currentLanguage.devicetype[order.productId.deviceType] }} {{ order.productId.name }}
+                            {{ languageStore.currentLanguage.devicetype[order.productId.deviceType] }} {{ order.productId.name }}
                         </span>
                         <span class="price">{{ order.productId.price }} ₸</span>
                     </div>
                 </div>
                 <div class="product-right">
                     <span :style="getStatusStyle(order.status)">
-                        {{ order.status === 'pending' ? currentLanguage.pending : order.status === 'delivered' ?
-                            currentLanguage.delivered : '' }}
+                        {{ order.status === 'pending' ? languageStore.currentLanguage.pending : order.status === 'delivered' ?
+                            languageStore.currentLanguage.delivered : '' }}
                     </span>
                     <button class="btn-delivered" v-if="order.status !== 'delivered'" @click="openMarkDelivered(order)">
-                        {{ currentLanguage.markisdelivered }}
+                        {{ languageStore.currentLanguage.markisdelivered }}
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="containerorder" v-if="currentLanguage" :class="{ active: isOpenMark }" @click="closeMarkDelivered">
+    <div class="containerorder" :class="{ active: isOpenMark }" @click="closeMarkDelivered">
         <div class="makeorder" @click.stop="console.log('stopped')">
-            <span class="titleorder">{{ currentLanguage.isdelivered }}</span>
-            <span class="infotext">{{ currentLanguage.warningdelivered }}</span>
-            <button class="btn-order" @click.stop="closeMarkDelivered">{{ currentLanguage.closedelivered }}</button>
-            <button class="btn-order" @click.stop="markAsDelivered(selectedOrder._id, currentLanguage)">{{
-                currentLanguage.successdelivered }}</button>
+            <span class="titleorder">{{ languageStore.currentLanguage.isdelivered }}</span>
+            <span class="infotext">{{ languageStore.currentLanguage.warningdelivered }}</span>
+            <button class="btn-order" @click.stop="closeMarkDelivered">{{ languageStore.currentLanguage.closedelivered }}</button>
+            <button class="btn-order" @click.stop="markAsDelivered(selectedOrder._id)">{{
+                languageStore.currentLanguage.successdelivered }}</button>
         </div>
     </div>
 </template>
 
 <script setup>
-import { languages } from '../lib/languages'
 import { onMounted } from 'vue';
 import { h } from 'vue';
 import axios from 'axios';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
+import { useLanguageStore } from '~/store/languagesStore';
 import Notification from '../components/thenotification.vue'
 import { useNotiStore } from '~/store/notificationStore';
 const username = ref('')
@@ -67,11 +67,11 @@ const email = ref('')
 const notificationStore = useNotiStore()
 const router = useRouter()
 const isOpenMark = ref(false)
-const currentLanguage = ref(null)
+const languageStore = useLanguageStore();
 const isAuth = ref(false);
 const orders = ref([])
 const isLoading = ref(true)
-const selectedOrder = ref(null)  // Новая переменная для хранения выбранного заказа
+const selectedOrder = ref(null)
 
 onMounted(() => {
     if (localStorage != 'undefined') {
@@ -86,8 +86,6 @@ onMounted(() => {
 })
 
 onMounted(async () => {
-    const langCode = localStorage.getItem('languageCode') || 'ru';
-    currentLanguage.value = languages[langCode] || languages.ru;
     const response = await axios.get(
         'https://backendlopify.vercel.app/orders',
         {
@@ -115,7 +113,7 @@ const closeMarkDelivered = () => {
     isOpenMark.value = false
 }
 
-const markAsDelivered = async (orderId, currentLanguage) => {
+const markAsDelivered = async (orderId) => {
     try {
         const response = await axios.put(
             `https://backendlopify.vercel.app/orders/${orderId}/delivered`,
@@ -136,15 +134,13 @@ const markAsDelivered = async (orderId, currentLanguage) => {
             orders.value = updatedOrders;
         }
         closeMarkDelivered()
-        if (currentLanguage) {
-            notificationStore.setNotification(currentLanguage.successchangedstatus)
-        }
+        notificationStore.setNotification(languageStore.currentLanguage.successchangedstatus)
         notificationStore.setActive(true)
         setTimeout(() => {
             notificationStore.setActive(false)
         }, 3000);
     } catch (error) {
-        notificationStore.setNotification('Ошибка при обновлении статуса')
+        notificationStore.setNotification(languageStore.currentLanguage.failedchangestatus)
         notificationStore.setActive(true)
         setTimeout(() => {
             notificationStore.setActive(false)

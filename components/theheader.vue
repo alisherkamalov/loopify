@@ -1,47 +1,53 @@
+<!-- theheader.vue -->
 <template>
-    <Notification />
-    <header>
-        <div class="pc">
-            <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
-            <SearchInput class="search" :place="currentLanguage.search" />
-            <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
-                <HeaderButton class="profile" :text="currentLanguage.profile" @click="router.push('/profile')" />
-                <HeaderButton class="basket" :text="currentLanguage.basket" @click="router.push('/basket')" />
-                <LangDropdown class="language" :language="'ru.png'" :variants="[
-                    { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
-                    { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' }
-                ]" @language-changed="changeLanguage" />
-            </div>
-        </div>
+  <Notification />
+  <header>
+    <div class="pc">
+      <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
+      <SearchInput class="search" :place="languageStore.currentLanguage.search" />
+      <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
+        <HeaderButton class="profile" :text="languageStore.currentLanguage.profile" @click="router.push('/profile')" />
+        <HeaderButton class="basket" :text="languageStore.currentLanguage.basket" @click="router.push('/basket')" />
+        <LangDropdown 
+          class="language" 
+          :language="'ru.png'" 
+          :variants="languageVariants"
+          @language-changed="languageStore.setLanguage"
+        />
+      </div>
+    </div>
 
-        <div class="mobile">
-            <div class="darkmode" @click="MenuOpenAndClose" :class="{ 'active': isMenu }"></div>
-            <div class="menu" :class="{ 'active': isMenu }">
-                <div class="logo mobile"></div>
-                <div class="frame">
-                    <HeaderButton class="profile" :text="currentLanguage.profile"@click="router.push('/profile')" />
-                </div>
-                <div class="frame">
-                    <HeaderButton class="basket" :text="currentLanguage.basket" @click="router.push('/basket')"/>
-                </div>
-                <div class="frame">
-                    <LangDropdown class="language" :language="'ru.png'" :variants="[
-                        { text: currentLanguage.russian, code: 'ru', icon: 'ru.png' },
-                        { text: currentLanguage.kazakh, code: 'kz', icon: 'kz.png' }
-                    ]" @language-changed="changeLanguage" />
-                </div>
-            </div>
-            <a-tooltip @click="MenuOpenAndClose" class="menubtn" :class="{ 'deactivate': focusStore.isFocused }">
-                <a-button color="white" shape="circle" :icon="h(MenuOutlined)" />
-            </a-tooltip>
-            <SearchInput :place="currentLanguage.search" />
+    <div class="mobile">
+      <div class="darkmode" @click="MenuOpenAndClose" :class="{ 'active': isMenu }"></div>
+      <div class="menu" :class="{ 'active': isMenu }">
+        <div class="logo mobile"></div>
+        <div class="frame">
+          <HeaderButton class="profile" :text="languageStore.currentLanguage.profile" @click="router.push('/profile')" />
         </div>
-    </header>
+        <div class="frame">
+          <HeaderButton class="basket" :text="languageStore.currentLanguage.basket" @click="router.push('/basket')" />
+        </div>
+        <div class="frame">
+          <LangDropdown 
+            class="language" 
+            :language="'ru.png'" 
+            :variants="languageVariants"
+            @language-changed="languageStore.setLanguage"
+          />
+        </div>
+      </div>
+      <a-tooltip @click="MenuOpenAndClose" class="menubtn" :class="{ 'deactivate': focusStore.isFocused }">
+        <a-button color="white" shape="circle" :icon="h(MenuOutlined)" />
+      </a-tooltip>
+      <SearchInput :place="languageStore.currentLanguage.search" />
+    </div>
+  </header>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, watchEffect } from 'vue'
+import { ref, computed } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
+import { useLanguageStore } from '~/store/languagesStore'
 import { h } from 'vue'
 import Notification from '../components/thenotification.vue'
 import { MenuOutlined } from '@ant-design/icons-vue'
@@ -49,29 +55,34 @@ import SearchInput from './searchInput.vue'
 import HeaderButton from './headerbutton.vue'
 import LangDropdown from './langdropdown.vue'
 import { useRouter } from 'vue-router'
+
 const router = useRouter()
 const isMenu = ref(false)
+const focusStore = useFocusStore()
+const languageStore = useLanguageStore()
+
+const languageVariants = computed(() => [
+  { 
+    text: languageStore.currentLanguage.russian, 
+    code: 'ru', 
+    icon: 'ru.png' 
+  },
+  { 
+    text: languageStore.currentLanguage.kazakh, 
+    code: 'kz', 
+    icon: 'kz.png' 
+  }
+])
 
 const MenuOpenAndClose = () => {
-    isMenu.value = !isMenu.value
+  isMenu.value = !isMenu.value
 }
-const focusStore = useFocusStore()
 
-const props = defineProps({
-    currentLanguage: {
-        type: Object,
-        required: true
-    }
-})
 function handleBackButton(event) {
   isMenu.value = false;
   history.pushState(null, '', location.href);
 }
-const emit = defineEmits(['language-changed'])
 
-const changeLanguage = (langCode) => {
-    emit('language-changed', langCode)
-}
 onMounted(() => {
   history.pushState(null, '', location.href);
   window.addEventListener('popstate', handleBackButton);
@@ -80,10 +91,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('popstate', handleBackButton);
 });
+
 watchEffect(() => {
-    if (typeof document !== 'undefined') {
-        document.body.style.overflow = focusStore.isFocused ? 'hidden' : 'auto'
-    }
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = focusStore.isFocused ? 'hidden' : 'auto'
+  }
 })
 </script>
 

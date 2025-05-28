@@ -52,18 +52,16 @@
                                 <p class="cardproduct__price">{{ product.price }} ₸</p>
                             </div>
                             <div class="bottom">
-                                <button class="cardproduct__btn more" @click.stop="openProduct()"
+                                <button class="cardproduct__btn more" @click.stop="openProduct(index)"
                                     :class="{ active: activeFrameIndex === index }">{{ currentLanguage.more
                                     }}</button>
                                 <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
-                                    @click.stop="addProductToCart(product, currentLanguage)">
+                                    @click.stop="addProductToCart(product)">
                                     {{ currentLanguage.incart }}
                                 </button>
-
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -82,23 +80,30 @@ import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import { useNotiStore } from '~/store/notificationStore';
-import { useFocusStore } from '~/store/focusStore'
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
-import Moreinfoproduct from '~/pages/moreinfoproduct.vue'
 import { usePageStore } from '~/store/PagesRoutesStore'
+import { useLanguageStore } from '~/store/languagesStore'
 
 const store = usePageStore()
 
 const notificationStore = useNotiStore()
+const lastProductStore = useLastProductStore()
 const videoStates = ref({});
 const videoRefs = ref({});
-const focusStore = useFocusStore()
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
 const allproductstore = useAllProductStore()
-const addProductToCart = async (productId, currentLanguage) => {
+const addProductToCart = async (productId) => {
     const token = localStorage.getItem('token')
+    if (!token) {
+        notificationStore.setNotification(currentLanguage.authonwebsite);
+        notificationStore.setActive(true);
+        setTimeout(() => {
+            notificationStore.setActive(false);
+        }, 3000);
+        return;
+    }
     try {
         const response = await axios.post(
             'https://backendlopify.vercel.app/basket',
@@ -112,9 +117,6 @@ const addProductToCart = async (productId, currentLanguage) => {
             }
         );
         console.log(response.data)
-        if (currentLanguage) {
-
-        }
         notificationStore.setNotification(currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -123,13 +125,9 @@ const addProductToCart = async (productId, currentLanguage) => {
 
     } catch (error) {
         if (error.response) {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.errorproductaddedcart);
-            }
+            notificationStore.setNotification(currentLanguage.errorproductaddedcart);
         } else {
-            if (currentLanguage) {
-                notificationStore.setNotification(currentLanguage.errorfetch);
-            }
+            notificationStore.setNotification(currentLanguage.errorfetch);
         }
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -137,7 +135,9 @@ const addProductToCart = async (productId, currentLanguage) => {
         }, 3000);
     }
 };
-const openProduct = () => {
+const openProduct = (index) => {
+    const product = allproductstore.products[index];
+    lastProductStore.setLastProduct(product);
     store.nextPage(2)
 };
 
@@ -188,7 +188,8 @@ const props = defineProps({
         required: true
     }
 })
-const currentLanguage = computed(() => props.currentLanguage)
+const languageStore = useLanguageStore()
+const currentLanguage = computed(() => languageStore.currentLanguage)
 const handleBackButton = (event) => {
     if (activeFrameIndex.value !== -1) {
         event.preventDefault();

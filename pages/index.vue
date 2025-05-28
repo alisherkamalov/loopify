@@ -1,23 +1,22 @@
 <template>
-    <main v-if="currentLanguage" :class="{ active: focusStore.isFocused }">
-        <!-- Проверяем, идет ли загрузка -->
+    <main :class="{ active: focusStore.isFocused }">
         <div class="loading" :class="{ active: isLoading }">
             <v-progress-circular indeterminate size="49"></v-progress-circular>
         </div>
+
         <Slider>
-            <!-- Проверяем, если есть токен и данные пользователя -->
             <template #page-0>
                 <div class="isauth">
-                    <TheHeader :currentLanguage="currentLanguage" @language-changed="changeLanguage" />
-                    <openSearch :currentLanguage="currentLanguage" />
+                    <TheHeader />
+                    <openSearch :currentLanguage="languageStore.currentLanguage" />
                     <div class="content">
-                        <BestProductSlider :current-language="currentLanguage" />
-                        <CardProduct :current-language="currentLanguage" />
+                        <BestProductSlider :current-language="languageStore.currentLanguage" />
+                        <CardProduct :current-language="languageStore.currentLanguage" />
                     </div>
                     <footer>
                         <img src="../assets/logo-dark.png" alt="" class="logofooter">
                         <div class="contentfooter">
-                            {{ currentLanguage.anyquestions }}
+                            {{ languageStore.currentLanguage.anyquestions }}
                             <div class="social">
                                 <svg class="footersvg" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24">
@@ -83,74 +82,56 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { languages } from '../lib/languages'
 import { VProgressCircular } from 'vuetify/components'
 import { useFocusStore } from '~/store/focusStore'
-import Moreinfoproduct from '@/pages/moreinfoproduct.vue'
+import { useLanguageStore } from '~/store/languagesStore'
+import Moreinfoproduct from '~/components/moreinfoproduct.vue'
 import TheHeader from '~/components/theheader.vue'
 import openSearch from '~/components/openSearch.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
 import CardProduct from '~/components/cardproduct.vue'
-import axios, { all } from 'axios'
+import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
-import Slider from '~/components/slider.vue';
+import Slider from '~/components/sliderpage.vue'
+
 const focusStore = useFocusStore()
-const token = ref(null)
+const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
-const currentLanguage = ref(null)
-const pageList = ["Главная", "Инфо о товаре"];
+const token = ref(null)
+
 onMounted(() => {
-    const langCode = localStorage.getItem('languageCode') || 'ru';
-    currentLanguage.value = languages[langCode] || languages.ru;
-    lastProductStore.setLastProduct([]);
-    lastProductStore.setSlider(false)
-    token.value = localStorage.getItem('token')
+  token.value = localStorage.getItem('token')
+  
+  if (token.value) {
+    axios.get('https://backendlopify.vercel.app/me', {
+      headers: { Authorization: `Bearer ${token.value}` }
+    })
+    .then(response => {
+      localStorage.setItem('userid', response.data._id)
+      localStorage.setItem('username', response.data.nickname)
+      localStorage.setItem('useremail', response.data.email)
+    })
+    .catch(error => {
+      console.error('Ошибка запроса /me:', error);
+      token.value = null;
+    })
+    .finally(() => {
+      setTimeout(() => isLoading.value = false, 1000);
+    })
+  } else {
+    setTimeout(() => isLoading.value = false, 2000);
+  }
+  
+  axios.get('https://backendlopify.vercel.app/products')
+    .then(response => allproductstore.setAllProducts(response.data))
+    .catch(error => console.error('Ошибка запроса товаров:', error));
 
-    if (token.value) {
-        axios.get('https://backendlopify.vercel.app/me', {
-            headers: {
-                Authorization: `Bearer ${token.value}`
-            }
-        })
-            .then(response => {
-                if (localStorage != 'undefined') {
-                    localStorage.setItem('userid', response.data._id)
-                    localStorage.setItem('username', response.data.nickname)
-                    localStorage.setItem('useremail', response.data.email)
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка запроса /me:', error);
-                token.value = null;
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    isLoading.value = false
-                }, 1000);
-            })
-    } else {
-        setTimeout(() => {
-            isLoading.value = false
-        }, 2000);
-    }
-    axios.get('https://backendlopify.vercel.app/products')
-        .then(response => {
-            allproductstore.setAllProducts(response.data)
-            console.log(allproductstore.products)
-        })
-        .catch(error => {
-            console.error('Ошибка запроса товаров:', error);
-        })
-
+  lastProductStore.setLastProduct([]);
+  lastProductStore.setSlider(false);
 });
-
-const changeLanguage = (langCode) => {
-    currentLanguage.value = languages[langCode] || languages.ru
-    localStorage.setItem('languageCode', langCode)
-}
 </script>
 
 

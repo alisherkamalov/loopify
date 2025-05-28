@@ -30,7 +30,7 @@ const notificationStore = useNotiStore()
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: 19999;
     transition: all 0.5s ease;
     color: var(--foreground);
 }
@@ -40,7 +40,7 @@ const notificationStore = useNotiStore()
     position: fixed;
     width: 100%;
     height: 100dvh;
-    z-index: 9998;
+    z-index: 19998;
     pointer-events: none;
     top: 0;
     transition: all 0.3s ease;
