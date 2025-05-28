@@ -22,5 +22,12 @@ export default defineNuxtConfig({
   },
   components: true,
   devtools: { enabled: true },
+  vue: {
+    config: {
+      devtools: true,
+      productionTip: false,
+      silent: false,
+    }
+  },
   compatibilityDate: "2024-11-01",
 });

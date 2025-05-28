@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design-vue/nuxt": "^1.4.6",
     "@ant-design/icons-vue": "^7.0.1",
+    "@douxcode/vue-spring-bottom-sheet": "^2.3.0",
     "@lottiefiles/lottie-player": "^2.0.12",
     "@mdi/font": "^7.4.47",
     "@pinia/nuxt": "^0.11.0",

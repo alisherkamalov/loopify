@@ -103,9 +103,10 @@ const getSlideClass = (index) => {
   border-radius: 0;
 }
 
-/* softened — только к активному вручную */
+
 .slider-page.softened {
-  transform: scale(0.9);
+  transform: scale(0.95);
   border-radius: 50px;
+  overflow: hidden;
 }
 </style>

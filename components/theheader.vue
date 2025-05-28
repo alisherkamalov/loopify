@@ -6,7 +6,7 @@
       <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
       <SearchInput class="search" :place="languageStore.currentLanguage.search" />
       <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
-        <HeaderButton class="profile" :text="languageStore.currentLanguage.profile" @click="router.push('/profile')" />
+        <HeaderButton class="profile" :text="languageStore.currentLanguage.profile" @click="openBottomSheet()" />
         <HeaderButton class="basket" :text="languageStore.currentLanguage.basket" @click="router.push('/basket')" />
         <LangDropdown 
           class="language" 
@@ -54,13 +54,16 @@ import { MenuOutlined } from '@ant-design/icons-vue'
 import SearchInput from './searchInput.vue'
 import HeaderButton from './headerbutton.vue'
 import LangDropdown from './langdropdown.vue'
+import { useSheetStore } from '~/store/sheetStore'
 import { useRouter } from 'vue-router'
-
 const router = useRouter()
 const isMenu = ref(false)
 const focusStore = useFocusStore()
 const languageStore = useLanguageStore()
-
+const sheetStore = useSheetStore()
+const openBottomSheet = () => {
+    sheetStore.openSheet()
+}
 const languageVariants = computed(() => [
   { 
     text: languageStore.currentLanguage.russian, 

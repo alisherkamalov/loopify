@@ -1,4 +1,14 @@
 <template>
+    <client-only>
+        <BottomSheet v-model="sheetStore.isOpen" 
+        :height="300"
+      :disableBodyScroll="true"
+      @closed="sheetStore.closeSheet"
+      class="bottomsheet"
+      >
+            beta settings ui
+        </BottomSheet>
+    </client-only>
     <main :class="{ active: focusStore.isFocused }">
         <div class="loading" :class="{ active: isLoading }">
             <v-progress-circular indeterminate size="49"></v-progress-circular>
@@ -94,43 +104,45 @@ import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
 import Slider from '~/components/sliderpage.vue'
-
+import { useSheetStore } from '~/store/sheetStore'
+import BottomSheet from '@douxcode/vue-spring-bottom-sheet'
+import '@douxcode/vue-spring-bottom-sheet/dist/style.css'
+const sheetStore = useSheetStore()
 const focusStore = useFocusStore()
 const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
 const token = ref(null)
-
 onMounted(() => {
-  token.value = localStorage.getItem('token')
-  
-  if (token.value) {
-    axios.get('https://backendlopify.vercel.app/me', {
-      headers: { Authorization: `Bearer ${token.value}` }
-    })
-    .then(response => {
-      localStorage.setItem('userid', response.data._id)
-      localStorage.setItem('username', response.data.nickname)
-      localStorage.setItem('useremail', response.data.email)
-    })
-    .catch(error => {
-      console.error('Ошибка запроса /me:', error);
-      token.value = null;
-    })
-    .finally(() => {
-      setTimeout(() => isLoading.value = false, 1000);
-    })
-  } else {
-    setTimeout(() => isLoading.value = false, 2000);
-  }
-  
-  axios.get('https://backendlopify.vercel.app/products')
-    .then(response => allproductstore.setAllProducts(response.data))
-    .catch(error => console.error('Ошибка запроса товаров:', error));
+    console.log('index.vue onMounted сработал')
+    token.value = localStorage.getItem('token')
+    if (token.value) {
+        axios.get('https://backendlopify.vercel.app/me', {
+            headers: { Authorization: `Bearer ${token.value}` }
+        })
+            .then(response => {
+                localStorage.setItem('userid', response.data._id)
+                localStorage.setItem('username', response.data.nickname)
+                localStorage.setItem('useremail', response.data.email)
+            })
+            .catch(error => {
+                console.error('Ошибка запроса /me:', error);
+                token.value = null;
+            })
+            .finally(() => {
+                setTimeout(() => isLoading.value = false, 1000);
+            })
+    } else {
+        setTimeout(() => isLoading.value = false, 2000);
+    }
 
-  lastProductStore.setLastProduct([]);
-  lastProductStore.setSlider(false);
+    axios.get('https://backendlopify.vercel.app/products')
+        .then(response => allproductstore.setAllProducts(response.data))
+        .catch(error => console.error('Ошибка запроса товаров:', error));
+
+    lastProductStore.setLastProduct([]);
+    lastProductStore.setSlider(false);
 });
 </script>
 
@@ -148,7 +160,9 @@ main.active {
     overflow: hidden;
     transition: all 0.3s ease;
 }
-
+.bottomsheet {
+    min-width: 100% !important;
+}
 .social {
     width: 30px;
     height: 30px;
