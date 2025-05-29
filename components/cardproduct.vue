@@ -101,13 +101,15 @@ const addProductToCart = async (productId) => {
         notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
         notificationStore.setActive(true);
         notificationStore.setText(true);
-
+        notificationStore.setLeftTypeIcon('error');
         setTimeout(() => {
             if (!notificationStore.isMore) {
                 notificationStore.setActive(false);
                 notificationStore.setText(false)
+                notificationStore.setLeftTypeIcon('');
             } else {
                 notificationStore.setActive(false);
+                notificationStore.setText(true)
             }
         }, 3000);
         return;
@@ -127,8 +129,15 @@ const addProductToCart = async (productId) => {
         console.log(response.data)
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
+        notificationStore.setText(true);
+
         setTimeout(() => {
-            notificationStore.setActive(false);
+            if (!notificationStore.isMore) {
+                notificationStore.setActive(false);
+                notificationStore.setText(false)
+            } else {
+                notificationStore.setActive(false);
+            }
         }, 3000);
 
     } catch (error) {
@@ -138,8 +147,15 @@ const addProductToCart = async (productId) => {
             notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
         }
         notificationStore.setActive(true);
+        notificationStore.setText(true);
+
         setTimeout(() => {
-            notificationStore.setActive(false);
+            if (!notificationStore.isMore) {
+                notificationStore.setActive(false);
+                notificationStore.setText(false)
+            } else {
+                notificationStore.setActive(false);
+            }
         }, 3000);
     }
 };

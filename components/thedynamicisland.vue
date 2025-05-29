@@ -1,7 +1,10 @@
 <template>
     <div class="notification" ref="dynamicIsland" :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore }" @click.stop="moreInfo">
         <client-only>
-            <Vue3Lottie v-if="IslandStore.activetypeicon" class="left-icon" :animationLink="die.anim" :height="die.width" :width="die.height" />
+            <Vue3Lottie v-if="IslandStore.activelefttypeicon" 
+            :loop="false"
+            :autoplay="true"
+            class="left-icon" :animationLink="IslandStore.activelefttypeicon" />
         </client-only>
         <span class="textnotification" :class="{ 'active': IslandStore.isText }">
             {{ IslandStore.notification }}
@@ -11,13 +14,13 @@
 
 <script setup>
 import { useNotiStore } from '~/store/IslandStore'
-
+import { Vue3Lottie } from 'vue3-lottie'
 const IslandStore = useNotiStore()
 
 const dynamicIsland = ref(null)
 
 function handleClickOutside(event) {
-  if (!IslandStore.isMore) {
+  if (!IslandStore.isMore && !IslandStore.isActive) {
     return
   }
   if (dynamicIsland.value && !dynamicIsland.value.contains(event.target)) {
@@ -28,8 +31,14 @@ function handleClickOutside(event) {
         IslandStore.setText(true)
     }, 400);
     setTimeout(() => {
-        IslandStore.setActive(false)
+        if (IslandStore.isMore) {
+            IslandStore.setText(true)
+            IslandStore.setActive(false)
+            return
+        }
         IslandStore.setText(false)
+        IslandStore.setActive(false)
+        IslandStore.setLeftTypeIcon('');
     }, 2400);
   }
 }
@@ -47,6 +56,7 @@ const moreInfo = () => {
         IslandStore.setMore(true)
         IslandStore.setText(true)
     }
+    IslandStore.setText(true)
 }
 
 </script>
@@ -74,9 +84,16 @@ const moreInfo = () => {
     max-height: 5px;
     transition: all 0.5s ease;
 }
-
+.left-icon {
+    max-width: 30px;
+    max-height: 30px;
+    width: 100%;
+    translate: -30px;
+    height: 100%;
+}
 .textnotification {
     opacity: 0;
+    translate: -50px;
     transition: all 0.3s ease;
 }
 

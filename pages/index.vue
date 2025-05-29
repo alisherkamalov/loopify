@@ -12,7 +12,6 @@
             :disable-scrollbar="true"
             :disable-header="true"
             :disable-footer="true"
-
             :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
             beta settings ui
         </BottomSheet>
@@ -25,7 +24,7 @@
         <Slider>
             <template #page-0>
                 <div class="isauth">
-                    <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
+                    <div class="dynamicislandbox" :class="{ active: notificationStore.isText }"></div>
                     <TheHeader />
                     <openSearch :currentLanguage="languageStore.currentLanguage" />
                     <div class="content">
@@ -91,7 +90,6 @@
                 </div>
             </template>
         </Slider>
-
         <!-- Если нет токена или данных, показываем страницу для входа -->
         <!-- <div v-else> -->
         <!-- <TitlePage :current-language="currentLanguage" @language-changed="changeLanguage" /> -->
