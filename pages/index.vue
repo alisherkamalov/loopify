@@ -125,7 +125,7 @@ const token = ref(null)
 
 onMounted(() => {
     setTimeout(() => {
-            pagesStore.goToPage(0)
+            pagesStore.goToPage(1)
     }, 500);
     token.value = localStorage.getItem('token')
     if (token.value) {
@@ -145,7 +145,7 @@ onMounted(() => {
                 setTimeout(() => isLoading.value = false, 1000);
             })
         setTimeout(() => {
-            pagesStore.goToPage(1)
+            pagesStore.goToPage(0)
         }, 1000);
     } else {
         setTimeout(() => isLoading.value = false, 2000);
