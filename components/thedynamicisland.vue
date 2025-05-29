@@ -24,6 +24,7 @@ function handleClickOutside(event) {
     return
   }
   if (dynamicIsland.value && !dynamicIsland.value.contains(event.target)) {
+    IslandStore.setActive(false)
     IslandStore.setMore(false)
     IslandStore.setText(false)
     setTimeout(() => {
@@ -39,7 +40,7 @@ function handleClickOutside(event) {
         IslandStore.setText(false)
         IslandStore.setActive(false)
         IslandStore.setLeftTypeIcon('');
-    }, 2400);
+    }, 4400);
   }
 }
 

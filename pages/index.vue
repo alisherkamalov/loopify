@@ -24,7 +24,7 @@
         <Slider>
             <template #page-0>
                 <div class="isauth">
-                    <div class="dynamicislandbox" :class="{ active: notificationStore.isText }"></div>
+                    <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
                     <TheHeader />
                     <openSearch :currentLanguage="languageStore.currentLanguage" />
                     <div class="content">

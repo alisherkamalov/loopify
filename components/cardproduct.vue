@@ -103,13 +103,13 @@ const addProductToCart = async (productId) => {
         notificationStore.setText(true);
         notificationStore.setLeftTypeIcon('error');
         setTimeout(() => {
-            if (!notificationStore.isMore) {
+            if (notificationStore.isMore) {
+                notificationStore.setText(true)
+            } else {
                 notificationStore.setActive(false);
                 notificationStore.setText(false)
                 notificationStore.setLeftTypeIcon('');
-            } else {
-                notificationStore.setActive(false);
-                notificationStore.setText(true)
+                
             }
         }, 3000);
         return;
