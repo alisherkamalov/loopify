@@ -23,11 +23,11 @@
 import { ref } from 'vue';
 import { h } from 'vue'
 import axios from 'axios';
-import Notification from '../components/thenotification.vue'
+import Notification from '../components/thedynamicisland.vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { VTextField } from 'vuetify/components';
 import { useRouter } from 'vue-router';
-import { useNotiStore } from '~/store/notificationStore';
+import { useNotiStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
 const notificationStore = useNotiStore()
 const router = useRouter()

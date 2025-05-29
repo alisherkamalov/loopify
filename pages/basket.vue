@@ -62,8 +62,8 @@ import { VProgressCircular } from 'vuetify/components';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useLanguageStore } from '~/store/languagesStore';
 import axios from 'axios';
-import Notification from '../components/thenotification.vue'
-import { useNotiStore } from '~/store/notificationStore';
+import Notification from '../components/thedynamicisland.vue'
+import { useNotiStore } from '~/store/IslandStore';
 
 const notificationStore = useNotiStore();
 const router = useRouter();

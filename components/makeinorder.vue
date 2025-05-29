@@ -15,7 +15,7 @@
 import { VTextField } from 'vuetify/components';
 import { useMakeOrder } from '~/store/MakeOrderStore';
 import { useLastProductStore } from '~/store/lastProductStore';
-import { useNotiStore } from '~/store/notificationStore';
+import { useNotiStore } from '~/store/IslandStore';
 import { ref } from 'vue';
 import axios from 'axios';
 import { useLanguageStore } from '~/store/languagesStore';

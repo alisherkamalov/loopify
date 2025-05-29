@@ -1,8 +1,9 @@
 <template>
     <client-only>
+        <DynamicIsland/>
         <BottomSheet v-model="sheetStore.isOpen" 
         :blocking="true"
-        :snap-points="['50%', '90%']"
+        :snap-points="['50%', '85%']"
             :spring-config="{ tension: 300, friction: 30 }"
             :header-height="50"
             :footer-height="0"
@@ -11,7 +12,7 @@
             :disable-scrollbar="true"
             :disable-header="true"
             :disable-footer="true"
-        :initial-snap-point="0"
+
             :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
             beta settings ui
         </BottomSheet>
@@ -24,6 +25,7 @@
         <Slider>
             <template #page-0>
                 <div class="isauth">
+                    <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
                     <TheHeader />
                     <openSearch :currentLanguage="languageStore.currentLanguage" />
                     <div class="content">
@@ -98,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { VProgressCircular } from 'vuetify/components'
 import { useFocusStore } from '~/store/focusStore'
 import { useLanguageStore } from '~/store/languagesStore'
@@ -108,14 +110,17 @@ import openSearch from '~/components/openSearch.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
 import CardProduct from '~/components/cardproduct.vue'
 import axios from 'axios'
+import DynamicIsland from '~/components/thedynamicisland.vue'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
 import Slider from '~/components/sliderpage.vue'
 import { useSheetStore } from '~/store/sheetStore'
 import BottomSheet from '@douxcode/vue-spring-bottom-sheet'
 import '@douxcode/vue-spring-bottom-sheet/dist/style.css'
+import { useNotiStore } from '~/store/IslandStore'
 const sheetStore = useSheetStore()
 const focusStore = useFocusStore()
+const notificationStore = useNotiStore()
 const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
@@ -159,7 +164,16 @@ onMounted(() => {
 main.active {
     overflow: hidden;
 }
-
+.dynamicislandbox {
+    width: 100%;
+    min-height: 15px;
+    display: flex;
+    background-color: transparent;
+    transition: all 0.5s ease;
+}
+.dynamicislandbox.active {
+    min-height: 60px;
+}
 .pagesroutes {
     width: 100%;
     height: 100dvh;
@@ -219,6 +233,7 @@ footer {
     position: relative;
     background-color: black;
     display: flex;
+    padding-bottom: 15px;
     flex-direction: column;
     align-items: start;
 }
@@ -234,7 +249,6 @@ footer {
     font-size: 30px;
     font-weight: 600;
 }
-
 .loading {
     display: flex;
     position: fixed;
@@ -261,6 +275,8 @@ footer {
 .isauth {
     height: 100dvh;
     width: 100%;
+    display: flex;
+    flex-direction: column;
     background-color: var(--background);
 }
 
@@ -270,11 +286,8 @@ footer {
 }
 
 .content {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
     width: 100%;
-    min-height: 100dvh;
+    flex: 1;
     border-top-left-radius: 50px;
     border-top-right-radius: 50px;
     background-color: var(--bg-cont);

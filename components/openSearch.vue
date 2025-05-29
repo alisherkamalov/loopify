@@ -59,7 +59,7 @@ import { VProgressCircular } from 'vuetify/components'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { languages } from '../lib/languages'
-import { useNotiStore } from '~/store/notificationStore'
+import { useNotiStore } from '~/store/IslandStore'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { h } from 'vue'
 import axios from 'axios'
@@ -423,7 +423,7 @@ onBeforeUnmount(() => {
     z-index: 1001;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 55px;
+    margin-top: 65px;
     padding-bottom: 15px;
     gap: 10px;
     opacity: 0;

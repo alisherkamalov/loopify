@@ -4,8 +4,8 @@
             <div v-for="(product, index) in allproductstore.products" :key="product.title" class="frame-cardproduct"
                 :ref="el => frameRefs[index] = el">
                 <div class="cardproduct">
-                    <a-tooltip class="btnclose" title="close" @click.stop="closeProduct(activeFrameIndex)"
-                        :class="{ active: activeFrameIndex === index }">
+                    <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back"
+                        @click.stop="closeProduct(activeFrameIndex)" :class="{ active: activeFrameIndex === index }">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                     </a-tooltip>
                     <div v-if="activeFrameIndex !== index" class="mini-info"
@@ -47,17 +47,19 @@
                         </Swiper>
                         <div class="cardproduct__content" :class="{ active: activeFrameIndex === index }">
                             <div class="top">
-                                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[product.deviceType] }} {{
-                                    product.name }}</h3>
+                                <h3 class="cardproduct__title">{{
+                                    languageStore.currentLanguage.devicetype[product.deviceType] }} {{
+                                        product.name }}</h3>
                                 <p class="cardproduct__price">{{ product.price }} ₸</p>
                             </div>
                             <div class="bottom">
                                 <button class="cardproduct__btn more" @click.stop="openProduct(index)"
-                                    :class="{ active: activeFrameIndex === index }">{{ currentLanguage.more
+                                    :class="{ active: activeFrameIndex === index }">{{
+                                        languageStore.currentLanguage.more
                                     }}</button>
                                 <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
                                     @click.stop="addProductToCart(product)">
-                                    {{ currentLanguage.incart }}
+                                    {{ languageStore.currentLanguage.incart }}
                                 </button>
                             </div>
                         </div>
@@ -79,14 +81,13 @@ import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
-import { useNotiStore } from '~/store/notificationStore';
+import { useNotiStore } from '~/store/IslandStore';
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 import { useLanguageStore } from '~/store/languagesStore'
-
+const languageStore = useLanguageStore()
 const store = usePageStore()
-
 const notificationStore = useNotiStore()
 const lastProductStore = useLastProductStore()
 const videoStates = ref({});
@@ -97,10 +98,17 @@ const allproductstore = useAllProductStore()
 const addProductToCart = async (productId) => {
     const token = localStorage.getItem('token')
     if (!token) {
-        notificationStore.setNotification(currentLanguage.authonwebsite);
+        notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
         notificationStore.setActive(true);
+        notificationStore.setText(true);
+
         setTimeout(() => {
-            notificationStore.setActive(false);
+            if (!notificationStore.isMore) {
+                notificationStore.setActive(false);
+                notificationStore.setText(false)
+            } else {
+                notificationStore.setActive(false);
+            }
         }, 3000);
         return;
     }
@@ -117,7 +125,7 @@ const addProductToCart = async (productId) => {
             }
         );
         console.log(response.data)
-        notificationStore.setNotification(currentLanguage.productaddedcart);
+        notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         setTimeout(() => {
             notificationStore.setActive(false);
@@ -125,9 +133,9 @@ const addProductToCart = async (productId) => {
 
     } catch (error) {
         if (error.response) {
-            notificationStore.setNotification(currentLanguage.errorproductaddedcart);
+            notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
         } else {
-            notificationStore.setNotification(currentLanguage.errorfetch);
+            notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
         }
         notificationStore.setActive(true);
         setTimeout(() => {
@@ -188,8 +196,6 @@ const props = defineProps({
         required: true
     }
 })
-const languageStore = useLanguageStore()
-const currentLanguage = computed(() => languageStore.currentLanguage)
 const handleBackButton = (event) => {
     if (activeFrameIndex.value !== -1) {
         event.preventDefault();
@@ -214,10 +220,12 @@ onBeforeUnmount(() => {
 .cardproduct__btn.more.active {
     display: none;
 }
+
 .cardproduct.active {
     max-width: 100%;
     max-height: 100dvh;
 }
+
 .btnclose {
     display: none;
     background-color: var(--background);
@@ -249,18 +257,6 @@ onBeforeUnmount(() => {
     left: 10px;
 }
 
-.frame-cardproduct.active {
-    position: fixed;
-    z-index: 2003;
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
-    max-height: 100vh;
-    height: 100vh;
-    margin: 0;
-    border-radius: 0;
-}
 .cardproduct__img.active {
     translate: 0px -50%;
 }
@@ -350,6 +346,8 @@ onBeforeUnmount(() => {
     justify-content: center;
     margin-top: 15px;
     margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
     gap: 20px;
 }
 
@@ -543,13 +541,16 @@ onBeforeUnmount(() => {
     .cardproduct__img.active {
         translate: 0px -50%;
     }
+
     .cardproduct__media.active {
         width: 70%;
         height: 400px;
     }
+
     .frame-cardproduct {
         margin-right: 0;
     }
+
     .cardproduct.active {
         max-width: 100% !important;
         max-height: 100dvh;

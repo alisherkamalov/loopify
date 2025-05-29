@@ -1,6 +1,5 @@
 <!-- theheader.vue -->
 <template>
-  <Notification />
   <header>
     <div class="pc">
       <div class="logo" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }"></div>
@@ -31,7 +30,6 @@ import { ref, computed } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { h } from 'vue'
-import Notification from '../components/thenotification.vue'
 import { MenuOutlined } from '@ant-design/icons-vue'
 import SearchInput from './searchInput.vue'
 import HeaderButton from './headerbutton.vue'

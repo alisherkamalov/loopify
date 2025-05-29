@@ -60,8 +60,8 @@ import axios from 'axios';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '~/store/languagesStore';
-import Notification from '../components/thenotification.vue'
-import { useNotiStore } from '~/store/notificationStore';
+import Notification from '../components/thedynamicisland.vue'
+import { useNotiStore } from '~/store/IslandStore';
 const username = ref('')
 const email = ref('')
 const notificationStore = useNotiStore()

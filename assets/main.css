@@ -92,6 +92,10 @@ textarea:focus, input:focus, button:focus {
     --textfield-color: #c4c4c4;
     --logo-url: url(./logo-light.svg);
     --vsbs-max-width: 100%;
+    --vsbs-background: var(--background);
+}
+[data-vsbs-header]:before {
+    background-color: var(--foreground) !important;
 }
 body {
     background-color: var(--background);

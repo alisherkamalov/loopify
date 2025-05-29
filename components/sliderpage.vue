@@ -72,6 +72,7 @@ const getSlideClass = (index) => {
   overflow-x: hidden;
   background-color: rgba(180, 180, 180, 0.5);
   width: 100%;
+  min-height: 100vh;
 }
 
 .slider-track {

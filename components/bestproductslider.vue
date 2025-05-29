@@ -142,6 +142,8 @@ onBeforeUnmount(() => {
   width: 98%;
   height: 250px;
   margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 50px;
   background-color: var(--background);
   align-items: center;

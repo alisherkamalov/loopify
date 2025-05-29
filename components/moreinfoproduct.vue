@@ -1,8 +1,7 @@
 <template>
-    <Notification />
     <Makeinorder />
     <div class="container" :class="{ active: lastProductStore.isSlider }">
-        <a-tooltip class="btnclose" :title="currentLanguage.back">
+        <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back">
             <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(CloseOutlined)" />
         </a-tooltip>
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
@@ -37,17 +36,17 @@
         </Swiper>
         <div class="cardproduct__content">
             <div class="top">
-                <h3 class="cardproduct__title">{{ currentLanguage.devicetype[lastProduct.deviceType] }} {{
+                <h3 class="cardproduct__title">{{ languageStore.currentLanguage.devicetype[lastProduct.deviceType] }} {{
                     lastProduct.name }}</h3>
                 <p class="cardproduct__price">{{ lastProduct.price }} ₸</p>
             </div>
             <div class="bottom">
                 <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{
-                    currentLanguage.makeinorder
+                    languageStore.currentLanguage.makeinorder
                     }}</button>
                 <button class="cardproduct__btn incart"
-                    @click.stop="addProductToCart(lastProduct._id, currentLanguage)">
-                    {{ currentLanguage.incart }}
+                    @click.stop="addProductToCart(lastProduct._id)">
+                    {{ languageStore.currentLanguage.incart }}
                 </button>
             </div>
         </div>
@@ -61,12 +60,11 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import { h } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
-import Notification from '../components/thenotification.vue'
 import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import axios from 'axios'
-import { useNotiStore } from '~/store/notificationStore';
+import { useNotiStore } from '~/store/IslandStore';
 import { useMakeOrder } from '~/store/MakeOrderStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 
@@ -76,7 +74,6 @@ const lastProductStore = useLastProductStore();
 const lastProduct = computed(() => lastProductStore.lastproduct);
 import { useLanguageStore } from '~/store/languagesStore'
 const languageStore = useLanguageStore()
-const currentLanguage = computed(() => languageStore.currentLanguage)
 const videoStates = ref({});
 const notificationStore = useNotiStore()
 const videoRefs = ref({});
@@ -89,7 +86,7 @@ const closeProduct = () => {
 const addProductToCart = async (productId) => {
     const token = localStorage.getItem('token')
     if (!token) {
-        notificationStore.setNotification(currentLanguage.authonwebsite);
+        notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
         notificationStore.setActive(true);
         setTimeout(() => {
             notificationStore.setActive(false);
@@ -108,7 +105,7 @@ const addProductToCart = async (productId) => {
                 },
             }
         );
-        notificationStore.setNotification(currentLanguage.productaddedcart);
+        notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         console.log(response.data.message || 'Товар добавлен в корзину');
         setTimeout(() => {
@@ -118,9 +115,9 @@ const addProductToCart = async (productId) => {
     } catch (error) {
         // Ошибка при добавлении товара в корзину
         if (error.response) {
-            notificationStore.setNotification(currentLanguage.errorproductaddedcart);
+            notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
         } else {
-            notificationStore.setNotification(currentLanguage.errorfetch);
+            notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
         }
         notificationStore.setActive(true);
         setTimeout(() => {
