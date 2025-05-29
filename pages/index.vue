@@ -146,7 +146,7 @@ onMounted(() => {
             })
         setTimeout(() => {
             pagesStore.goToPage(0)
-        }, 500);
+        }, 1000);
     } else {
         setTimeout(() => isLoading.value = false, 2000);
     }
