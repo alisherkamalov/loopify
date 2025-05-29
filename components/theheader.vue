@@ -18,25 +18,7 @@
     </div>
 
     <div class="mobile">
-      <div class="darkmode" @click="MenuOpenAndClose" :class="{ 'active': isMenu }"></div>
-      <div class="menu" :class="{ 'active': isMenu }">
-        <div class="logo mobile"></div>
-        <div class="frame">
-          <HeaderButton class="profile" :text="languageStore.currentLanguage.profile" @click="router.push('/profile')" />
-        </div>
-        <div class="frame">
-          <HeaderButton class="basket" :text="languageStore.currentLanguage.basket" @click="router.push('/basket')" />
-        </div>
-        <div class="frame">
-          <LangDropdown 
-            class="language" 
-            :language="'ru.png'" 
-            :variants="languageVariants"
-            @language-changed="languageStore.setLanguage"
-          />
-        </div>
-      </div>
-      <a-tooltip @click="MenuOpenAndClose" class="menubtn" :class="{ 'deactivate': focusStore.isFocused }">
+      <a-tooltip @click="openBottomSheet()" class="menubtn" :class="{ 'deactivate': focusStore.isFocused }">
         <a-button color="white" shape="circle" :icon="h(MenuOutlined)" />
       </a-tooltip>
       <SearchInput :place="languageStore.currentLanguage.search" />

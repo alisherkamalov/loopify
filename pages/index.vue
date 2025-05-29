@@ -1,11 +1,18 @@
 <template>
     <client-only>
         <BottomSheet v-model="sheetStore.isOpen" 
-        :height="300"
-      :disableBodyScroll="true"
-      @closed="sheetStore.closeSheet"
-      class="bottomsheet"
-      >
+        :blocking="true"
+        :snap-points="['50%', '90%']"
+            :spring-config="{ tension: 300, friction: 30 }"
+            :header-height="50"
+            :footer-height="0"
+            :close-on-click-outside="true"
+            :close-on-esc="true"
+            :disable-scrollbar="true"
+            :disable-header="true"
+            :disable-footer="true"
+        :initial-snap-point="0"
+            :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
             beta settings ui
         </BottomSheet>
     </client-only>
@@ -91,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { VProgressCircular } from 'vuetify/components'
 import { useFocusStore } from '~/store/focusStore'
 import { useLanguageStore } from '~/store/languagesStore'
@@ -114,8 +121,8 @@ const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
 const token = ref(null)
+
 onMounted(() => {
-    console.log('index.vue onMounted сработал')
     token.value = localStorage.getItem('token')
     if (token.value) {
         axios.get('https://backendlopify.vercel.app/me', {
@@ -144,6 +151,7 @@ onMounted(() => {
     lastProductStore.setLastProduct([]);
     lastProductStore.setSlider(false);
 });
+
 </script>
 
 
@@ -160,9 +168,11 @@ main.active {
     overflow: hidden;
     transition: all 0.3s ease;
 }
+
 .bottomsheet {
     min-width: 100% !important;
 }
+
 .social {
     width: 30px;
     height: 30px;
