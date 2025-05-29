@@ -11,6 +11,7 @@ export const useIslandStore = defineStore('island', {
     error: '/dynamicisland/error.json',
     addedtocart: '/dynamicisland/addtobasket.json',
     auth: '/dynamicisland/faceid.json',
+    success: '/dynamicisland/success.json',
     activelefttypeicon: '',
     activerighttypeicon: ''
   }),
@@ -24,6 +25,14 @@ export const useIslandStore = defineStore('island', {
         this.activelefttypeicon = this.addedtocart;
         return
       }
+      else if (typeicon === 'success') {
+        this.activelefttypeicon = this.success;
+        return
+      }
+      else {
+        this.activelefttypeicon = '';
+        return
+      }
     },
     setRightTypeIcon(typeicon) {
       if (typeicon === 'error') {
@@ -32,6 +41,14 @@ export const useIslandStore = defineStore('island', {
       }
       else if (typeicon === 'addedtocart') {
         this.activelefttypeicon = this.addedtocart;
+        return
+      }
+      else if (typeicon === 'success') {
+        this.activelefttypeicon = this.success;
+        return
+      }
+      else {
+        this.activelefttypeicon = '';
         return
       }
     },

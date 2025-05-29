@@ -1,4 +1,5 @@
 <template>
+    <thedynamicisland />
     <a-tooltip class="close" :title="languageStore.currentLanguage.back" @click="router.push('/signin')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
@@ -7,8 +8,8 @@
             <span class="textlogo">LOOPIFY</span>
         </span>
         <div class="content">
-            <v-text-field v-model="nickname" class="input" clearable :label="languageStore.currentLanguage.nameandsurname"
-                variant="solo"></v-text-field>
+            <v-text-field v-model="nickname" class="input" clearable
+                :label="languageStore.currentLanguage.nameandsurname" variant="solo"></v-text-field>
             <v-text-field v-model="email" class="input" clearable :label="languageStore.currentLanguage.email"
                 variant="solo"></v-text-field>
             <v-text-field v-model="password" class="input" clearable :label="languageStore.currentLanguage.password"
@@ -25,6 +26,7 @@ import axios from 'axios';
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { VTextField } from 'vuetify/components';
 import { useRouter } from 'vue-router';
+import thedynamicisland from '~/components/thedynamicisland.vue';
 import { useIslandStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
 const notificationStore = useIslandStore()
@@ -44,12 +46,15 @@ const registration = () => {
         .then(response => {
             notificationStore.setNotification(languageStore.currentLanguage.successsignup)
             notificationStore.setActive(true)
+            notificationStore.setText(true)
+            notificationStore.setLeftTypeIcon('success')
             setTimeout(() => {
-                notificationStore.setActive(false)
+                notificationStore.setActive(false);
+                notificationStore.setText(false);
             }, 2000);
             setTimeout(() => {
                 router.push('/signin')
-            }, 2000);
+            }, 4000);
         })
         .catch(error => {
             const res = error.response?.data;
@@ -64,8 +69,11 @@ const registration = () => {
             }
 
             notificationStore.setActive(true);
+            notificationStore.setText(true)
+            notificationStore.setLeftTypeIcon('error')
             setTimeout(() => {
                 notificationStore.setActive(false)
+                notificationStore.setText(false)
             }, 2000);
         });
 }
@@ -81,6 +89,7 @@ main {
     align-items: center;
     flex-direction: column;
     width: 100%;
+    margin: auto;
     gap: 15px;
 }
 
@@ -109,6 +118,7 @@ main {
     background-color: var(--foreground);
     color: var(--background);
 }
+
 .signinbtn {
     color: var(--foreground);
     cursor: pointer;
@@ -116,6 +126,7 @@ main {
     text-decoration-color: var(--foreground);
     text-decoration-thickness: 2px;
 }
+
 .btnsignin:hover {
     background-color: var(--foreground);
     color: var(--background);

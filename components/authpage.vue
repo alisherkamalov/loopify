@@ -19,6 +19,12 @@ const dynamicIsland = useIslandStore();
 const languageStore = useLanguageStore();
 const pagesStore = usePageStore()
 onMounted(() => {
+    dynamicIsland.setActive(false);
+    dynamicIsland.setText(false);
+    dynamicIsland.setLeftTypeIcon('');
+    dynamicIsland.setRightTypeIcon('');
+    dynamicIsland.setMore(false);
+    dynamicIsland.setAuth(false);
     if (localStorage.getItem('authenticated') === 'true') {
         authenticated.value = true;
     }

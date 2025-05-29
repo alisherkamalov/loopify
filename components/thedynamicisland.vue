@@ -1,23 +1,23 @@
 <template>
     <div class="notification" ref="dynamicIsland"
         :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth }" @click.stop="moreInfo">
-        <client-only v-if="IslandStore.activelefttypeicon">
-            <div class="cont-left-icon" :class="{ 'active': IslandStore.isText }">
+        <client-only>
+            <div v-if="IslandStore.activelefttypeicon" class="cont-left-icon" :class="{ 'active': IslandStore.isText }">
                 <Vue3Lottie :loop="false" :autoplay="true" class="left-icon"
                     :animationLink="IslandStore.activelefttypeicon" />
             </div>
         </client-only>
-        <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.notification != ''">
+        <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.isText">
             {{ IslandStore.notification }}
         </span>
-        <client-only v-if="IslandStore.isAuth">
-            <div class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
+        <client-only>
+            <div v-if="IslandStore.isAuth" class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
                 <Vue3Lottie :loop="false" :autoplay="true" class="auth-icon"
                     :animationLink="IslandStore.auth" />
             </div>
         </client-only>
-        <client-only v-if="IslandStore.activerighttypeicon">
-            <div class="cont-right-icon" :class="{ 'active': IslandStore.isText }">
+        <client-only>
+            <div v-if="IslandStore.activerighttypeicon" class="cont-right-icon" :class="{ 'active': IslandStore.isText }">
                 <Vue3Lottie :loop="false" :autoplay="true" class="right-icon"
                     :animationLink="IslandStore.activerighttypeicon" />
             </div>
@@ -46,7 +46,6 @@ watch(() => IslandStore.isMore, () => {
     if (debounceTimeout) {
         clearTimeout(debounceTimeout);
     }
-
     debounceTimeout = setTimeout(() => {
         IslandStore.setText(false);
         IslandStore.setActive(false);
@@ -60,6 +59,9 @@ onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
 })
 const moreInfo = () => {
+    if(IslandStore.isAuth) {
+        return
+    }
     if (IslandStore.notification != '') {
         IslandStore.setMore(true)
         IslandStore.setText(true)
@@ -149,7 +151,7 @@ const moreInfo = () => {
 
 .notification.active {
     opacity: 1;
-    max-width: 80%;
+    max-width: 70%;
     max-height: 40px;
 }
 

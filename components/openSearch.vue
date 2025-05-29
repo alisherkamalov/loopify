@@ -152,7 +152,7 @@ const selectProduct = (product) => {
             lastProductStore.setLastProduct([]);
         }, 500);
     } else {
-        store.goToPage(1)
+        store.goToPage(2)
         lastProductStore.setLastProduct(product);
         focusStore.activeProduct && document.querySelector('.product--active')?.classList.remove('final-position');
     }
