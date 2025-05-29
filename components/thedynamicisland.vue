@@ -1,59 +1,66 @@
 <template>
-    <div class="notification" ref="dynamicIsland" :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore }" @click.stop="moreInfo">
-        <client-only>
-            <Vue3Lottie v-if="IslandStore.activelefttypeicon" 
-            :loop="false"
-            :autoplay="true"
-            class="left-icon" :animationLink="IslandStore.activelefttypeicon" />
+    <div class="notification" ref="dynamicIsland"
+        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth }" @click.stop="moreInfo">
+        <client-only v-if="IslandStore.activelefttypeicon">
+            <div class="cont-left-icon" :class="{ 'active': IslandStore.isText }">
+                <Vue3Lottie :loop="false" :autoplay="true" class="left-icon"
+                    :animationLink="IslandStore.activelefttypeicon" />
+            </div>
         </client-only>
-        <span class="textnotification" :class="{ 'active': IslandStore.isText }">
+        <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.notification != ''">
             {{ IslandStore.notification }}
         </span>
+        <client-only v-if="IslandStore.isAuth">
+            <div class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
+                <Vue3Lottie :loop="false" :autoplay="true" class="auth-icon"
+                    :animationLink="IslandStore.auth" />
+            </div>
+        </client-only>
+        <client-only v-if="IslandStore.activerighttypeicon">
+            <div class="cont-right-icon" :class="{ 'active': IslandStore.isText }">
+                <Vue3Lottie :loop="false" :autoplay="true" class="right-icon"
+                    :animationLink="IslandStore.activerighttypeicon" />
+            </div>
+        </client-only>
     </div>
 </template>
 
 <script setup>
-import { useNotiStore } from '~/store/IslandStore'
+import { useIslandStore } from '~/store/IslandStore'
 import { Vue3Lottie } from 'vue3-lottie'
-const IslandStore = useNotiStore()
-
+const IslandStore = useIslandStore()
+let debounceTimeout = null;
 const dynamicIsland = ref(null)
 
 function handleClickOutside(event) {
-  if (!IslandStore.isMore && !IslandStore.isActive) {
-    return
-  }
-  if (dynamicIsland.value && !dynamicIsland.value.contains(event.target)) {
-    IslandStore.setActive(false)
-    IslandStore.setMore(false)
-    IslandStore.setText(false)
-    setTimeout(() => {
+    if (!IslandStore.isMore && !IslandStore.isActive) {
+        return
+    }
+    if (dynamicIsland.value && !dynamicIsland.value.contains(event.target)) {
+        IslandStore.setMore(false)
         IslandStore.setActive(true)
         IslandStore.setText(true)
-    }, 400);
-    setTimeout(() => {
-        if (IslandStore.isMore) {
-            IslandStore.setText(true)
-            IslandStore.setActive(false)
-            return
-        }
-        IslandStore.setText(false)
-        IslandStore.setActive(false)
-        IslandStore.setLeftTypeIcon('');
-    }, 4400);
-  }
+    }
 }
+watch(() => IslandStore.isMore, () => {
+    if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+    }
 
+    debounceTimeout = setTimeout(() => {
+        IslandStore.setText(false);
+        IslandStore.setActive(false);
+    }, 2000);
+});
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
+    document.addEventListener('click', handleClickOutside)
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
+    document.removeEventListener('click', handleClickOutside)
 })
 const moreInfo = () => {
     if (IslandStore.notification != '') {
-        IslandStore.setLeftTypeIcon('')
         IslandStore.setMore(true)
         IslandStore.setText(true)
     }
@@ -81,23 +88,60 @@ const moreInfo = () => {
     overflow: hidden;
     justify-content: space-between;
     align-items: center;
-    z-index: 19999;
+    z-index: 9999;
     max-height: 5px;
-    transition: all 0.5s ease;
+    transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+
+.left-icon, .right-icon {
+    max-width: 40px;
+    max-height: 40px;
+    width: 100%;
+    height: 100%;
 }
 .left-icon {
-    max-width: 30px;
-    max-height: 30px;
-    width: 100%;
-    translate: -30px;
-    height: 100%;
+    margin-left: 10px;
 }
 .textnotification {
     opacity: 0;
-    translate: -50px;
+    width: 90%;
+    margin: 0 auto;
     transition: all 0.3s ease;
 }
 
+.cont-left-icon, .cont-right-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+.cont-auth-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+.auth-icon {
+    max-width: 100px;
+    max-height: 100px;
+    width: 100%;
+    height: 100%;
+}
+.cont-auth-icon.active {
+    opacity: 1;
+}
+.cont-left-icon.active {
+    opacity: 1;
+}
+.cont-right-icon.active {
+    opacity: 1;
+}
 .textnotification.active {
     opacity: 1;
     color: white;
@@ -108,8 +152,14 @@ const moreInfo = () => {
     max-width: 80%;
     max-height: 40px;
 }
+
 .notification.more {
     max-width: 95%;
     max-height: 200px;
+}
+.notification.auth {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 35px;
 }
 </style>

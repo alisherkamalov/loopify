@@ -64,7 +64,7 @@ import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import axios from 'axios'
-import { useNotiStore } from '~/store/IslandStore';
+import { useIslandStore } from '~/store/IslandStore';
 import { useMakeOrder } from '~/store/MakeOrderStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 
@@ -75,7 +75,7 @@ const lastProduct = computed(() => lastProductStore.lastproduct);
 import { useLanguageStore } from '~/store/languagesStore'
 const languageStore = useLanguageStore()
 const videoStates = ref({});
-const notificationStore = useNotiStore()
+const notificationStore = useIslandStore()
 const videoRefs = ref({});
 const closeProduct = () => {
     store.prevPage()

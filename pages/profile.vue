@@ -1,5 +1,4 @@
 <template>
-    <Notification />
     <a-tooltip class="close" :title="languageStore.currentLanguage.back" @click="router.push('/')">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
@@ -60,11 +59,10 @@ import axios from 'axios';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '~/store/languagesStore';
-import Notification from '../components/thedynamicisland.vue'
-import { useNotiStore } from '~/store/IslandStore';
+import { useIslandStore } from '~/store/IslandStore';
 const username = ref('')
 const email = ref('')
-const notificationStore = useNotiStore()
+const notificationStore = useIslandStore()
 const router = useRouter()
 const isOpenMark = ref(false)
 const languageStore = useLanguageStore();

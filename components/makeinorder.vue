@@ -15,11 +15,11 @@
 import { VTextField } from 'vuetify/components';
 import { useMakeOrder } from '~/store/MakeOrderStore';
 import { useLastProductStore } from '~/store/lastProductStore';
-import { useNotiStore } from '~/store/IslandStore';
+import { useIslandStore } from '~/store/IslandStore';
 import { ref } from 'vue';
 import axios from 'axios';
 import { useLanguageStore } from '~/store/languagesStore';
-const notificationStore = useNotiStore()
+const notificationStore = useIslandStore()
 const languageStore = useLanguageStore();
 const uselastproduct = useLastProductStore()
 const makeorder = useMakeOrder()

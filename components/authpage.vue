@@ -1,0 +1,123 @@
+<template>
+    <div class="container">
+        <span class="title">
+            <span class="textlogo">LOOPIFY</span>
+        </span>
+        <span class="authtext">Подтверждение личности</span>
+        <button @click="authenticate">Войти</button>
+    </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useIslandStore } from '~/store/IslandStore';
+import { useLanguageStore } from '~/store/languagesStore';
+import { usePageStore } from '~/store/PagesRoutesStore';
+
+const authenticated = ref(false);
+const dynamicIsland = useIslandStore();
+const languageStore = useLanguageStore();
+const pagesStore = usePageStore()
+onMounted(() => {
+    if (localStorage.getItem('authenticated') === 'true') {
+        authenticated.value = true;
+    }
+});
+
+async function authenticate() {
+    if (!window.PublicKeyCredential) {
+        alert('WebAuthn не поддерживается этим браузером');
+        return;
+    }
+
+    const publicKey = {
+        challenge: Uint8Array.from('simple-challenge', c => c.charCodeAt(0)),
+        rp: { name: 'Loopify' },
+        user: {
+            id: Uint8Array.from('user-id', c => c.charCodeAt(0)),
+            name: localStorage.getItem('useremail') || 'Loopify User',
+            displayName: localStorage.getItem('username') || 'Loopify User'
+        },
+        pubKeyCredParams: [
+            { type: 'public-key', alg: -7 },
+            { type: 'public-key', alg: -257 }
+        ],
+        authenticatorSelection: {
+            authenticatorAttachment: 'platform',
+            userVerification: 'required'
+        },
+        timeout: 60000,
+        attestation: 'none'
+    };
+
+
+    try {
+        const credential = await navigator.credentials.create({ publicKey });
+        console.log('Успешная проверка:', credential);
+        localStorage.setItem('authenticated', 'true');
+        authenticated.value = true;
+        dynamicIsland.setAuth(true);
+        setTimeout(() => {
+            pagesStore.goToPage(1);
+        }, 500);
+        setTimeout(() => {
+            dynamicIsland.setAuth(false);
+        }, 2000);
+    } catch (err) {
+        if (localStorage.getItem('authenticated') === 'true') {
+            authenticated.value = true;
+            dynamicIsland.setAuth(true);
+            setTimeout(() => {
+                pagesStore.goToPage(1);
+            }, 500);
+            setTimeout(() => {
+                dynamicIsland.setAuth(false);
+            }, 2000);
+            return;
+        }
+        console.error('Ошибка биометрии:', err);
+        dynamicIsland.setNotification(languageStore.currentLanguage.failedauth);
+        dynamicIsland.setActive(true);
+        dynamicIsland.setText(true);
+        dynamicIsland.setLeftTypeIcon('error');
+    }
+}
+</script>
+<style scoped>
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.title {
+    font-size: 40px;
+    margin-top: 200px;
+}
+
+.textlogo {
+    font-family: 'Bernoru';
+}
+
+.authtext {
+    font-size: 20px;
+    margin-bottom: 50px;
+}
+
+button {
+    width: 200px;
+    height: 50px;
+    border-radius: 25px;
+    background-color: var(--background);
+    border: 1px solid var(--border-color);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--foreground);
+    color: var(--background);
+}
+</style>

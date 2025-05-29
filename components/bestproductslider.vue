@@ -1,7 +1,6 @@
 <template>
   <div class="slider-container">
     <button class="nav left" @click="manualSlide('prev')">‹</button>
-
     <div class="best-product-slider">
       <div v-for="(slide, index) in slides" :key="index" class="slide" :class="slide.class"
         :style="getSlideStyle(index)">
@@ -13,7 +12,6 @@
         </div>
       </div>
     </div>
-
     <button class="nav right" @click="manualSlide('next')">›</button>
   </div>
 </template>
@@ -41,7 +39,7 @@ const isAnimating = ref(false)
 const openmore = (idprod) => {
   lastProductStore.setLastProduct(idprod);
   lastProductStore.setSlider(true)
-  pagesStore.goToPage(1)
+  pagesStore.goToPage(2)
   
 }
 const slides = ref([])

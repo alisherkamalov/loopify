@@ -1,18 +1,10 @@
 <template>
     <client-only>
-        <DynamicIsland/>
-        <BottomSheet v-model="sheetStore.isOpen" 
-        :blocking="true"
-        :snap-points="['50%', '85%']"
-            :spring-config="{ tension: 300, friction: 30 }"
-            :header-height="50"
-            :footer-height="0"
-            :close-on-click-outside="true"
-            :close-on-esc="true"
-            :disable-scrollbar="true"
-            :disable-header="true"
-            :disable-footer="true"
-            :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
+        <DynamicIsland />
+        <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['50%', '85%']"
+            :spring-config="{ tension: 300, friction: 30 }" :header-height="50" :footer-height="0"
+            :close-on-click-outside="true" :close-on-esc="true" :disable-scrollbar="true" :disable-header="true"
+            :disable-footer="true" :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
             beta settings ui
         </BottomSheet>
     </client-only>
@@ -23,6 +15,9 @@
 
         <Slider>
             <template #page-0>
+                <authpage />
+            </template>
+            <template #page-1>
                 <div class="isauth">
                     <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
                     <TheHeader />
@@ -84,7 +79,7 @@
                     </footer>
                 </div>
             </template>
-            <template #page-1>
+            <template #page-2>
                 <div class="moreinfopage">
                     <Moreinfoproduct />
                 </div>
@@ -108,6 +103,8 @@ import openSearch from '~/components/openSearch.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
 import CardProduct from '~/components/cardproduct.vue'
 import axios from 'axios'
+import authpage from '~/components/authpage.vue'
+import { usePageStore } from '~/store/PagesRoutesStore'
 import DynamicIsland from '~/components/thedynamicisland.vue'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
@@ -115,17 +112,21 @@ import Slider from '~/components/sliderpage.vue'
 import { useSheetStore } from '~/store/sheetStore'
 import BottomSheet from '@douxcode/vue-spring-bottom-sheet'
 import '@douxcode/vue-spring-bottom-sheet/dist/style.css'
-import { useNotiStore } from '~/store/IslandStore'
+import { useIslandStore } from '~/store/IslandStore'
 const sheetStore = useSheetStore()
 const focusStore = useFocusStore()
-const notificationStore = useNotiStore()
+const notificationStore = useIslandStore()
 const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
+const pagesStore = usePageStore()
 const token = ref(null)
 
 onMounted(() => {
+    setTimeout(() => {
+            pagesStore.goToPage(1)
+    }, 500);
     token.value = localStorage.getItem('token')
     if (token.value) {
         axios.get('https://backendlopify.vercel.app/me', {
@@ -143,6 +144,9 @@ onMounted(() => {
             .finally(() => {
                 setTimeout(() => isLoading.value = false, 1000);
             })
+        setTimeout(() => {
+            pagesStore.goToPage(0)
+        }, 500);
     } else {
         setTimeout(() => isLoading.value = false, 2000);
     }
@@ -162,6 +166,7 @@ onMounted(() => {
 main.active {
     overflow: hidden;
 }
+
 .dynamicislandbox {
     width: 100%;
     min-height: 15px;
@@ -169,9 +174,11 @@ main.active {
     background-color: transparent;
     transition: all 0.5s ease;
 }
+
 .dynamicislandbox.active {
     min-height: 60px;
 }
+
 .pagesroutes {
     width: 100%;
     height: 100dvh;
@@ -247,6 +254,7 @@ footer {
     font-size: 30px;
     font-weight: 600;
 }
+
 .loading {
     display: flex;
     position: fixed;

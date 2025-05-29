@@ -1,5 +1,4 @@
 <template>
-    <Notification />
     <div class="container">
         <div class="header">
             <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back" @click="router.push('/')">
@@ -62,10 +61,9 @@ import { VProgressCircular } from 'vuetify/components';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useLanguageStore } from '~/store/languagesStore';
 import axios from 'axios';
-import Notification from '../components/thedynamicisland.vue'
-import { useNotiStore } from '~/store/IslandStore';
+import { useIslandStore } from '~/store/IslandStore';
 
-const notificationStore = useNotiStore();
+const notificationStore = useIslandStore();
 const router = useRouter();
 const languageStore = useLanguageStore();
 const displayedProducts = ref([]);

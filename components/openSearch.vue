@@ -1,6 +1,6 @@
 <template>
     <div class="frame-openedsearch" :class="{ active: focusStore.isFocused }">
-        <div ref="foundProductsRef" class="foundproducts" :class="{ active: focusStore.isFocused }">
+        <div ref="foundProductsRef" class="foundproducts" :class="{ 'active': focusStore.isFocused, 'island': dynamicIslandStore.isActive }">
             <div class="sortingproduct">
                 <button class="btn-sortingproduct" :class="{ active: selectedDeviceType === null }"
                     @click="selectedDeviceType = null">
@@ -58,8 +58,6 @@
 import { VProgressCircular } from 'vuetify/components'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useFocusStore } from '~/store/focusStore'
-import { languages } from '../lib/languages'
-import { useNotiStore } from '~/store/IslandStore'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { h } from 'vue'
 import axios from 'axios'
@@ -68,8 +66,10 @@ import Moreinfoproduct from '~/components/moreinfoproduct.vue'
 import { useLastProductStore } from '~/store/lastProductStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 import { useLanguageStore } from '~/store/languagesStore'
+import { useIslandStore } from '~/store/IslandStore'
 
 const store = usePageStore()
+const dynamicIslandStore = useIslandStore()
 const languageStore = useLanguageStore();
 const selectedDeviceType = ref(null)
 
@@ -92,15 +92,14 @@ const frameSearchRef = ref(null)
 const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
 const isLoading = ref(false)
-const notificationStore = useNotiStore()
 const lastProductStore = useLastProductStore()
 const addProductToCart = async (productId,) => {
     const token = localStorage.getItem('token')
     if (!token) {
-        notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
-        notificationStore.setActive(true);
+        dynamicIslandStore.setNotification(languageStore.currentLanguage.authonwebsite);
+        dynamicIslandStore.setActive(true);
         setTimeout(() => {
-            notificationStore.setActive(false);
+            dynamicIslandStore.setActive(false);
         }, 3000);
         return;
     }
@@ -116,21 +115,21 @@ const addProductToCart = async (productId,) => {
                 },
             }
         );
-        notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
-        notificationStore.setActive(true);
+        dynamicIslandStore.setNotification(languageStore.currentLanguage.productaddedcart);
+        dynamicIslandStore.setActive(true);
         setTimeout(() => {
-            notificationStore.setActive(false);
+            dynamicIslandStore.setActive(false);
         }, 3000);
 
     } catch (error) {
         if (error.response) {
-            notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
+            dynamicIslandStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
         } else {
-            notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
+            dynamicIslandStore.setNotification(languageStore.currentLanguage.errorfetch);
         }
-        notificationStore.setActive(true);
+        dynamicIslandStore.setActive(true);
         setTimeout(() => {
-            notificationStore.setActive(false);
+            dynamicIslandStore.setActive(false);
         }, 3000);
     }
 };
@@ -435,6 +434,9 @@ onBeforeUnmount(() => {
     pointer-events: all;
     width: 90%;
     height: 90dvh;
+}
+.foundproducts.island {
+    margin-top: 115px;
 }
 .notfound {
     width: 100%;

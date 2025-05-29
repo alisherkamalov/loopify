@@ -81,14 +81,14 @@ import 'swiper/css/pagination'
 import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
-import { useNotiStore } from '~/store/IslandStore';
+import { useIslandStore } from '~/store/IslandStore';
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 import { useLanguageStore } from '~/store/languagesStore'
 const languageStore = useLanguageStore()
 const store = usePageStore()
-const notificationStore = useNotiStore()
+const notificationStore = useIslandStore()
 const lastProductStore = useLastProductStore()
 const videoStates = ref({});
 const videoRefs = ref({});
@@ -127,10 +127,10 @@ const addProductToCart = async (productId) => {
             }
         );
         console.log(response.data)
+        notificationStore.setLeftTypeIcon('addedtocart');
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         notificationStore.setText(true);
-
         setTimeout(() => {
             if (!notificationStore.isMore) {
                 notificationStore.setActive(false);
@@ -148,7 +148,7 @@ const addProductToCart = async (productId) => {
         }
         notificationStore.setActive(true);
         notificationStore.setText(true);
-
+        notificationStore.setLeftTypeIcon('error');
         setTimeout(() => {
             if (!notificationStore.isMore) {
                 notificationStore.setActive(false);
@@ -162,7 +162,7 @@ const addProductToCart = async (productId) => {
 const openProduct = (index) => {
     const product = allproductstore.products[index];
     lastProductStore.setLastProduct(product);
-    store.nextPage(2)
+    store.goToPage(2)
 };
 
 const initVideo = (el, index) => {
