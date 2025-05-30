@@ -102,16 +102,6 @@ const addProductToCart = async (productId) => {
         notificationStore.setActive(true);
         notificationStore.setText(true);
         notificationStore.setLeftTypeIcon('error');
-        setTimeout(() => {
-            if (notificationStore.isMore) {
-                notificationStore.setText(true)
-            } else {
-                notificationStore.setActive(false);
-                notificationStore.setText(false)
-                notificationStore.setLeftTypeIcon('');
-                
-            }
-        }, 3000);
         return;
     }
     try {
@@ -131,14 +121,6 @@ const addProductToCart = async (productId) => {
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
         notificationStore.setText(true);
-        setTimeout(() => {
-            if (!notificationStore.isMore) {
-                notificationStore.setActive(false);
-                notificationStore.setText(false)
-            } else {
-                notificationStore.setActive(false);
-            }
-        }, 3000);
 
     } catch (error) {
         if (error.response) {
@@ -149,14 +131,6 @@ const addProductToCart = async (productId) => {
         notificationStore.setActive(true);
         notificationStore.setText(true);
         notificationStore.setLeftTypeIcon('error');
-        setTimeout(() => {
-            if (!notificationStore.isMore) {
-                notificationStore.setActive(false);
-                notificationStore.setText(false)
-            } else {
-                notificationStore.setActive(false);
-            }
-        }, 3000);
     }
 };
 const openProduct = (index) => {

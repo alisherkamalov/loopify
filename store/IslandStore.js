@@ -52,6 +52,15 @@ export const useIslandStore = defineStore('island', {
         return
       }
     },
+    deactivateIsland() {
+      this.isActive = false
+      this.notification = '';
+      this.isMore = false;
+      this.isAuth = false;
+      this.isText = false;
+      this.activelefttypeicon = '';
+      this.activerighttypeicon = '';
+    },
     setNotification(noti) {
       this.notification = noti;
     },

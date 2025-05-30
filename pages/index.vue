@@ -1,7 +1,7 @@
 <template>
     <client-only>
         <DynamicIsland />
-        <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['50%', '85%']"
+        <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['90%']"
             :spring-config="{ tension: 300, friction: 30 }" :header-height="50" :footer-height="0"
             :close-on-click-outside="true" :close-on-esc="true" :disable-scrollbar="true" :disable-header="true"
             :disable-footer="true" :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
@@ -76,6 +76,8 @@ const pagesStore = usePageStore()
 const token = ref(null)
 
 onMounted(() => {
+    
+    pagesStore.remsoftenCurrentSlide()
     token.value = localStorage.getItem('token')
     if (token.value) {
         axios.get('https://backendlopify.vercel.app/me', {

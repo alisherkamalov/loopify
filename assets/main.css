@@ -1,45 +1,64 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 @font-face {
     font-family: 'Bernoru';
     src: url('@/assets/bernoru-blackultraexpanded.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Sans';
     src: url('@/assets/sans.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
-  }
-  @font-face {
+}
+
+@font-face {
     font-family: 'Sanss';
     src: url('@/assets/sans2.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
-  }
+}
+
 @keyframes opacityanimate {
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
 }
+
 .container {
     background-color: var(--background);
 }
-.isauth, .containersignin, .containersignup {
+
+.isauth,
+.containersignin,
+.containersignup {
     animation: opacityanimate 1s ease forwards;
 }
+
 .loading {
     animation: opacityanimate 1s ease;
 }
+
 html {
-    overflow: hidden; 
-  }
+    overflow: auto;
+}
+
+html,
+body {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
 ul {
     list-style: none;
 }
+
 * {
     margin: 0;
     padding: 0;
@@ -52,10 +71,15 @@ ul {
 main {
     background-color: var(--background);
 }
-textarea:focus, input:focus, button:focus {
+
+textarea:focus,
+input:focus,
+button:focus {
     outline: none;
 }
-.swiper-button-prev, .swiper-button-next {
+
+.swiper-button-prev,
+.swiper-button-next {
     scale: 0.5;
     color: black !important;
     background-color: var(--background);
@@ -65,26 +89,35 @@ textarea:focus, input:focus, button:focus {
     translate: 0px 100px;
     border: 1px solid var(--border-color);
 }
+
 .swiper-button-next {
     right: 30px !important;
 }
+
 .v-field.v-field--appended.v-field--center-affix.v-field--variant-solo.v-theme--light.v-locale--is-ltr {
     background-color: var(--background);
 }
+
 .swiper-button-prev {
     left: 30px !important;
 }
+
 .v-application__wrap {
     background-color: var(--background);
     max-height: auto !important;
     height: auto !important;
 }
+
 .close {
     background-color: var(--background);
     transition: all 1s ease !important;
 }
+
 :root {
     --background: #ffffff;
+    --bottomsheetbg: #f2f2f7;
+    --buttonbsbg: #ffffff;
+    --buttonbsbgactive: #c7c7c7;
     --foreground: #171717;
     --bg-cont: #f0f0f0;
     --border-color: #c7c7c7;
@@ -92,30 +125,36 @@ textarea:focus, input:focus, button:focus {
     --textfield-color: #c4c4c4;
     --logo-url: url(./logo-light.svg);
     --vsbs-max-width: 100%;
-    --vsbs-background: var(--background);
+    --vsbs-background: var(--bottomsheetbg);
 }
+
 [data-vsbs-header]:before {
     background-color: var(--foreground) !important;
 }
+
 body {
     background-color: var(--background);
 }
+
 .swiper-slide {
     margin-right: 1px;
 }
+
 .logo {
     background-image: var(--logo-url);
     width: 150px;
     height: 150px;
     background-color: transparent;
-    background-size: cover; 
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
+
 ::selection {
     background: #8aa9d6;
     color: white;
 }
+
 @media (max-width: 768px) {
     .swiper.cardproduct__media.active .swiper-button-prev {
         translate: 0px 150px !important;
@@ -125,14 +164,18 @@ body {
         translate: 0px 150px !important;
     }
 }
+
 @media (prefers-color-scheme: dark) {
     :root {
-      --background: #2c2c2c;
-      --border-color: #181818;
-      --bg-cont: #363636;
-      --foreground: #ededed;
-      --textfield-color: #ffffff;
-      --blur: rgba(87, 87, 87, 0.5);
-      --logo-url: url(./logo-dark.png);
+        --background: #2c2c2c;
+        --border-color: #181818;
+        --bg-cont: #363636;
+        --foreground: #ededed;
+        --bottomsheetbg : #000000;
+        --buttonbsbg: #1c1c1e;
+        --buttonbsbgactive: #2f2f31;
+        --textfield-color: #ffffff;
+        --blur: rgba(87, 87, 87, 0.5);
+        --logo-url: url(./logo-dark.png);
     }
-  }
+}

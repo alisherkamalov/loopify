@@ -52,9 +52,8 @@ const createOrder = async () => {
     makeorder.setOrder(false)
     notificationStore.setNotification(languageStore.currentLanguage.successordercreate)
     notificationStore.setActive(true)
-    setTimeout(() => {
-        notificationStore.setActive(false)
-    }, 3000);
+    notificationStore.setText(true)
+    notificationStore.setLeftTypeIcon('success')
 
 }
 </script>

@@ -4,7 +4,7 @@
             <span class="textlogo">LOOPIFY</span>
         </span>
         <span class="authtext">Подтверждение личности</span>
-        <button @click="authenticate">Войти</button>
+        <button @click="authenticate">Подтвердить</button>
     </div>
 </template>
 
@@ -15,27 +15,21 @@ import { useLanguageStore } from '~/store/languagesStore';
 import { usePageStore } from '~/store/PagesRoutesStore';
 
 const authenticated = ref(false);
-const dynamicIsland = useIslandStore();
+const dynamicIsland = useIslandStore(); 
 const languageStore = useLanguageStore();
 const pagesStore = usePageStore()
 onMounted(() => {
-    dynamicIsland.setActive(false);
-    dynamicIsland.setText(false);
-    dynamicIsland.setLeftTypeIcon('');
-    dynamicIsland.setRightTypeIcon('');
-    dynamicIsland.setMore(false);
-    dynamicIsland.setAuth(false);
-    if (localStorage.getItem('authenticated') === 'true') {
-        authenticated.value = true;
-    }
+    dynamicIsland.deactivateIsland();
+    authenticate()
 });
 
 async function authenticate() {
+    
     if (!window.PublicKeyCredential) {
         alert('WebAuthn не поддерживается этим браузером');
         return;
     }
-
+    localStorage.removeItem('authenticated')
     const publicKey = {
         challenge: Uint8Array.from('simple-challenge', c => c.charCodeAt(0)),
         rp: { name: 'Loopify' },
@@ -58,6 +52,7 @@ async function authenticate() {
 
 
     try {
+        dynamicIsland.deactivateIsland();
         const credential = await navigator.credentials.create({ publicKey });
         console.log('Успешная проверка:', credential);
         localStorage.setItem('authenticated', 'true');
@@ -66,19 +61,14 @@ async function authenticate() {
         setTimeout(() => {
             pagesStore.goToPage(1);
         }, 500);
-        setTimeout(() => {
-            dynamicIsland.setAuth(false);
-        }, 2000);
-    } catch (err) {
+    } catch (err) { 
+        dynamicIsland.deactivateIsland();
         if (localStorage.getItem('authenticated') === 'true') {
             authenticated.value = true;
             dynamicIsland.setAuth(true);
             setTimeout(() => {
                 pagesStore.goToPage(1);
             }, 500);
-            setTimeout(() => {
-                dynamicIsland.setAuth(false);
-            }, 2000);
             return;
         }
         console.error('Ошибка биометрии:', err);

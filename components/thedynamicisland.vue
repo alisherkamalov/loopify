@@ -1,6 +1,7 @@
 <template>
     <div class="notification" ref="dynamicIsland"
-        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth }" @click.stop="moreInfo">
+        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth }"
+        @click.stop="moreInfo">
         <client-only>
             <div v-if="IslandStore.activelefttypeicon" class="cont-left-icon" :class="{ 'active': IslandStore.isText }">
                 <Vue3Lottie :loop="false" :autoplay="true" class="left-icon"
@@ -9,15 +10,15 @@
         </client-only>
         <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.isText">
             {{ IslandStore.notification }}
-        </span>
+        </span> 
         <client-only>
             <div v-if="IslandStore.isAuth" class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
-                <Vue3Lottie :loop="false" :autoplay="true" class="auth-icon"
-                    :animationLink="IslandStore.auth" />
+                <Vue3Lottie @onComplete="authComplete" :loop="false" :autoplay="true" class="auth-icon" :animationLink="IslandStore.auth" />
             </div>
         </client-only>
         <client-only>
-            <div v-if="IslandStore.activerighttypeicon" class="cont-right-icon" :class="{ 'active': IslandStore.isText }">
+            <div v-if="IslandStore.activerighttypeicon" class="cont-right-icon"
+                :class="{ 'active': IslandStore.isText }">
                 <Vue3Lottie :loop="false" :autoplay="true" class="right-icon"
                     :animationLink="IslandStore.activerighttypeicon" />
             </div>
@@ -32,7 +33,7 @@ const IslandStore = useIslandStore()
 let debounceTimeout = null;
 const dynamicIsland = ref(null)
 
-function handleClickOutside(event) {
+const handleClickOutside = (event) => {
     if (!IslandStore.isMore && !IslandStore.isActive) {
         return
     }
@@ -42,11 +43,17 @@ function handleClickOutside(event) {
         IslandStore.setText(true)
     }
 }
+const authComplete = () => {
+    IslandStore.setAuth(false);
+}
 watch(() => IslandStore.isMore, () => {
     if (debounceTimeout) {
         clearTimeout(debounceTimeout);
     }
     debounceTimeout = setTimeout(() => {
+        if (IslandStore.isMore) {
+            return
+        }
         IslandStore.setText(false);
         IslandStore.setActive(false);
     }, 2000);
@@ -59,7 +66,7 @@ onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
 })
 const moreInfo = () => {
-    if(IslandStore.isAuth) {
+    if (IslandStore.isAuth) {
         return
     }
     if (IslandStore.notification != '') {
@@ -92,26 +99,34 @@ const moreInfo = () => {
     align-items: center;
     z-index: 9999;
     max-height: 5px;
-    transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+    transition: max-width 0.4s cubic-bezier(0.33, 1, 0.68, 1), 
+              max-height 0.4s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-.left-icon, .right-icon {
+.left-icon,
+.right-icon {
     max-width: 40px;
     max-height: 40px;
     width: 100%;
     height: 100%;
 }
+
 .left-icon {
     margin-left: 10px;
 }
+
 .textnotification {
     opacity: 0;
     width: 90%;
     margin: 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: all 0.3s ease;
 }
 
-.cont-left-icon, .cont-right-icon {
+.cont-left-icon,
+.cont-right-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -120,32 +135,42 @@ const moreInfo = () => {
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
+
 .cont-auth-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
+    scale: 1.5;
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
+
 .auth-icon {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 200px;
+    max-height: 200px;
     width: 100%;
     height: 100%;
 }
+
 .cont-auth-icon.active {
     opacity: 1;
 }
+
 .cont-left-icon.active {
     opacity: 1;
 }
+
 .cont-right-icon.active {
     opacity: 1;
 }
+
 .textnotification.active {
     opacity: 1;
+    overflow: auto;
+    text-overflow: none;
+    white-space: none;
     color: white;
 }
 
@@ -159,6 +184,7 @@ const moreInfo = () => {
     max-width: 95%;
     max-height: 200px;
 }
+
 .notification.auth {
     max-width: 100px;
     max-height: 100px;
