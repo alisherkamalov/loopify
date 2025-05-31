@@ -44,8 +44,7 @@
                 <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{
                     languageStore.currentLanguage.makeinorder
                     }}</button>
-                <button class="cardproduct__btn incart"
-                    @click.stop="addProductToCart(lastProduct._id)">
+                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id)">
                     {{ languageStore.currentLanguage.incart }}
                 </button>
             </div>
@@ -84,6 +83,7 @@ const closeProduct = () => {
     }, 500);
 };
 const addProductToCart = async (productId) => {
+    notificationStore.setText(false);
     const token = localStorage.getItem('token')
     if (!token) {
         notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
@@ -106,23 +106,46 @@ const addProductToCart = async (productId) => {
             }
         );
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
-        notificationStore.setActive(true);
-        console.log(response.data.message || 'Товар добавлен в корзину');
+        notificationStore.setText(false);
+        notificationStore.setCart(true);
         setTimeout(() => {
-            notificationStore.setActive(false);
-        }, 3000);
+            store.goToPage(1)
+        }, 500);
+        setTimeout(() => {
+            notificationStore.setCart(false);
+            notificationStore.setActive(true);
+            notificationStore.setText(true);
+        }, 1500);
+        notificationStore.setLeftTypeIcon('success');
+        console.log(response.data.message || 'Товар добавлен в корзину');
 
     } catch (error) {
-        // Ошибка при добавлении товара в корзину
+        notificationStore.setText(false);
+        notificationStore.setLeftTypeIcon('error');
         if (error.response) {
             notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
+            notificationStore.setCart(true);
+            setTimeout(() => {
+                store.goToPage(1)
+            }, 500);
+            setTimeout(() => {
+                notificationStore.setCart(false);
+                notificationStore.setActive(true);
+                notificationStore.setText(true);
+            }, 1500);
         } else {
             notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
+            notificationStore.setCart(true);
+            notificationStore.setText(false);
+            setTimeout(() => {
+                store.goToPage(1)
+            }, 500);
+            setTimeout(() => {
+                notificationStore.setCart(false);
+                notificationStore.setActive(true);
+                notificationStore.setText(true);
+            }, 1500);
         }
-        notificationStore.setActive(true);
-        setTimeout(() => {
-            notificationStore.setActive(false);
-        }, 3000);
     }
 };
 
@@ -177,8 +200,9 @@ const toggleVideo = (index) => {
 .container {
     display: flex;
     width: 100%;
-    height: 100dvh;
+    min-height: 100dvh;
     gap: 35px;
+    background-color: var(--background);
     padding-top: 25px;
     margin-left: auto;
     margin-right: auto;

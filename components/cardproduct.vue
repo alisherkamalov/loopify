@@ -540,7 +540,9 @@ onBeforeUnmount(() => {
     .frame-cardproduct {
         margin-right: 0;
     }
-
+    .cardproduct {
+        width: 95%;
+    }
     .cardproduct.active {
         max-width: 100% !important;
         max-height: 100dvh;

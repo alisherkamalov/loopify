@@ -72,10 +72,6 @@ async function authenticate() {
             return;
         }
         console.error('Ошибка биометрии:', err);
-        dynamicIsland.setNotification(languageStore.currentLanguage.failedauth);
-        dynamicIsland.setActive(true);
-        dynamicIsland.setText(true);
-        dynamicIsland.setLeftTypeIcon('error');
     }
 }
 </script>

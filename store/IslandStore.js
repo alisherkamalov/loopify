@@ -7,6 +7,7 @@ export const useIslandStore = defineStore('island', {
     isMore: false,
     isText: false,
     isAuth: false,
+    isCart: false,
     notification: '',
     error: '/dynamicisland/error.json',
     addedtocart: '/dynamicisland/addtobasket.json',
@@ -16,6 +17,9 @@ export const useIslandStore = defineStore('island', {
     activerighttypeicon: ''
   }),
   actions: {
+    setCart(isCart) {
+      this.isCart = isCart;
+    },
     setLeftTypeIcon(typeicon) {
       if (typeicon === 'error') {
         this.activelefttypeicon = this.error;
@@ -58,6 +62,7 @@ export const useIslandStore = defineStore('island', {
       this.isMore = false;
       this.isAuth = false;
       this.isText = false;
+      this.isCart = false;
       this.activelefttypeicon = '';
       this.activerighttypeicon = '';
     },

@@ -1,6 +1,6 @@
 <template>
     <div class="notification" ref="dynamicIsland"
-        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth }"
+        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth, 'cart': IslandStore.isCart }"
         @click.stop="moreInfo">
         <client-only>
             <div v-if="IslandStore.activelefttypeicon" class="cont-left-icon" :class="{ 'active': IslandStore.isText }">
@@ -10,10 +10,11 @@
         </client-only>
         <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.isText">
             {{ IslandStore.notification }}
-        </span> 
+        </span>
         <client-only>
             <div v-if="IslandStore.isAuth" class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
-                <Vue3Lottie @onComplete="authComplete" :loop="false" :autoplay="true" class="auth-icon" :animationLink="IslandStore.auth" />
+                <Vue3Lottie @onComplete="authComplete" :loop="false" :autoplay="true" class="auth-icon"
+                    :animationLink="IslandStore.auth" />
             </div>
         </client-only>
         <client-only>
@@ -30,8 +31,43 @@
 import { useIslandStore } from '~/store/IslandStore'
 import { Vue3Lottie } from 'vue3-lottie'
 const IslandStore = useIslandStore()
-let debounceTimeout = null;
 const dynamicIsland = ref(null)
+let hideTimeout = null;
+
+watch(() => IslandStore.isCart, (newVal) => {
+    if (newVal) {
+        startHideTimer();
+    } else {
+        clearTimeout(hideTimeout);
+    }
+});
+
+watch(() => IslandStore.isActive, (newVal) => {
+    if (newVal) {
+        startHideTimer();
+    } else {
+        clearTimeout(hideTimeout);
+    }
+});
+
+watch(() => IslandStore.isMore, (newVal) => {
+    if (newVal) {
+        clearTimeout(hideTimeout);
+    } else if (IslandStore.isActive) {
+        startHideTimer();
+    }
+});
+
+function startHideTimer() {
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+        if (!IslandStore.isMore) {
+            IslandStore.setText(false);
+            IslandStore.setActive(false);
+            IslandStore.setCart(false);
+        }
+    }, 2000);
+}
 
 const handleClickOutside = (event) => {
     if (!IslandStore.isMore && !IslandStore.isActive) {
@@ -46,18 +82,6 @@ const handleClickOutside = (event) => {
 const authComplete = () => {
     IslandStore.setAuth(false);
 }
-watch(() => IslandStore.isMore, () => {
-    if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-    }
-    debounceTimeout = setTimeout(() => {
-        if (IslandStore.isMore) {
-            return
-        }
-        IslandStore.setText(false);
-        IslandStore.setActive(false);
-    }, 2000);
-});
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
 })
@@ -82,6 +106,7 @@ const moreInfo = () => {
 .notification {
     position: fixed;
     top: 5px;
+    overflow: hidden !important;
     left: 50%;
     transform: translateX(-50%);
     padding: 5px;
@@ -94,13 +119,10 @@ const moreInfo = () => {
     border-radius: 50px;
     background-color: black;
     display: flex;
-    overflow: hidden;
     justify-content: space-between;
-    align-items: center;
     z-index: 9999;
     max-height: 5px;
-    transition: max-width 0.4s cubic-bezier(0.33, 1, 0.68, 1), 
-              max-height 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    transition: all 0.5s ease;
 }
 
 .left-icon,
@@ -109,22 +131,32 @@ const moreInfo = () => {
     max-height: 40px;
     width: 100%;
     height: 100%;
+    transition: all 0.5s ease;
 }
 
 .left-icon {
     margin-left: 10px;
+    translate: 0px -6px;
 }
 
 .textnotification {
     opacity: 0;
     width: 90%;
     margin: 0 auto;
-    overflow: hidden;
+    overflow: hidden !important;
+    margin-top: 3px;
+    margin-left: 3px;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: left;
     transition: all 0.3s ease;
 }
-
+.notification.more .textnotification {
+    margin-top: 20px;
+}
+.notification.more .left-icon {
+    translate: 0px 10px;
+}
 .cont-left-icon,
 .cont-right-icon {
     display: flex;
@@ -140,16 +172,17 @@ const moreInfo = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 200px;
-    height: 200px;
+    width: 100px;
+    translate: 0px -5px;
+    height: 100px;
     scale: 1.5;
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 
 .auth-icon {
-    max-width: 200px;
-    max-height: 200px;
+    max-width: 100px;
+    max-height: 100px;
     width: 100%;
     height: 100%;
 }
@@ -189,5 +222,10 @@ const moreInfo = () => {
     max-width: 100px;
     max-height: 100px;
     border-radius: 35px;
+}
+
+.notification.cart {
+    max-width: 30%;
+    max-height: 50px;
 }
 </style>

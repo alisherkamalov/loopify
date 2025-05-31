@@ -1,5 +1,5 @@
 <template>
-    <div class="contentsettings">
+    <div class="contentsettings" id="settings">
         <div class="info-account">
             <div class="logoaccount">
                 {{ initials }}
@@ -14,21 +14,17 @@
             </button>
 
         </div>
-        <Swiper
-  class="swiper-info-account"
-  slides-per-view="1"
-  :onSwiper="setSwiperInstance"
-  @slideChange="onSlideChange"
->
+        <Swiper class="swiper-info-account" slides-per-view="1" :onSwiper="setSwiperInstance"
+            @slideChange="onSlideChange">
 
             <SwiperSlide>
                 <div class="slide-content">
-                    <orderSlide/>
+                    <orderSlide />
                 </div>
             </SwiperSlide>
             <SwiperSlide>
-                <div class="slide-content"> 
-                    <basketSlide/>
+                <div class="slide-content">
+                    <basketSlide />
                 </div>
             </SwiperSlide>
             <SwiperSlide>
@@ -55,50 +51,50 @@ const swiperInstance = ref(null);
 const sliderButtonsRef = ref(null);
 
 const setSwiperInstance = (swiper) => {
-  swiperInstance.value = swiper;
+    swiperInstance.value = swiper;
 };
 import { nextTick } from 'vue'
 
 const goToButton = (index) => {
-  nextTick(() => {
-    const container = sliderButtonsRef.value;
-    const buttons = container.querySelectorAll('button');
-    const button = buttons[index];
+    nextTick(() => {
+        const container = sliderButtonsRef.value;
+        const buttons = container.querySelectorAll('button');
+        const button = buttons[index];
 
-    if (!button) return;
+        if (!button) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const buttonRect = button.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const buttonRect = button.getBoundingClientRect();
 
-    const offset = buttonRect.left - containerRect.left;
+        const offset = buttonRect.left - containerRect.left;
 
-    container.scrollTo({
-      left: container.scrollLeft + offset - container.clientWidth / 2 + button.clientWidth / 2,
-      behavior: 'smooth'
+        container.scrollTo({
+            left: container.scrollLeft + offset - container.clientWidth / 2 + button.clientWidth / 2,
+            behavior: 'smooth'
+        });
     });
-  });
 }
 
 
 const goToSlide = (index) => {
-  if (index >= swiperInstance.value.slides.length) {
-    console.log('Выход...');
-    return;
-  }
+    if (index >= swiperInstance.value.slides.length) {
+        console.log('Выход...');
+        return;
+    }
 
-  if (swiperInstance.value) {
-    swiperInstance.value.slideTo(index);
-    activeSlide.value = index;
-  }
-  goToButton(index);
+    if (swiperInstance.value) {
+        swiperInstance.value.slideTo(index);
+        activeSlide.value = index;
+    }
+    goToButton(index);
 };
 
 
 const onSlideChange = () => {
-  if (swiperInstance.value) {
-    activeSlide.value = swiperInstance.value.activeIndex;
-  }
-   goToButton(activeSlide.value);
+    if (swiperInstance.value) {
+        activeSlide.value = swiperInstance.value.activeIndex;
+    }
+    goToButton(activeSlide.value);
 };
 
 const sliderbuttons = ref([
@@ -121,12 +117,17 @@ const initUser = () => {
 };
 onMounted(() => {
     initUser();
+    const settings = document.querySelector('#settings');
+    settings.scrollBy({
+        top: 1,
+        behavior: 'smooth'
+    });
 });
 </script>
 <style scoped>
 .contentsettings {
     display: flex;
-    height: 700px;
+    min-height: 100dvh;
     overflow-x: hidden;
     flex-direction: column;
 }
@@ -134,25 +135,9 @@ onMounted(() => {
 .info-account {
     width: 100%;
     display: flex;
-    height: 200px;
     margin-top: 30px;
     flex-direction: column;
     align-items: center;
-}
-.sortingproduct {
-    overflow-x: auto;
-    display: flex;
-    max-width: 95%;
-    align-items: center;
-    min-height: 50px;
-    gap: 10px;
-    margin-top: 5px;
-    margin-left: auto;
-    margin-right: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    /* Firefox */
-    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
 .sliderbuttons::-webkit-scrollbar {
@@ -163,6 +148,7 @@ onMounted(() => {
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 2px;
 }
+
 .username {
     font-size: 30px;
     font-weight: 700;
@@ -194,8 +180,7 @@ onMounted(() => {
     display: flex;
     width: 100%;
     gap: 10px;
-    height: 70px;
-    translate: 0px -20px;
+    height: 60px;
     overflow-y: hidden;
     white-space: nowrap;
     align-items: center;
@@ -206,17 +191,17 @@ onMounted(() => {
     /* Firefox */
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
+
 .btnsettings.active {
-  background-color: var(--buttonbsbgactive);
+    background-color: var(--buttonbsbgactive);
 }
 
 .swiper-info-account {
     width: 100%;
-    height: 400px;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     align-items: center;
-    translate: 0px -15px;
     justify-content: center;
 }
 
@@ -234,6 +219,7 @@ onMounted(() => {
     font-weight: 700;
     font-size: 40px;
 }
+
 @media (min-width: 850px) {
     .sliderbuttons {
         justify-content: center;

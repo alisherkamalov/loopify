@@ -2,7 +2,7 @@
     <client-only>
         <DynamicIsland />
         <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['90%']"
-            :spring-config="{ tension: 300, friction: 30 }" :header-height="50" :footer-height="0"
+            :spring-config="{ tension: 10000, friction: 10000 }" :header-height="50" :footer-height="0"
             :close-on-click-outside="true" :close-on-esc="true" :disable-scrollbar="true" :disable-header="true"
             :disable-footer="true" :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
             <ContentSettings/>
@@ -30,7 +30,7 @@
                 </div>
             </template>
             <template #page-2>
-                <div class="moreinfopage">
+                <div class="moreinfopage" :class="{ active: notificationStore.isCart }">
                     <Moreinfoproduct />
                 </div>
             </template>
@@ -76,7 +76,6 @@ const pagesStore = usePageStore()
 const token = ref(null)
 
 onMounted(() => {
-    
     pagesStore.remsoftenCurrentSlide()
     token.value = localStorage.getItem('token')
     if (token.value) {
@@ -126,7 +125,19 @@ main.active {
     background-color: transparent;
     transition: all 0.5s ease;
 }
-
+.moreinfopage {
+    scale: 1;
+    opacity: 1;
+    border-radius: 0px;
+    translate: 0px 0px;
+    transition: all 0.5s ease;
+}
+.moreinfopage.active {
+    scale: 0.1;
+    opacity: 0;
+    border-radius: 50px;
+    translate: 0px -50%;
+}
 .dynamicislandbox.active {
     min-height: 60px;
 }
