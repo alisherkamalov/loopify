@@ -1,37 +1,56 @@
 <template>
     <div class="notification" ref="dynamicIsland"
-        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth, 'cart': IslandStore.isCart }"
+        :class="{ 'active': IslandStore.isActive, 'more': IslandStore.isMore, 'auth': IslandStore.isAuth, 'cart': IslandStore.isCart, 'increase': IslandStore.isIncrease }"
         @click.stop="moreInfo">
-        <client-only>
-            <div v-if="IslandStore.activelefttypeicon" class="cont-left-icon" :class="{ 'active': IslandStore.isText }">
-                <Vue3Lottie :loop="false" :autoplay="true" class="left-icon"
-                    :animationLink="IslandStore.activelefttypeicon" />
+        <div class="top">
+            <client-only>
+                <div v-if="IslandStore.activelefttypeicon" class="cont-left-icon"
+                    :class="{ 'active': IslandStore.isText }">
+                    <Vue3Lottie :loop="false" :autoplay="true" class="left-icon"
+                        :animationLink="IslandStore.activelefttypeicon" />
+                </div>
+            </client-only>
+            <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.isText">
+                {{ IslandStore.notification }}
+            </span>
+            <client-only>
+                <div v-if="IslandStore.isAuth" class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
+                    <Vue3Lottie @onComplete="authComplete" :loop="false" :autoplay="true" class="auth-icon"
+                        :animationLink="IslandStore.auth" />
+                </div>
+            </client-only>
+            <client-only>
+                <div v-if="IslandStore.activerighttypeicon" class="cont-right-icon"
+                    :class="{ 'active': IslandStore.isText }">
+                    <Vue3Lottie :loop="false" :autoplay="true" class="right-icon"
+                        :animationLink="IslandStore.activerighttypeicon" />
+                </div>
+            </client-only>
+        </div>
+        <div class="bottom" :class="{ 'active': IslandStore.isMore }">
+            <span class="textmorenotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.isText">
+                {{ IslandStore.morenotification }}
+            </span>
+            <div class="cartcase" :class="{ 'active': IslandStore.isCartBottom }" v-if="IslandStore.isCartBottom">
+                <img :src="lastProduct.photoUrl" alt="" class="photo">
+                <span class="cartname">
+                    {{ languageStore.currentLanguage.devicetype[lastProduct.deviceType] }} 
+                    {{ lastProduct.name }}
+                </span>
+                <span class="price">{{ lastProduct }} ₸</span>
             </div>
-        </client-only>
-        <span class="textnotification" :class="{ 'active': IslandStore.isText }" v-if="IslandStore.isText">
-            {{ IslandStore.notification }}
-        </span>
-        <client-only>
-            <div v-if="IslandStore.isAuth" class="cont-auth-icon" :class="{ 'active': IslandStore.isAuth }">
-                <Vue3Lottie @onComplete="authComplete" :loop="false" :autoplay="true" class="auth-icon"
-                    :animationLink="IslandStore.auth" />
-            </div>
-        </client-only>
-        <client-only>
-            <div v-if="IslandStore.activerighttypeicon" class="cont-right-icon"
-                :class="{ 'active': IslandStore.isText }">
-                <Vue3Lottie :loop="false" :autoplay="true" class="right-icon"
-                    :animationLink="IslandStore.activerighttypeicon" />
-            </div>
-        </client-only>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useIslandStore } from '~/store/IslandStore'
 import { Vue3Lottie } from 'vue3-lottie'
+import { useLanguageStore } from '~/store/languagesStore'
 const IslandStore = useIslandStore()
 const dynamicIsland = ref(null)
+const languageStore = useLanguageStore()
+const lastProduct = IslandStore.lastproduct;
 let hideTimeout = null;
 
 watch(() => IslandStore.isCart, (newVal) => {
@@ -119,12 +138,43 @@ const moreInfo = () => {
     border-radius: 50px;
     background-color: black;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     z-index: 9999;
     max-height: 5px;
     transition: all 0.5s ease;
 }
-
+.price {
+    color: rgb(177, 177, 177);
+}
+.photo {
+    width: 50px;
+    height: 50px;
+}
+.cartcase {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: 13px;
+}
+.top {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 50px;
+}
+.bottom {
+    width: 100%;
+    flex: 1;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+.cartname {
+    color: white;
+}
+.bottom.active {
+    opacity: 1;
+}
 .left-icon,
 .right-icon {
     max-width: 40px;
@@ -151,12 +201,15 @@ const moreInfo = () => {
     text-align: left;
     transition: all 0.3s ease;
 }
+
 .notification.more .textnotification {
     margin-top: 20px;
 }
+
 .notification.more .left-icon {
     translate: 0px 10px;
 }
+
 .cont-left-icon,
 .cont-right-icon {
     display: flex;
@@ -227,5 +280,9 @@ const moreInfo = () => {
 .notification.cart {
     max-width: 30%;
     max-height: 50px;
+}
+
+.notification.increase {
+    max-height: 80px;
 }
 </style>

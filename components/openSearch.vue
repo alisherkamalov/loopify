@@ -433,7 +433,7 @@ onBeforeUnmount(() => {
     opacity: 1;
     pointer-events: all;
     width: 90%;
-    height: 90dvh;
+    height: 88dvh;
 }
 .foundproducts.island {
     margin-top: 115px;

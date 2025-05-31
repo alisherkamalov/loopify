@@ -78,6 +78,7 @@ const notificationStore = useIslandStore()
 const videoRefs = ref({});
 const closeProduct = () => {
     store.prevPage()
+
     setTimeout(() => {
         lastProductStore.setLastProduct([]);
     }, 500);
@@ -109,13 +110,21 @@ const addProductToCart = async (productId) => {
         notificationStore.setText(false);
         notificationStore.setCart(true);
         setTimeout(() => {
+            notificationStore.setIncrease(true);
+        }, 200);
+        setTimeout(() => {
+            notificationStore.setIncrease(false);
+            store.goToPage(1)
+        }, 500);
+        setTimeout(() => {
             store.goToPage(1)
         }, 500);
         setTimeout(() => {
             notificationStore.setCart(false);
             notificationStore.setActive(true);
+            notificationStore.setCartBottom(true);
             notificationStore.setText(true);
-        }, 1500);
+        }, 700);
         notificationStore.setLeftTypeIcon('success');
         console.log(response.data.message || 'Товар добавлен в корзину');
 
@@ -126,25 +135,33 @@ const addProductToCart = async (productId) => {
             notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
             notificationStore.setCart(true);
             setTimeout(() => {
+                notificationStore.setIncrease(true);
+            }, 200);
+            setTimeout(() => {
+                notificationStore.setIncrease(false);
                 store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
                 notificationStore.setActive(true);
                 notificationStore.setText(true);
-            }, 1500);
+            }, 700);
         } else {
             notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
             notificationStore.setCart(true);
-            notificationStore.setText(false);
             setTimeout(() => {
+                notificationStore.setIncrease(true);
+            }, 200);
+            setTimeout(() => {
+                notificationStore.setIncrease(false);
                 store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
                 notificationStore.setActive(true);
+                notificationStore.setCartBottom(true);
                 notificationStore.setText(true);
-            }, 1500);
+            }, 700);
         }
     }
 };
@@ -200,7 +217,6 @@ const toggleVideo = (index) => {
 .container {
     display: flex;
     width: 100%;
-    min-height: 100dvh;
     gap: 35px;
     background-color: var(--background);
     padding-top: 25px;
@@ -212,9 +228,6 @@ const toggleVideo = (index) => {
     padding-top: 25px;
 }
 
-.bottom {
-    margin-top: 45px;
-}
 
 .btnclose {
     position: absolute;

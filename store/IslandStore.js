@@ -8,15 +8,22 @@ export const useIslandStore = defineStore('island', {
     isText: false,
     isAuth: false,
     isCart: false,
+    isCartBottom: false,
+    isIncrease: false,
     notification: '',
+    morenotification: '',
     error: '/dynamicisland/error.json',
     addedtocart: '/dynamicisland/addtobasket.json',
     auth: '/dynamicisland/faceid.json',
     success: '/dynamicisland/success.json',
     activelefttypeicon: '',
-    activerighttypeicon: ''
+    activerighttypeicon: '',
+    lastproduct: []
   }),
   actions: {
+    setLastProduct(product) {
+      this.lastproduct = product;
+    },
     setCart(isCart) {
       this.isCart = isCart;
     },
@@ -63,17 +70,28 @@ export const useIslandStore = defineStore('island', {
       this.isAuth = false;
       this.isText = false;
       this.isCart = false;
+      this.isCartBottom = false;
+      this.isIncrease = false;
       this.activelefttypeicon = '';
       this.activerighttypeicon = '';
     },
     setNotification(noti) {
       this.notification = noti;
     },
+    setMoreNotification(morenoti) {
+      this.morenotification = morenoti;
+    },
     setMore(isMore) {
       this.isMore = isMore;
     },
     setAuth(isAuth) {
       this.isAuth = isAuth;
+    },
+    setIncrease(isIncrease) {
+      this.isIncrease = isIncrease;
+    },
+    setCartBottom(isCartBottom) {
+      this.isCartBottom = isCartBottom;
     },
     setText(isText) {
       this.isText = isText;

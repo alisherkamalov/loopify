@@ -133,10 +133,10 @@ main.active {
     transition: all 0.5s ease;
 }
 .moreinfopage.active {
-    scale: 0.1;
+    scale: 0;
     opacity: 0;
     border-radius: 50px;
-    translate: 0px -50%;
+    translate: 0px -40%;
 }
 .dynamicislandbox.active {
     min-height: 60px;

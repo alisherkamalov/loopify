@@ -105,6 +105,10 @@ const addProductToCart = async (productId) => {
         return;
     }
     try {
+        notificationStore.setLastProduct(null);
+
+        notificationStore.setLastProduct(productId);
+
         const response = await axios.post(
             'https://backendlopify.vercel.app/basket',
             {
@@ -120,6 +124,7 @@ const addProductToCart = async (productId) => {
         notificationStore.setLeftTypeIcon('addedtocart');
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setActive(true);
+        notificationStore.setCartBottom(true);
         notificationStore.setText(true);
 
     } catch (error) {
@@ -130,12 +135,14 @@ const addProductToCart = async (productId) => {
         }
         notificationStore.setActive(true);
         notificationStore.setText(true);
+        notificationStore.setCartBottom(true);
         notificationStore.setLeftTypeIcon('error');
     }
 };
 const openProduct = (index) => {
     const product = allproductstore.products[index];
     lastProductStore.setLastProduct(product);
+    notificationStore.setLastProduct(product);
     store.goToPage(2)
 };
 
@@ -540,9 +547,11 @@ onBeforeUnmount(() => {
     .frame-cardproduct {
         margin-right: 0;
     }
+
     .cardproduct {
         width: 95%;
     }
+
     .cardproduct.active {
         max-width: 100% !important;
         max-height: 100dvh;

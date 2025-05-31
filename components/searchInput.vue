@@ -1,5 +1,6 @@
 <template>
-    <a-tooltip @click.stop="closeSearch" :title="languageStore.currentLanguage.back" class="closebtn" :class="{ 'closebtn--active': focusStore.isFocused }">
+    <a-tooltip @click.stop="closeSearch" :title="languageStore.currentLanguage.back" class="closebtn"
+        :class="{ 'closebtn--active': focusStore.isFocused }">
         <a-button color="white" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
     <div :class="{ active: focusStore.isFocused }">
@@ -23,6 +24,10 @@ defineProps({
 })
 const closeSearch = () => {
     focusStore.isFocused = false
+    const step3Elements = document.querySelectorAll('.slider-page.step-3');
+    if (step3Elements.length >= 2) {
+        step3Elements[1].style.overflow = 'auto';
+    }
 }
 const showPlaceholder = computed(() => {
     return !focusStore.isFocused && focusStore.searchValue === ''
@@ -33,6 +38,11 @@ function handleInput(event) {
 
 function handleFocus() {
     focusStore.isFocused = true
+    const step3Elements = document.querySelectorAll('.slider-page.step-3');
+    if (step3Elements.length >= 2) {
+        step3Elements[1].style.overflow = 'hidden';
+    }
+
 }
 </script>
 
@@ -59,6 +69,7 @@ input {
     transition: all 0.3s ease;
 
 }
+
 .closebtn {
     width: 30px;
     display: none;
@@ -66,10 +77,12 @@ input {
     background-color: var(--background);
     border: 1px solid var(--bg-cont);
 }
+
 .closebtn--active {
     display: block;
     z-index: 2003;
 }
+
 input.active {
     width: 99%;
 }
@@ -83,6 +96,7 @@ div.active {
     div {
         width: 88%;
     }
+
     input.active {
         width: 95%;
     }
