@@ -120,6 +120,7 @@ button:focus {
     --buttonbsbgactive: #c7c7c7;
     --foreground: #171717;
     --bg-cont: #f0f0f0;
+    --graycart-color: #8f8fa5;
     --border-color: #c7c7c7;
     --blur: rgba(180, 180, 180, 0.5);
     --textfield-color: #c4c4c4;
@@ -131,7 +132,16 @@ button:focus {
 [data-vsbs-header]:before {
     background-color: var(--foreground) !important;
 }
-
+.dynamicislandbox {
+    width: 100%;
+    min-height: 15px;
+    display: flex;
+    background-color: transparent;
+    transition: all 0.5s ease;
+}
+.dynamicislandbox.active {
+    min-height: 60px;
+}
 body {
     background-color: var(--background);
 }

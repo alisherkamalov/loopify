@@ -1,5 +1,6 @@
 <template>
     <Makeinorder />
+    <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
     <div class="container" :class="{ active: lastProductStore.isSlider }">
         <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back">
             <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(CloseOutlined)" />
@@ -109,22 +110,19 @@ const addProductToCart = async (productId) => {
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setText(false);
         notificationStore.setCart(true);
-        setTimeout(() => {
-            notificationStore.setIncrease(true);
-        }, 200);
-        setTimeout(() => {
-            notificationStore.setIncrease(false);
-            store.goToPage(1)
-        }, 500);
-        setTimeout(() => {
-            store.goToPage(1)
-        }, 500);
-        setTimeout(() => {
-            notificationStore.setCart(false);
-            notificationStore.setActive(true);
-            notificationStore.setCartBottom(true);
-            notificationStore.setText(true);
-        }, 700);
+            setTimeout(() => {
+                notificationStore.setCart(true);
+                store.goToPage(1)
+            }, 500);
+            setTimeout(() => {
+                notificationStore.setCart(false);
+            }, 600);
+            setTimeout(() => {
+                notificationStore.setCartBottom(true);
+                notificationStore.setCart(false);
+                notificationStore.setActive(true);
+                notificationStore.setText(true);
+            }, 1100);
         notificationStore.setLeftTypeIcon('success');
         console.log(response.data.message || 'Товар добавлен в корзину');
 
@@ -135,33 +133,34 @@ const addProductToCart = async (productId) => {
             notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
             notificationStore.setCart(true);
             setTimeout(() => {
-                notificationStore.setIncrease(true);
-            }, 200);
-            setTimeout(() => {
-                notificationStore.setIncrease(false);
+                notificationStore.setCart(true);
                 store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
+            }, 600);
+            setTimeout(() => {
+                notificationStore.setCartBottom(true);
+                notificationStore.setCart(false);
                 notificationStore.setActive(true);
                 notificationStore.setText(true);
-            }, 700);
+            }, 1100);
         } else {
             notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
             notificationStore.setCart(true);
             setTimeout(() => {
-                notificationStore.setIncrease(true);
-            }, 200);
-            setTimeout(() => {
-                notificationStore.setIncrease(false);
+                notificationStore.setCart(true);
                 store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
-                notificationStore.setActive(true);
+            }, 600);
+            setTimeout(() => {
                 notificationStore.setCartBottom(true);
+                notificationStore.setCart(false);
+                notificationStore.setActive(true);
                 notificationStore.setText(true);
-            }, 700);
+            }, 1100);
         }
     }
 };

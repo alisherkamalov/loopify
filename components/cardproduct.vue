@@ -351,6 +351,7 @@ onBeforeUnmount(() => {
 .centercard {
     display: flex;
     flex-wrap: wrap;
+    max-width: 1380px;
     justify-content: center;
     width: 100%;
     gap: 15px;

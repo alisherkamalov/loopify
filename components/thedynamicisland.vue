@@ -32,12 +32,15 @@
                 {{ IslandStore.morenotification }}
             </span>
             <div class="cartcase" :class="{ 'active': IslandStore.isCartBottom }" v-if="IslandStore.isCartBottom">
-                <img :src="lastProduct.photoUrl" alt="" class="photo">
-                <span class="cartname">
-                    {{ languageStore.currentLanguage.devicetype[lastProduct.deviceType] }} 
-                    {{ lastProduct.name }}
-                </span>
-                <span class="price">{{ lastProduct }} ₸</span>
+                <img :src="lastProductIsland.photoUrl" alt="" class="photo">
+                <div class="infocart">
+                    <span class="cartname">
+                        {{ languageStore.currentLanguage.devicetype[lastProductIsland.deviceType] }}
+                        {{ lastProductIsland.name }}
+                    </span>
+                    <span class="price">{{ lastProductIsland.price }} ₸</span>
+                </div>
+
             </div>
         </div>
     </div>
@@ -47,10 +50,14 @@
 import { useIslandStore } from '~/store/IslandStore'
 import { Vue3Lottie } from 'vue3-lottie'
 import { useLanguageStore } from '~/store/languagesStore'
+import { useLastProductStore } from '~/store/lastProductStore'
+import { usePageStore } from '~/store/PagesRoutesStore'
 const IslandStore = useIslandStore()
 const dynamicIsland = ref(null)
+const lastProductStore = useLastProductStore()
 const languageStore = useLanguageStore()
-const lastProduct = IslandStore.lastproduct;
+const pageStore = usePageStore()
+const lastProductIsland = computed(() => IslandStore.lastproduct);
 let hideTimeout = null;
 
 watch(() => IslandStore.isCart, (newVal) => {
@@ -83,19 +90,29 @@ function startHideTimer() {
         if (!IslandStore.isMore) {
             IslandStore.setText(false);
             IslandStore.setActive(false);
+            IslandStore.setActiveMore(false)
             IslandStore.setCart(false);
         }
     }, 2000);
 }
 
 const handleClickOutside = (event) => {
-    if (!IslandStore.isMore && !IslandStore.isActive) {
+    if (!IslandStore.isMore) {
         return
     }
     if (dynamicIsland.value && !dynamicIsland.value.contains(event.target)) {
         IslandStore.setMore(false)
-        IslandStore.setActive(true)
-        IslandStore.setText(true)
+        IslandStore.setActiveMore(false)
+        IslandStore.setActive(false)
+        setTimeout(() => {
+            IslandStore.setText(false)
+        }, 100);
+        setTimeout(() => {
+            IslandStore.setActive(true)
+        }, 500);
+        setTimeout(() => {
+            IslandStore.setText(true)
+        }, 700);
     }
 }
 const authComplete = () => {
@@ -112,18 +129,28 @@ const moreInfo = () => {
     if (IslandStore.isAuth) {
         return
     }
+    if (IslandStore.isActiveMore) {
+        lastProductStore.setLastProduct(IslandStore.lastproduct)
+        pageStore.goToPage(2)
+        IslandStore.setMore(false)
+        IslandStore.setActiveMore(false)
+        return
+    }
     if (IslandStore.notification != '') {
         IslandStore.setMore(true)
         IslandStore.setText(true)
     }
     IslandStore.setText(true)
+    if (IslandStore.isMore) {
+        IslandStore.setActiveMore(true)
+    }
 }
 
 </script>
 
 <style scoped>
 .notification {
-    position: fixed;
+    position: absolute;
     top: 5px;
     overflow: hidden !important;
     left: 50%;
@@ -143,13 +170,20 @@ const moreInfo = () => {
     max-height: 5px;
     transition: all 0.5s ease;
 }
+.infocart {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
 .price {
     color: rgb(177, 177, 177);
 }
+
 .photo {
     width: 50px;
     height: 50px;
 }
+
 .cartcase {
     display: flex;
     justify-content: start;
@@ -157,24 +191,32 @@ const moreInfo = () => {
     gap: 10px;
     margin-left: 13px;
 }
+
 .top {
     display: flex;
     justify-content: space-between;
     width: 100%;
     height: 50px;
 }
+
 .bottom {
     width: 100%;
     flex: 1;
     opacity: 0;
-    transition: all 0.5s ease;
+    filter: blur(5px);
+    padding-bottom: 30px;
+    transition: all 1s ease;
 }
+
 .cartname {
     color: white;
 }
+
 .bottom.active {
     opacity: 1;
+    filter: blur(0px);
 }
+
 .left-icon,
 .right-icon {
     max-width: 40px;
@@ -192,6 +234,7 @@ const moreInfo = () => {
 .textnotification {
     opacity: 0;
     width: 90%;
+    filter: blur(5px);
     margin: 0 auto;
     overflow: hidden !important;
     margin-top: 3px;
@@ -199,9 +242,16 @@ const moreInfo = () => {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: left;
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
 }
-
+.textnotification.active {
+    opacity: 1;
+    filter: blur(0px);
+    overflow: auto;
+    text-overflow: none;
+    white-space: none;
+    color: white;
+}
 .notification.more .textnotification {
     margin-top: 20px;
 }
@@ -217,6 +267,7 @@ const moreInfo = () => {
     justify-content: center;
     width: 40px;
     height: 40px;
+    filter: blur(5px);
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
@@ -229,6 +280,7 @@ const moreInfo = () => {
     translate: 0px -5px;
     height: 100px;
     scale: 1.5;
+    filter: blur(5px);
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
@@ -242,22 +294,17 @@ const moreInfo = () => {
 
 .cont-auth-icon.active {
     opacity: 1;
+    filter: blur(0px);
 }
 
 .cont-left-icon.active {
     opacity: 1;
+    filter: blur(0px);
 }
 
 .cont-right-icon.active {
     opacity: 1;
-}
-
-.textnotification.active {
-    opacity: 1;
-    overflow: auto;
-    text-overflow: none;
-    white-space: none;
-    color: white;
+    filter: blur(0px);
 }
 
 .notification.active {
@@ -268,7 +315,7 @@ const moreInfo = () => {
 
 .notification.more {
     max-width: 95%;
-    max-height: 200px;
+    max-height: 140px;
 }
 
 .notification.auth {

@@ -5,6 +5,7 @@ export const useIslandStore = defineStore('island', {
   state: () => ({
     isActive: false,
     isMore: false,
+    isActiveMore: false,
     isText: false,
     isAuth: false,
     isCart: false,
@@ -83,6 +84,9 @@ export const useIslandStore = defineStore('island', {
     },
     setMore(isMore) {
       this.isMore = isMore;
+    },
+    setActiveMore(isActiveMore) {
+      this.isActiveMore = isActiveMore;
     },
     setAuth(isAuth) {
       this.isAuth = isAuth;

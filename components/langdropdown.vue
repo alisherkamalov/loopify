@@ -19,7 +19,7 @@ import { useLanguageStore } from '~/store/languagesStore'
 
 const languageStore = useLanguageStore()
 const languageActive = ref(false)
-const width = ref(0) // Начальное значение для SSR
+const width = ref(0)
 
 const props = defineProps({
     variants: {

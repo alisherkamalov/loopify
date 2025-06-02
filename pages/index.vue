@@ -118,17 +118,11 @@ main.active {
     overflow: hidden;
 }
 
-.dynamicislandbox {
-    width: 100%;
-    min-height: 15px;
-    display: flex;
-    background-color: transparent;
-    transition: all 0.5s ease;
-}
 .moreinfopage {
     scale: 1;
     opacity: 1;
     border-radius: 0px;
+    background-color: var(--background);
     translate: 0px 0px;
     transition: all 0.5s ease;
 }
@@ -137,9 +131,6 @@ main.active {
     opacity: 0;
     border-radius: 50px;
     translate: 0px -40%;
-}
-.dynamicislandbox.active {
-    min-height: 60px;
 }
 
 .pagesroutes {
