@@ -6,7 +6,6 @@
     font-weight: normal;
     font-style: normal;
 }
-
 @font-face {
     font-family: 'Sans';
     src: url('@/assets/sans.woff2') format('woff2');
@@ -45,9 +44,6 @@
     animation: opacityanimate 1s ease;
 }
 
-html {
-    overflow: auto;
-}
 
 html,
 body {

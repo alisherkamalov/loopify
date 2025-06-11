@@ -28,18 +28,18 @@ import { storeToRefs } from 'pinia'
 
 const store = usePageStore()
 const { currentPage } = storeToRefs(store)
-
+store.setAnimate(false)
 const containerRef = ref(null)
 const { width: containerWidth } = useElementBounding(containerRef)
 const width = computed(() => containerWidth.value || 0)
 
-const pages = computed(() => ['page-0', 'page-1', 'page-2']) // или динамически
+const pages = computed(() => ['page-0', 'page-1', 'page-2', 'page-3'])
 const totalPages = computed(() => pages.value.length)
 
-// Глобальные шаги анимации применяются ко всем слайдам
 const globalStep = ref('') // '', 'step-1', 'step-2', 'step-3'
 
 watch(currentPage, () => {
+  store.setAnimate(true)
   globalStep.value = 'step-1'
 
   setTimeout(() => {
@@ -47,11 +47,11 @@ watch(currentPage, () => {
   }, 300)
 
   setTimeout(() => {
+    store.setAnimate(false)
     globalStep.value = 'step-3'
   }, 600)
 })
 
-// Классы для каждого слайда
 const getSlideClass = (index) => {
   const classes = []
 
@@ -69,10 +69,10 @@ const getSlideClass = (index) => {
 
 <style scoped>
 .slider-container {
-  overflow-x: hidden;
   background-color: rgba(180, 180, 180, 0.5);
   width: 100%;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .slider-track {
@@ -84,11 +84,10 @@ const getSlideClass = (index) => {
   flex-shrink: 0;
   transition: all 0.5s ease;
   transform: scale(1);
+  overflow: hidden;
   border-radius: 0;
-  overflow-x: hidden;
 }
 
-/* Шаги применяются ко всем */
 .slider-page.step-1 {
   transform: scale(0.8);
   border-radius: 50px;

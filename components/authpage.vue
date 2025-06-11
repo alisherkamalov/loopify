@@ -19,6 +19,7 @@ const dynamicIsland = useIslandStore();
 const languageStore = useLanguageStore();
 const pagesStore = usePageStore()
 onMounted(() => {
+    document.body.style.overflow = 'hidden';
     dynamicIsland.deactivateIsland();
     authenticate()
 });
@@ -60,6 +61,7 @@ async function authenticate() {
         dynamicIsland.setAuth(true);
         setTimeout(() => {
             pagesStore.goToPage(1);
+            document.body.style.overflow = 'auto';
         }, 500);
     } catch (err) { 
         dynamicIsland.deactivateIsland();
@@ -68,6 +70,7 @@ async function authenticate() {
             dynamicIsland.setAuth(true);
             setTimeout(() => {
                 pagesStore.goToPage(1);
+                document.body.style.overflow = 'auto';
             }, 500);
             return;
         }

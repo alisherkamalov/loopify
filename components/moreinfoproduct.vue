@@ -42,7 +42,7 @@
                 <p class="cardproduct__price">{{ lastProduct.price }} ₸</p>
             </div>
             <div class="bottom">
-                <button class="cardproduct__btn order" @click.stop="makeorder.setOrder(true)">{{
+                <button class="cardproduct__btn order" @click.stop="makeOrder">{{
                     languageStore.currentLanguage.makeinorder
                     }}</button>
                 <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id)">
@@ -65,11 +65,11 @@ import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import axios from 'axios'
 import { useIslandStore } from '~/store/IslandStore';
-import { useMakeOrder } from '~/store/MakeOrderStore'
+import { useMakeProduct } from '~/store/MakeProductStore'
 import { usePageStore } from '~/store/PagesRoutesStore'
 
 const store = usePageStore()
-const makeorder = useMakeOrder()
+const makeProductStore = useMakeProduct()
 const lastProductStore = useLastProductStore();
 const lastProduct = computed(() => lastProductStore.lastproduct);
 import { useLanguageStore } from '~/store/languagesStore'
@@ -84,6 +84,13 @@ const closeProduct = () => {
         lastProductStore.setLastProduct([]);
     }, 500);
 };
+
+const makeOrder = () => {
+    lastProductStore.setSlider(false)
+    makeProductStore.setProducts(lastProductStore.lastproduct)
+    store.goToPage(3)
+    document.body.style.overflow = 'hidden';
+}
 const addProductToCart = async (productId) => {
     notificationStore.setText(false);
     const token = localStorage.getItem('token')

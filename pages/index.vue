@@ -18,7 +18,7 @@
                 <authpage />
             </template>
             <template #page-1>
-                <div class="isauth">
+                <div class="isauth" :class="{ active: pagesStore.isAnimate }">
                     <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
                     <TheHeader />
                     <openSearch :currentLanguage="languageStore.currentLanguage" />
@@ -30,8 +30,13 @@
                 </div>
             </template>
             <template #page-2>
-                <div class="moreinfopage" :class="{ active: notificationStore.isCart }">
+                <div class="moreinfopage" :class="{ 'active': notificationStore.isCart, 'animate': pagesStore.isAnimate }">
                     <Moreinfoproduct />
+                </div>
+            </template>
+            <template #page-3>
+                <div class="makeorderpage">
+                    <MakeOrderPage/>
                 </div>
             </template>
         </Slider>
@@ -52,6 +57,7 @@ import TheHeader from '~/components/theheader.vue'
 import openSearch from '~/components/openSearch.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
 import CardProduct from '~/components/cardproduct.vue'
+import { MakeOrderPage } from '#components'
 import axios from 'axios'
 import authpage from '~/components/authpage.vue'
 import { usePageStore } from '~/store/PagesRoutesStore'
@@ -117,7 +123,6 @@ onMounted(() => {
 main.active {
     overflow: hidden;
 }
-
 .moreinfopage {
     scale: 1;
     opacity: 1;
@@ -132,7 +137,6 @@ main.active {
     border-radius: 50px;
     translate: 0px -40%;
 }
-
 .pagesroutes {
     width: 100%;
     height: 100dvh;
@@ -163,20 +167,26 @@ main.active {
 
 .moreinfopage {
     width: 100%;
-    height: 100dvh;
+    height: auto;
     position: relative;
     display: flex;
     flex-direction: column;
 }
 
 .isauth {
-    height: 100dvh;
+    height: auto;
     width: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
     background-color: var(--background);
 }
-
+.moreinfopage.animate {
+    height: 100dvh;
+}
+.isauth.active {
+    height: 100dvh;
+}
 .loading.active {
     opacity: 1;
     pointer-events: all;
