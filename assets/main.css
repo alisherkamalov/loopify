@@ -168,6 +168,10 @@ button:focus {
 [data-vsbs-scroll][data-v-e9faa2c0]::-webkit-scrollbar {
     display: none;
 }
+[data-vsbs-header][data-v-e9faa2c0]:empty {
+    position: relative;
+    z-index: 5;
+}
 [data-vsbs-scroll][data-v-e9faa2c0]:active {
     cursor: grabbing;
   }
