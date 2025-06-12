@@ -151,7 +151,7 @@ button:focus {
     position: absolute;
     inset: 0px;
     overflow-x: hidden;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.8);
 }
 
 .liquidGlass-shine {
@@ -165,6 +165,12 @@ button:focus {
 .dynamicislandbox.active {
     min-height: 60px;
 }
+[data-vsbs-scroll][data-v-e9faa2c0]::-webkit-scrollbar {
+    display: none;
+}
+[data-vsbs-scroll][data-v-e9faa2c0]:active {
+    cursor: grabbing;
+  }
 [data-vsbs-sheet][data-v-e9faa2c0] {
     box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 6px, rgba(0, 0, 0, 0.1) 0px 0px 20px;
     position: relative;

@@ -111,6 +111,17 @@ const pagesStore = usePageStore()
 const token = ref(null)
 
 onMounted(() => {
+    if (MutationObserver) {
+        const observer = new MutationObserver(() => {
+            const el = document.querySelector('[data-vsbs-scroll][data-v-e9faa2c0]');
+            if (el && !el.id) {
+                el.id = 'bottomsheetscroll';
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
     pagesStore.remsoftenCurrentSlide()
     token.value = localStorage.getItem('token')
     if (token.value) {

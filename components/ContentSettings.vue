@@ -11,7 +11,6 @@
             <button class="btnsettings" :class="[sliderbutton.class, { active: activeSlide === index }]"
                 v-for="(sliderbutton, index) in sliderbuttons" :key="index" @click="goToSlide(index)">
                 <div class="liquidGlass-tint"></div>
-                <div class="liquidGlass-shine"></div>
                 <span class="btntext">{{ sliderbutton.text }}</span>
             </button>
 
@@ -51,6 +50,11 @@ const initials = ref('')
 const activeSlide = ref(0);
 const swiperInstance = ref(null);
 const sliderButtonsRef = ref(null);
+const scrollBox = document.getElementById('bottomsheetscroll');
+
+let isDown = false;
+let startY;
+let scrollTop;
 
 const setSwiperInstance = (swiper) => {
     swiperInstance.value = swiper;
@@ -119,6 +123,37 @@ const initUser = () => {
 };
 onMounted(() => {
     initUser();
+    const observer = new MutationObserver(() => {
+        const scrollBox = document.getElementById('bottomsheetscroll');
+        if (scrollBox) {
+            observer.disconnect();
+
+            scrollBox.addEventListener('mousedown', (e) => {
+                isDown = true;
+                scrollBox.classList.add('active');
+                startY = e.pageY - scrollBox.offsetTop;
+                scrollTop = scrollBox.scrollTop;
+            });
+
+            scrollBox.addEventListener('mouseleave', () => {
+                isDown = false;
+            });
+
+            scrollBox.addEventListener('mouseup', () => {
+                isDown = false;
+            });
+
+            scrollBox.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const y = e.pageY - scrollBox.offsetTop;
+                const walk = (y - startY) * 1.5;
+                scrollBox.scrollTop = scrollTop - walk;
+            });
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
     const settings = document.querySelector('#settings');
     settings.scrollBy({
         top: 1,
@@ -129,8 +164,8 @@ onMounted(() => {
 <style scoped>
 .contentsettings {
     display: flex;
-    min-height: 100dvh;
     overflow-x: hidden;
+    overflow-y: auto;
     flex-direction: column;
     z-index: 4;
 }
