@@ -1,5 +1,7 @@
 <template>
     <div class="basket-slide">
+            <div class="liquidGlass-tint"></div>
+            <div class="liquidGlass-shine"></div>
         <span class="headertext">{{ languageStore.currentLanguage.cart }} <span class="quantitycart">{{
                 displayedProducts.length }} {{ getProductWord(displayedProducts.length) }}</span></span>
         <div class="content">
@@ -143,12 +145,13 @@ onMounted(() => {
 <style scoped>
 .basket-slide {
     width: 95%;
-    min-height: 55vh;
+    height: 70vh;
     display: flex;
     flex-direction: column;
     margin: auto;
+    overflow-x: hidden;
     align-items: center;
-    background-color: var(--buttonbsbg);
+    position: relative;
     margin-top: 15px;
     padding-bottom: 10px;
     border-radius: 15px;
@@ -159,27 +162,31 @@ onMounted(() => {
     margin-top: 10px;
     font-size: 20px;
     font-weight: 500;
+    z-index: 4;
 }
 .infoproduct {
     display: flex;
     width: 55%;
+    z-index: 4;
     flex-direction: column;
 }
 .thereproduct {
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 2px;
 }
 
 .cartproduct {
-    width: 100%;
+    width: 95%;
     margin-top: 5px;
     border-radius: 15px;
     display: flex;
+    position: relative;
     gap: 10px;
     padding: 15px 0px;
-    background-color: #f6f6f9;
+    background-color: rgb(255, 255, 255, 0.8);
 }
 
 .price {
@@ -192,12 +199,16 @@ onMounted(() => {
     border-radius: 15px;
     width: 100px;
     height: 100px;
+    z-index: 4;
+    position: relative;
 }
 
 .content {
     width: 98%;
     min-height: 55vh;
     display: flex;
+    z-index: 4;
+    overflow-x: hidden;
 }
 
 .loading {
@@ -217,7 +228,7 @@ onMounted(() => {
         width: 95%;
     }
     .content {
-        width: 95%;
+        width: 100%;
     }
     .basket-slide {
         width: 100%;

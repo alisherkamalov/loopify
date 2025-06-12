@@ -10,7 +10,9 @@
         <div class="sliderbuttons" ref="sliderButtonsRef">
             <button class="btnsettings" :class="[sliderbutton.class, { active: activeSlide === index }]"
                 v-for="(sliderbutton, index) in sliderbuttons" :key="index" @click="goToSlide(index)">
-                {{ sliderbutton.text }}
+                <div class="liquidGlass-tint"></div>
+                <div class="liquidGlass-shine"></div>
+                <span class="btntext">{{ sliderbutton.text }}</span>
             </button>
 
         </div>
@@ -130,6 +132,7 @@ onMounted(() => {
     min-height: 100dvh;
     overflow-x: hidden;
     flex-direction: column;
+    z-index: 4;
 }
 
 .info-account {
@@ -160,7 +163,8 @@ onMounted(() => {
     padding: 0px 10px;
     min-width: 140px;
     border-radius: 15px;
-    background-color: var(--buttonbsbg);
+    position: relative;
+    overflow: hidden;
     color: var(--foreground);
     transition: all 0.3s ease;
     flex-shrink: 0;
@@ -174,6 +178,11 @@ onMounted(() => {
     font-size: 17px;
     color: #8e8e93;
     font-weight: 500;
+}
+
+.btntext {
+    position: relative;
+    z-index: 4;
 }
 
 .sliderbuttons {
@@ -198,7 +207,6 @@ onMounted(() => {
 
 .swiper-info-account {
     width: 100%;
-    height: 100dvh;
     overflow: hidden;
     display: flex;
     align-items: center;

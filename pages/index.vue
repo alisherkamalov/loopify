@@ -1,11 +1,38 @@
 <template>
+    <svg style="display: none">
+        <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+            <feTurbulence type="fractalNoise" baseFrequency="0.001 0.005" numOctaves="1" seed="17"
+                result="turbulence" />
+            <!-- Liked Seeds: 5, 14, 17 -->
+
+            <feComponentTransfer in="turbulence" result="mapped">
+                <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+                <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+                <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+            </feComponentTransfer>
+
+            <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+            <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100"
+                lighting-color="white" result="specLight">
+                <fePointLight x="-200" y="-200" z="300" />
+            </feSpecularLighting>
+
+            <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+
+            <feDisplacementMap in="SourceGraphic" in2="softMap" scale="200" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </svg>
     <client-only>
         <DynamicIsland />
-        <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['90%']"
+        <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['80%']"
             :spring-config="{ tension: 10000, friction: 10000 }" :header-height="50" :footer-height="0"
             :close-on-click-outside="true" :close-on-esc="true" :disable-scrollbar="true" :disable-header="true"
             :disable-footer="true" :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
-            <ContentSettings/>
+            <div class="liquidGlass-effect"></div>
+            <div class="liquidGlass-tint"></div>
+            <div class="liquidGlass-shine"></div>
+            <ContentSettings />
         </BottomSheet>
     </client-only>
     <main :class="{ active: focusStore.isFocused }">
@@ -20,6 +47,7 @@
             <template #page-1>
                 <div class="isauth" :class="{ active: pagesStore.isAnimate }">
                     <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
+
                     <TheHeader />
                     <openSearch :currentLanguage="languageStore.currentLanguage" />
                     <div class="content">
@@ -30,13 +58,14 @@
                 </div>
             </template>
             <template #page-2>
-                <div class="moreinfopage" :class="{ 'active': notificationStore.isCart, 'animate': pagesStore.isAnimate }">
+                <div class="moreinfopage"
+                    :class="{ 'active': notificationStore.isCart, 'animate': pagesStore.isAnimate }">
                     <Moreinfoproduct />
                 </div>
             </template>
             <template #page-3>
                 <div class="makeorderpage">
-                    <MakeOrderPage/>
+                    <MakeOrderPage />
                 </div>
             </template>
         </Slider>
@@ -123,6 +152,7 @@ onMounted(() => {
 main.active {
     overflow: hidden;
 }
+
 .moreinfopage {
     scale: 1;
     opacity: 1;
@@ -131,12 +161,14 @@ main.active {
     translate: 0px 0px;
     transition: all 0.5s ease;
 }
+
 .moreinfopage.active {
     scale: 0;
     opacity: 0;
     border-radius: 50px;
     translate: 0px -40%;
 }
+
 .pagesroutes {
     width: 100%;
     height: 100dvh;
@@ -181,6 +213,7 @@ main.active {
     flex-direction: column;
     background-color: var(--background);
 }
+
 .loading.active {
     opacity: 1;
     pointer-events: all;
