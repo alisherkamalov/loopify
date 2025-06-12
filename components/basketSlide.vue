@@ -150,6 +150,7 @@ onMounted(() => {
     align-items: center;
     background-color: var(--buttonbsbg);
     margin-top: 15px;
+    padding-bottom: 10px;
     border-radius: 15px;
 }
 
@@ -217,6 +218,9 @@ onMounted(() => {
     }
     .content {
         width: 95%;
+    }
+    .basket-slide {
+        width: 100%;
     }
 }
 </style>

@@ -44,7 +44,8 @@ const openBottomSheet = () => {
       router.push('/signin')
       return
     }
-  } 
+  }
+  document.body.style.overflow = 'hidden';
   sheetStore.openSheet()
 }
 const languageVariants = computed(() => [

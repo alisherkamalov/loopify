@@ -84,7 +84,8 @@ const getSlideClass = (index) => {
   flex-shrink: 0;
   transition: all 0.5s ease;
   transform: scale(1);
-  overflow: hidden;
+  overflow-x: hidden;
+  height: 100dvh;
   border-radius: 0;
 }
 

@@ -181,12 +181,6 @@ main.active {
     flex-direction: column;
     background-color: var(--background);
 }
-.moreinfopage.animate {
-    height: 100dvh;
-}
-.isauth.active {
-    height: 100dvh;
-}
 .loading.active {
     opacity: 1;
     pointer-events: all;

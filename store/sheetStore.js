@@ -15,6 +15,8 @@ export const useSheetStore = defineStore('sheet', {
     closeSheet() {
       const pageStore = usePageStore()
       pageStore.remsoftenCurrentSlide()
+      document.body.classList.remove('overflow-hidden')
+      document.body.style.overflow = 'auto'
       this.isOpen = false
     },
   }
