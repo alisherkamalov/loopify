@@ -145,21 +145,21 @@ onMounted(() => {
 <style scoped>
 .basket-slide {
     width: 95%;
-    height: 70vh;
+    height: 570px;
     display: flex;
     flex-direction: column;
     margin: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     align-items: center;
     position: relative;
     margin-top: 15px;
-    padding-bottom: 10px;
     border-radius: 15px;
 }
 
 .headertext {
     width: 97%;
     margin-top: 10px;
+    padding-bottom: 5px;
     font-size: 20px;
     font-weight: 500;
     z-index: 4;
@@ -186,7 +186,7 @@ onMounted(() => {
     position: relative;
     gap: 10px;
     padding: 15px 0px;
-    background-color: rgb(255, 255, 255, 0.8);
+    background-color: var(--cartbasket-color);
 }
 
 .price {
@@ -205,12 +205,23 @@ onMounted(() => {
 
 .content {
     width: 98%;
-    min-height: 55vh;
+    min-height: 480px;
     display: flex;
     z-index: 4;
+    margin-bottom: 10px;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
-
+.content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+}
+.content::-webkit-scrollbar {
+    width: 4px;
+}
 .loading {
     width: 100%;
     height: 100dvh;

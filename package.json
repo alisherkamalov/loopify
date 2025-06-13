@@ -12,11 +12,11 @@
   "dependencies": {
     "@ant-design-vue/nuxt": "^1.4.6",
     "@ant-design/icons-vue": "^7.0.1",
-    "@douxcode/vue-spring-bottom-sheet": "^2.3.0",
     "@lottiefiles/lottie-player": "^2.0.12",
     "@mdi/font": "^7.4.47",
     "@pinia/nuxt": "^0.11.0",
     "@vueuse/core": "^13.3.0",
+    "@webzlodimir/vue-bottom-sheet": "^3.0.5",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.9.0",
     "lenis": "^1.3.4",

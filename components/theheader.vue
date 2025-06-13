@@ -46,7 +46,7 @@ const openBottomSheet = () => {
     }
   }
   document.body.style.overflow = 'hidden';
-  sheetStore.openSheet()
+  sheetStore.open()
 }
 const languageVariants = computed(() => [
   {
@@ -60,11 +60,6 @@ const languageVariants = computed(() => [
     icon: 'kz.png'
   }
 ])
-
-const MenuOpenAndClose = () => {
-  isMenu.value = !isMenu.value
-}
-
 function handleBackButton(event) {
   isMenu.value = false;
   history.pushState(null, '', location.href);

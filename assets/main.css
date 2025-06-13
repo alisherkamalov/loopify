@@ -6,6 +6,7 @@
     font-weight: normal;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Sans';
     src: url('@/assets/sans.woff2') format('woff2');
@@ -50,9 +51,11 @@ body {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
 }
+
 body {
     overflow: auto !important;
 }
+
 ul {
     list-style: none;
 }
@@ -113,11 +116,14 @@ button:focus {
 
 :root {
     --background: #ffffff;
-    --bottomsheetbg: #f2f2f7;
+    --bottomsheetbgoverlay: #f2f2f7;
     --buttonbsbg: #ffffff;
-    --buttonbsbgactive: #c7c7c7;
+    --buttonbsbgactive: #929292;
     --foreground: #171717;
+    --bottomsheetbg: rgba(255, 255, 255, 0.8);
     --bg-cont: #f0f0f0;
+    --cartbasket-color: #92929221;
+    --bottomsheethadow: rgba(255, 255, 255, 0.5) 2px 2px 1px 0px inset, rgba(255, 255, 255, 0.5) -1px -1px 1px 1px inset;
     --graycart-color: #8f8fa5;
     --border-color: #c7c7c7;
     --blur: rgba(180, 180, 180, 0.5);
@@ -136,6 +142,7 @@ button:focus {
     background-color: transparent;
     transition: all 0.5s ease;
 }
+
 .liquidGlass-effect {
     position: absolute;
     z-index: 0;
@@ -151,34 +158,39 @@ button:focus {
     position: absolute;
     inset: 0px;
     overflow-x: hidden;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bottomsheetbg);
 }
 
 .liquidGlass-shine {
     position: absolute;
     z-index: 2;
-    box-shadow: rgba(255, 255, 255, 0.5) 2px 2px 1px 0px inset, rgba(255, 255, 255, 0.5) -1px -1px 1px 1px inset;
-    inset: 0px;
+    box-shadow: var(--bottomsheethadow);
     overflow: hidden;
 }
 
 .dynamicislandbox.active {
     min-height: 60px;
 }
-[data-vsbs-scroll][data-v-e9faa2c0]::-webkit-scrollbar {
-    display: none;
+
+.bottom-sheet__header {
+    z-index: 4;
 }
-[data-vsbs-header][data-v-e9faa2c0]:empty {
-    position: relative;
-    z-index: 5;
+.bottom-sheet__overlay {
+    background: transparent !important;
 }
-[data-vsbs-scroll][data-v-e9faa2c0]:active {
-    cursor: grabbing;
-  }
-[data-vsbs-sheet][data-v-e9faa2c0] {
+.bottom-sheet__content {
+    background: transparent !important;
+    padding: 0px 16px 16px 16px;
+    height: 90% !important;
     box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 6px, rgba(0, 0, 0, 0.1) 0px 0px 20px;
-    position: relative;
-    overflow-x: hidden;
+}
+
+.bottom-sheet__main {
+    scrollbar-width: none;
+    background: transparent !important;
+}
+.bottom-sheet__main::-webkit-scrollbar {
+    display: none;
 }
 body {
     background-color: var(--background);
@@ -219,10 +231,14 @@ body {
         --border-color: #181818;
         --bg-cont: #363636;
         --foreground: #ededed;
-        --bottomsheetbg : #000000;
+        --bottomsheetbg: rgba(0, 0, 0, 0.2);
+        --bottomsheetbgoverlay: #000000;
         --buttonbsbg: #1c1c1e;
+        --bottomsheethadow: rgba(0, 0, 0, 0.3) 2px 2px 1px 0px inset,
+            rgba(0, 0, 0, 0.3) -1px -1px 1px 1px inset;
         --buttonbsbgactive: #2f2f31;
         --textfield-color: #ffffff;
+        --cartbasket-color: #2f2f31;
         --blur: rgba(87, 87, 87, 0.5);
         --logo-url: url(./logo-dark.png);
     }

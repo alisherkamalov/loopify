@@ -25,15 +25,7 @@
     </svg>
     <client-only>
         <DynamicIsland />
-        <BottomSheet v-model="sheetStore.isOpen" :blocking="true" :snap-points="['80%']"
-            :spring-config="{ tension: 10000, friction: 10000 }" :header-height="50" :footer-height="0"
-            :close-on-click-outside="true" :close-on-esc="true" :disable-scrollbar="true" :disable-header="true"
-            :disable-footer="true" :disableBodyScroll="true" @closed="sheetStore.closeSheet" class="bottomsheet">
-            <div class="liquidGlass-effect"></div>
-            <div class="liquidGlass-tint"></div>
-            <div class="liquidGlass-shine"></div>
-            <ContentSettings />
-        </BottomSheet>
+        <bottomsheet />
     </client-only>
     <main :class="{ active: focusStore.isFocused }">
         <div class="loading" :class="{ active: isLoading }">
@@ -94,13 +86,10 @@ import DynamicIsland from '~/components/thedynamicisland.vue'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
 import Slider from '~/components/sliderpage.vue'
-import { useSheetStore } from '~/store/sheetStore'
-import BottomSheet from '@douxcode/vue-spring-bottom-sheet'
-import '@douxcode/vue-spring-bottom-sheet/dist/style.css'
+import bottomsheet from '~/components/bottomsheet.vue'
 import { useIslandStore } from '~/store/IslandStore'
 import TheFooter from '~/components/theFooter.vue'
-import ContentSettings from '~/components/ContentSettings.vue'
-const sheetStore = useSheetStore()
+
 const focusStore = useFocusStore()
 const notificationStore = useIslandStore()
 const languageStore = useLanguageStore()

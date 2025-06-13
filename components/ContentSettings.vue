@@ -15,7 +15,7 @@
             </button>
 
         </div>
-        <Swiper class="swiper-info-account" slides-per-view="1" :onSwiper="setSwiperInstance"
+        <Swiper class="swiper-info-account" :simulateTouch="false" slides-per-view="1" :onSwiper="setSwiperInstance"
             @slideChange="onSlideChange">
 
             <SwiperSlide>
@@ -168,6 +168,7 @@ onMounted(() => {
     overflow-y: auto;
     flex-direction: column;
     z-index: 4;
+    min-height: 852px;
 }
 
 .info-account {
