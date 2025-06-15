@@ -15,7 +15,7 @@
             </button>
 
         </div>
-        <Swiper class="swiper-info-account" :simulateTouch="false" slides-per-view="1" :onSwiper="setSwiperInstance"
+        <Swiper class="swiper-info-account" slides-per-view="1" :onSwiper="setSwiperInstance"
             @slideChange="onSlideChange">
 
             <SwiperSlide>
@@ -123,42 +123,6 @@ const initUser = () => {
 };
 onMounted(() => {
     initUser();
-    const observer = new MutationObserver(() => {
-        const scrollBox = document.getElementById('bottomsheetscroll');
-        if (scrollBox) {
-            observer.disconnect();
-
-            scrollBox.addEventListener('mousedown', (e) => {
-                isDown = true;
-                scrollBox.classList.add('active');
-                startY = e.pageY - scrollBox.offsetTop;
-                scrollTop = scrollBox.scrollTop;
-            });
-
-            scrollBox.addEventListener('mouseleave', () => {
-                isDown = false;
-            });
-
-            scrollBox.addEventListener('mouseup', () => {
-                isDown = false;
-            });
-
-            scrollBox.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const y = e.pageY - scrollBox.offsetTop;
-                const walk = (y - startY) * 1.5;
-                scrollBox.scrollTop = scrollTop - walk;
-            });
-        }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-    const settings = document.querySelector('#settings');
-    settings.scrollBy({
-        top: 1,
-        behavior: 'smooth'
-    });
 });
 </script>
 <style scoped>

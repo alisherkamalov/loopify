@@ -193,6 +193,7 @@ button:focus {
     display: none;
 }
 body {
+    overflow: hidden !important;
     background-color: var(--background);
 }
 
