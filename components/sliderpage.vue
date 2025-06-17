@@ -108,6 +108,9 @@ const getSlideClass = (index) => {
 .slider-page.softened {
   transform: scale(0.95);
   border-radius: 50px;
-  overflow: hidden;
 }
+.slider-page.softened.step-3::-webkit-scrollbar {
+    display: none;
+}
+
 </style>

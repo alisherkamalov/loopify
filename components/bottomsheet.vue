@@ -1,11 +1,13 @@
 <template>
-    <div class="bottomsheetloopify" :class="{ 'active': sheetStore.isOpen }">
+    <div class="bottomsheetloopify" :class="{ 'active': sheetStore.isOpen, 'isanimate': sheetStore.isAnimated }">
+            <div class="liquidGlass-tint"></div>
+            <div class="liquidGlass-shine"></div>
         <div class="content">
-            <div class="close">
+            <div class="close" @click="sheetStore.close">
                 <div class="relative">
                     <div class="liquidGlass-tint"></div>
                     <div class="liquidGlass-shine"></div>
-                    <a-tooltip class="btnclose" @click="sheetStore.close">
+                    <a-tooltip class="btnclose">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                     </a-tooltip>
                     <span class="closetext">
@@ -13,9 +15,6 @@
                     </span>
                 </div>
             </div>
-            <div class="liquidGlass-effect"></div>
-            <div class="liquidGlass-tint"></div>
-            <div class="liquidGlass-shine"></div>
             <ContentSettings />
         </div>
     </div>
@@ -37,14 +36,15 @@ const languagesStore = useLanguageStore();
     position: absolute;
     display: flex;
     height: 100dvh;
-    backdrop-filter: blur(3px);
     top: 100dvh;
+    background-color: rgb(0, 0, 0, 0.2);
     overflow: hidden;
     z-index: 1;
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px #3F51B5;
     border-top-left-radius: 1.8rem;
     border-top-right-radius: 1.8rem;
-    background-color: transparent;
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
 }
 
 .btnclose {
@@ -70,10 +70,12 @@ const languagesStore = useLanguageStore();
     align-items: center;
     font-size: 17px;
     display: flex;
+    width: 32px;
     border-radius: 20px;
     overflow: hidden;
     color: var(--foreground);
     opacity: 1;
+    cursor: pointer;
     background-color: transparent;
     transition: all 0.1s ease;
 }
@@ -92,12 +94,18 @@ const languagesStore = useLanguageStore();
     width: 100%;
     height: 100dvh;
     display: flex;
+    z-index: 5;
     flex-direction: column;
     position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
+
 
 .bottomsheetloopify.active {
     top: 0px;
+}
+.bottomsheetloopify.isanimate {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="contentsettings" id="settings">
+    <div class="contentsettings">
         <div class="info-account">
             <div class="logoaccount">
                 {{ initials }}
@@ -50,11 +50,6 @@ const initials = ref('')
 const activeSlide = ref(0);
 const swiperInstance = ref(null);
 const sliderButtonsRef = ref(null);
-const scrollBox = document.getElementById('bottomsheetscroll');
-
-let isDown = false;
-let startY;
-let scrollTop;
 
 const setSwiperInstance = (swiper) => {
     swiperInstance.value = swiper;
@@ -131,10 +126,16 @@ onMounted(() => {
     overflow-x: hidden;
     overflow-y: auto;
     flex-direction: column;
+    margin: 16px;
     z-index: 4;
     min-height: 852px;
 }
-
+.slide-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+}
 .info-account {
     width: 100%;
     display: flex;

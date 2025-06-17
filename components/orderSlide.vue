@@ -9,7 +9,7 @@
 <style scoped>
 .order-slide {
     width: 95%;
-    min-height: 55vh;
+    height: 570px;
     display: flex;
     flex-direction: column;
     margin: auto;

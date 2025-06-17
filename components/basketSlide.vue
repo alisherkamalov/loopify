@@ -145,11 +145,11 @@ onMounted(() => {
 <style scoped>
 .basket-slide {
     width: 95%;
-    height: 570px;
     display: flex;
     flex-direction: column;
     margin: auto;
     overflow: hidden;
+    height: 570px;
     align-items: center;
     position: relative;
     margin-top: 15px;
@@ -163,6 +163,10 @@ onMounted(() => {
     font-size: 20px;
     font-weight: 500;
     z-index: 4;
+}
+.box {
+    width: 1px;
+    min-height: 10px;
 }
 .infoproduct {
     display: flex;
@@ -179,7 +183,7 @@ onMounted(() => {
 }
 
 .cartproduct {
-    width: 95%;
+    width: 100%;
     margin-top: 5px;
     border-radius: 15px;
     display: flex;
@@ -208,8 +212,10 @@ onMounted(() => {
     min-height: 480px;
     display: flex;
     z-index: 4;
+    height: 100dvh;
     margin-bottom: 10px;
     overflow-x: hidden;
+    flex-direction: column;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
@@ -227,13 +233,19 @@ onMounted(() => {
     height: 100dvh;
     display: flex;
     margin: auto;
+    justify-content: center;
+    align-items: center;
 }
 
 .quantitycart {
     color: var(--graycart-color);
     font-size: 15px;
 }
-
+@media (max-width:1100px) {
+    .cartproduct {
+        width: 98%;
+    }
+}
 @media (max-width: 800px) {
     .headertext {
         width: 95%;
@@ -243,6 +255,9 @@ onMounted(() => {
     }
     .basket-slide {
         width: 100%;
+    }
+    .cartproduct {
+        width: 97%;
     }
 }
 </style>

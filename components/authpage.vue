@@ -13,9 +13,8 @@ import { ref, onMounted } from 'vue';
 import { useIslandStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
 import { usePageStore } from '~/store/PagesRoutesStore';
-
 const authenticated = ref(false);
-const dynamicIsland = useIslandStore(); 
+const dynamicIsland = useIslandStore();
 const languageStore = useLanguageStore();
 const pagesStore = usePageStore()
 onMounted(() => {
@@ -25,7 +24,7 @@ onMounted(() => {
 });
 
 async function authenticate() {
-    
+
     if (!window.PublicKeyCredential) {
         alert('WebAuthn не поддерживается этим браузером');
         return;
@@ -63,7 +62,7 @@ async function authenticate() {
             pagesStore.goToPage(1);
             document.body.style.overflow = 'auto';
         }, 500);
-    } catch (err) { 
+    } catch (err) {
         dynamicIsland.deactivateIsland();
         if (localStorage.getItem('authenticated') === 'true') {
             authenticated.value = true;

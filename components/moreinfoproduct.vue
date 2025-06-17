@@ -226,6 +226,7 @@ const toggleVideo = (index) => {
     gap: 35px;
     background-color: var(--background);
     padding-top: 25px;
+    min-height: 100dvh;
     margin-left: auto;
     margin-right: auto;
 }

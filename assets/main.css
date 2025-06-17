@@ -143,15 +143,6 @@ button:focus {
     transition: all 0.5s ease;
 }
 
-.liquidGlass-effect {
-    position: absolute;
-    z-index: 0;
-    backdrop-filter: blur(3px);
-    filter: url(#glass-distortion);
-    isolation: isolate;
-    inset: 0px;
-    overflow: hidden;
-}
 
 .liquidGlass-tint {
     z-index: 1;
@@ -160,7 +151,6 @@ button:focus {
     overflow-x: hidden;
     background: var(--bottomsheetbg);
 }
-
 .liquidGlass-shine {
     position: absolute;
     z-index: 2;
