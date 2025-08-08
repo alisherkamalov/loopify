@@ -18,11 +18,10 @@ export default defineNuxtConfig({
         manifest: {
           name: "Loopify",
           short_name: "Loopify",
-          description: "Интернет магазин",
-          theme_color: "transparent",
-          background_color: "#00000000",
+          start_url: "/",
           display: "standalone",
-          start_url: ".",
+          background_color: "#000000",
+          theme_color: "#000000",
           orientation: "portrait",
           icons: [
             { src: "/icon192.png", sizes: "192x192", type: "image/png" },
@@ -31,24 +30,22 @@ export default defineNuxtConfig({
         },
         workbox: {
           cleanupOutdatedCaches: true,
-          navigateFallback: "/",
+          navigateFallback: "/offline.html",
           runtimeCaching: [
             {
-              urlPattern: ({ request }: { request: Request }) => request.destination === "document",
+              urlPattern: ({ request }) => request.destination === "document",
               handler: "NetworkFirst",
               options: {
                 cacheName: "html-cache",
               },
             },
-
             {
-              urlPattern: ({ request }: { request: Request }) => request.destination === "style",
+              urlPattern: ({ request }) => request.destination === "style",
               handler: "StaleWhileRevalidate",
               options: {
                 cacheName: "css-cache",
               },
             },
-
             {
               urlPattern: ({ request }) => request.destination === "script",
               handler: "StaleWhileRevalidate",
@@ -56,9 +53,8 @@ export default defineNuxtConfig({
                 cacheName: "js-cache",
               },
             },
-
             {
-              urlPattern: ({ request }: { request: Request }) => request.destination === "image",
+              urlPattern: ({ request }) => request.destination === "image",
               handler: "CacheFirst",
               options: {
                 cacheName: "image-cache",
@@ -68,7 +64,6 @@ export default defineNuxtConfig({
                 },
               },
             },
-
             {
               urlPattern: /\/api\/.*$/,
               handler: "NetworkFirst",
@@ -80,16 +75,17 @@ export default defineNuxtConfig({
             },
           ],
         },
+        includeAssets: [
+          "/favicon.ico",
+          "/icon192.png",
+          "/icon512.png",
+          "/offline.html",
+        ],
+        injectRegister: "auto",
         devOptions: {
           enabled: true,
           type: "module",
         },
-        includeAssets: [
-          "/icon192.png",
-          "/icon512.png",
-          "/favicon.ico",
-        ],
-        injectRegister: "auto",
       },
     ],
     // Vuetify
