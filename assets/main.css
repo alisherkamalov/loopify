@@ -50,10 +50,13 @@ html,
 body {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    overflow: auto !important;
+    height: 100dvh;
+    min-height: 100vh;
 }
 
 body {
-    overflow: auto !important;
+    padding-top: env(safe-area-inset-top);
 }
 
 ul {
@@ -151,6 +154,7 @@ button:focus {
     overflow-x: hidden;
     background: var(--bottomsheetbg);
 }
+
 .liquidGlass-shine {
     position: absolute;
     z-index: 2;
@@ -165,9 +169,11 @@ button:focus {
 .bottom-sheet__header {
     z-index: 4;
 }
+
 .bottom-sheet__overlay {
     background: transparent !important;
 }
+
 .bottom-sheet__content {
     background: transparent !important;
     padding: 0px 16px 16px 16px;
@@ -179,9 +185,11 @@ button:focus {
     scrollbar-width: none;
     background: transparent !important;
 }
+
 .bottom-sheet__main::-webkit-scrollbar {
     display: none;
 }
+
 body {
     overflow: hidden !important;
     background-color: var(--background);
