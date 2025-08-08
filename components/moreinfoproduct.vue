@@ -1,5 +1,4 @@
 <template>
-    <Makeinorder />
     <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
     <div class="container" :class="{ active: lastProductStore.isSlider }">
         <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back">
@@ -240,6 +239,7 @@ const toggleVideo = (index) => {
     position: absolute;
     left: 10px;
     top: 10px;
+    top: calc(env(safe-area-inset-top) + 10px);
     z-index: 10;
     background-color: var(--background);
 }

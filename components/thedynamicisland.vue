@@ -103,16 +103,8 @@ const handleClickOutside = (event) => {
     if (dynamicIsland.value && !dynamicIsland.value.contains(event.target)) {
         IslandStore.setMore(false)
         IslandStore.setActiveMore(false)
-        IslandStore.setActive(false)
-        setTimeout(() => {
-            IslandStore.setText(false)
-        }, 100);
-        setTimeout(() => {
-            IslandStore.setActive(true)
-        }, 500);
-        setTimeout(() => {
-            IslandStore.setText(true)
-        }, 700);
+        IslandStore.setActive(true)
+        IslandStore.setText(true)
     }
 }
 const authComplete = () => {
@@ -197,6 +189,7 @@ const moreInfo = () => {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    gap: 5px;
     height: 50px;
 }
 
@@ -253,10 +246,18 @@ const moreInfo = () => {
     white-space: none;
     color: white;
 }
-.notification.more .textnotification {
-    margin-top: 20px;
+.notification.active .textnotification.active {
+    translate: 0px 0px;
 }
-
+.notification.active .cont-left-icon.active {
+    translate: 0px 0px;
+}
+.notification.more .textnotification.active {
+    translate: 0px 7px;
+}
+.notification.more .cont-left-icon.active {
+    translate: 0px -10px;
+}
 .notification.more .left-icon {
     translate: 0px 10px;
 }
@@ -292,7 +293,6 @@ const moreInfo = () => {
     width: 100%;
     height: 100%;
 }
-
 .cont-auth-icon.active {
     opacity: 1;
     filter: blur(0px);
@@ -317,6 +317,7 @@ const moreInfo = () => {
 .notification.more {
     max-width: 95%;
     max-height: 140px;
+    border-radius: 25px;
 }
 
 .notification.auth {

@@ -39,92 +39,91 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, nextTick, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { useLocalStorage } from '@vueuse/core'
 import basketSlide from './basketSlide.vue'
 import orderSlide from './orderSlide.vue'
 import 'swiper/css'
-const fullName = ref('')
-const email = ref('')
-const initials = ref('')
-const activeSlide = ref(0);
-const swiperInstance = ref(null);
-const sliderButtonsRef = ref(null);
+
+const fullName = useLocalStorage('username', '')
+const email = useLocalStorage('useremail', '')
+
+const initials = computed(() =>
+  fullName.value
+    .split(' ')
+    .map(n => n[0]?.toUpperCase() || '')
+    .join('')
+)
+
+const activeSlide = ref(0)
+const swiperInstance = ref(null)
+const sliderButtonsRef = ref(null)
 
 const setSwiperInstance = (swiper) => {
-    swiperInstance.value = swiper;
-};
-import { nextTick } from 'vue'
-
-const goToButton = (index) => {
-    nextTick(() => {
-        const container = sliderButtonsRef.value;
-        const buttons = container.querySelectorAll('button');
-        const button = buttons[index];
-
-        if (!button) return;
-
-        const containerRect = container.getBoundingClientRect();
-        const buttonRect = button.getBoundingClientRect();
-
-        const offset = buttonRect.left - containerRect.left;
-
-        container.scrollTo({
-            left: container.scrollLeft + offset - container.clientWidth / 2 + button.clientWidth / 2,
-            behavior: 'smooth'
-        });
-    });
+  swiperInstance.value = swiper
 }
 
+const goToButton = (index) => {
+  nextTick(() => {
+    const container = sliderButtonsRef.value
+    const buttons = container.querySelectorAll('button')
+    const button = buttons[index]
+
+    if (!button) return
+
+    const containerRect = container.getBoundingClientRect()
+    const buttonRect = button.getBoundingClientRect()
+
+    const offset = buttonRect.left - containerRect.left
+
+    container.scrollTo({
+      left: container.scrollLeft + offset - container.clientWidth / 2 + button.clientWidth / 2,
+      behavior: 'smooth'
+    })
+  })
+}
 
 const goToSlide = (index) => {
-    if (index >= swiperInstance.value.slides.length) {
-        console.log('Выход...');
-        return;
-    }
+  if (index >= swiperInstance.value.slides.length) return
 
-    if (swiperInstance.value) {
-        swiperInstance.value.slideTo(index);
-        activeSlide.value = index;
-    }
-    goToButton(index);
-};
-
+  if (swiperInstance.value) {
+    swiperInstance.value.slideTo(index)
+    activeSlide.value = index
+  }
+  goToButton(index)
+}
 
 const onSlideChange = () => {
-    if (swiperInstance.value) {
-        activeSlide.value = swiperInstance.value.activeIndex;
-    }
-    goToButton(activeSlide.value);
-};
+  if (swiperInstance.value) {
+    activeSlide.value = swiperInstance.value.activeIndex
+  }
+  goToButton(activeSlide.value)
+}
 
 const sliderbuttons = ref([
-    { text: 'Заказы', class: 'orders' },
-    { text: 'Корзина', class: 'cart' },
-    { text: 'Избранные магазины', class: 'favorites stores' },
-    { text: 'Уведомления', class: 'notifications' },
-    { text: 'Выйти', class: 'logout' }
-]);
-const initUser = () => {
-    if (localStorage) {
-        email.value = localStorage.getItem('useremail') || '';
-        fullName.value = localStorage.getItem('username') || '';
+  { text: 'Заказы', class: 'orders' },
+  { text: 'Корзина', class: 'cart' },
+  { text: 'Избранные магазины', class: 'favorites stores' },
+  { text: 'Уведомления', class: 'notifications' },
+  { text: 'Выйти', class: 'logout' }
+])
 
-        if (fullName.value.trim()) {
-            initials.value = fullName.value
-                .split(' ')
-                .map(n => n[0]?.toUpperCase() || '')
-                .join('');
-        } else {
-            initials.value = '';
-        }
-    }
-};
+const handleStorage = (event) => {
+  if (event.key === 'username') fullName.value = event.newValue || ''
+  if (event.key === 'useremail') email.value = event.newValue || ''
+}
 
 onMounted(() => {
-    initUser();
-});
+  window.addEventListener('storage', handleStorage)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('storage', handleStorage)
+})
 </script>
+
+
 <style scoped>
 .contentsettings {
     display: flex;

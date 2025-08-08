@@ -90,7 +90,29 @@ onMounted(() => {
         observer.observe(document.body, { childList: true, subtree: true });
     }
     pagesStore.remsoftenCurrentSlide()
-
+    token.value = localStorage.getItem('token')
+    if (token.value) {
+        axios.get('https://backendlopify.vercel.app/me', {
+            headers: { Authorization: `Bearer ${token.value}` }
+        })
+            .then(response => {
+                localStorage.setItem('userid', response.data._id)
+                localStorage.setItem('username', response.data.nickname)
+                localStorage.setItem('useremail', response.data.email)
+            })
+            .catch(error => {
+                console.error('Ошибка запроса /me:', error);
+                token.value = null;
+                pagesStore.goToPage(0)
+                return
+            })
+            .finally(() => {
+                setTimeout(() => isLoading.value = false, 1000);
+            })
+    }
+    else {
+        pagesStore.goToPage(1)
+    }
     axios.get('https://backendlopify.vercel.app/products')
         .then(response => allproductstore.setAllProducts(response.data))
         .catch(error => console.error('Ошибка запроса товаров:', error))

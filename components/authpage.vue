@@ -74,11 +74,12 @@ async function authenticate() {
                 .catch(error => {
                     console.error('Ошибка запроса /me:', error);
                     token.value = null;
+                    pagesStore.goToPage(0)
+                    return
                 })
                 .finally(() => {
                     setTimeout(() => isLoading.value = false, 1000);
                 })
-            pagesStore.goToPage(0)
         }
         setTimeout(() => {
             pagesStore.goToPage(1);

@@ -134,7 +134,7 @@ header {
     min-height: 100dvh;
     display: flex;
     overflow: hidden;
-    z-index: 1;
+    z-index: 999;
     flex-direction: column;
     transition: all 0.3s ease;
     background-color: var(--background);

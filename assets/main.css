@@ -142,22 +142,6 @@ button:focus {
     transition: all 0.5s ease;
 }
 
-
-.liquidGlass-tint {
-    z-index: 1;
-    position: absolute;
-    inset: 0px;
-    overflow-x: hidden;
-    background: var(--bottomsheetbg);
-}
-
-.liquidGlass-shine {
-    position: absolute;
-    z-index: 2;
-    box-shadow: var(--bottomsheethadow);
-    overflow: hidden;
-}
-
 .dynamicislandbox.active {
     min-height: 60px;
 }
