@@ -1,12 +1,8 @@
 <template>
     <div class="bottomsheetloopify" :class="{ 'active': sheetStore.isOpen, 'isanimate': sheetStore.isAnimated }">
-            <div class="liquidGlass-tint"></div>
-            <div class="liquidGlass-shine"></div>
         <div class="content">
             <div class="close" @click="sheetStore.close">
                 <div class="relative">
-                    <div class="liquidGlass-tint"></div>
-                    <div class="liquidGlass-shine"></div>
                     <a-tooltip class="btnclose">
                         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
                     </a-tooltip>
@@ -40,8 +36,7 @@ const languagesStore = useLanguageStore();
     background-color: rgb(0, 0, 0, 0.2);
     overflow: hidden;
     z-index: 1;
-    border-radius: 50%;
-    box-shadow: inset 0 0 20px #3F51B5;
+    background-color: white;
     border-top-left-radius: 1.8rem;
     border-top-right-radius: 1.8rem;
     transition: all 0.5s ease;

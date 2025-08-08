@@ -107,15 +107,20 @@ const sliderbuttons = ref([
 ]);
 const initUser = () => {
     if (localStorage) {
-        email.value = localStorage.getItem('useremail');
-        fullName.value = localStorage.getItem('username');
-        initials.value = fullName.value
-            .split(' ')
-            .map(n => n[0].toUpperCase())
-            .join('');
+        email.value = localStorage.getItem('useremail') || '';
+        fullName.value = localStorage.getItem('username') || '';
 
+        if (fullName.value.trim()) {
+            initials.value = fullName.value
+                .split(' ')
+                .map(n => n[0]?.toUpperCase() || '')
+                .join('');
+        } else {
+            initials.value = '';
+        }
     }
 };
+
 onMounted(() => {
     initUser();
 });
@@ -129,6 +134,7 @@ onMounted(() => {
     margin: 16px;
     z-index: 4;
     min-height: 852px;
+    background-color: white;
 }
 .slide-content {
     display: flex;

@@ -16,11 +16,14 @@ import { usePageStore } from '~/store/PagesRoutesStore';
 const authenticated = ref(false);
 const dynamicIsland = useIslandStore();
 const languageStore = useLanguageStore();
+const token = ref('')
 const pagesStore = usePageStore()
 onMounted(() => {
     document.body.style.overflow = 'hidden';
     dynamicIsland.deactivateIsland();
-    authenticate()
+    if (localStorage.getItem('username')) {
+        authenticate()
+    }
 });
 
 async function authenticate() {
@@ -58,10 +61,30 @@ async function authenticate() {
         localStorage.setItem('authenticated', 'true');
         authenticated.value = true;
         dynamicIsland.setAuth(true);
+        token.value = localStorage.getItem('token')
+        if (token.value) {
+            axios.get('https://backendlopify.vercel.app/me', {
+                headers: { Authorization: `Bearer ${token.value}` }
+            })
+                .then(response => {
+                    localStorage.setItem('userid', response.data._id)
+                    localStorage.setItem('username', response.data.nickname)
+                    localStorage.setItem('useremail', response.data.email)
+                })
+                .catch(error => {
+                    console.error('Ошибка запроса /me:', error);
+                    token.value = null;
+                })
+                .finally(() => {
+                    setTimeout(() => isLoading.value = false, 1000);
+                })
+            pagesStore.goToPage(0)
+        }
         setTimeout(() => {
             pagesStore.goToPage(1);
             document.body.style.overflow = 'auto';
         }, 500);
+
     } catch (err) {
         dynamicIsland.deactivateIsland();
         if (localStorage.getItem('authenticated') === 'true') {

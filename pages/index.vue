@@ -88,34 +88,13 @@ onMounted(() => {
         observer.observe(document.body, { childList: true, subtree: true });
     }
     pagesStore.remsoftenCurrentSlide()
-    token.value = localStorage.getItem('token')
-    if (token.value) {
-        axios.get('https://backendlopify.vercel.app/me', {
-            headers: { Authorization: `Bearer ${token.value}` }
-        })
-            .then(response => {
-                localStorage.setItem('userid', response.data._id)
-                localStorage.setItem('username', response.data.nickname)
-                localStorage.setItem('useremail', response.data.email)
-            })
-            .catch(error => {
-                console.error('Ошибка запроса /me:', error);
-                token.value = null;
-            })
-            .finally(() => {
-                setTimeout(() => isLoading.value = false, 1000);
-            })
-        pagesStore.goToPage(0)
-    } else {
-        setTimeout(() => {
-            pagesStore.goToPage(1)
-        }, 500);
-        setTimeout(() => isLoading.value = false, 2000);
-    }
 
     axios.get('https://backendlopify.vercel.app/products')
         .then(response => allproductstore.setAllProducts(response.data))
-        .catch(error => console.error('Ошибка запроса товаров:', error));
+        .catch(error => console.error('Ошибка запроса товаров:', error))
+        .finally(() => {
+            isLoading.value = false;
+        });
 
     lastProductStore.setLastProduct([]);
     lastProductStore.setSlider(false);
