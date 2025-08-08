@@ -36,6 +36,7 @@ const languagesStore = useLanguageStore();
     background-color: rgb(0, 0, 0, 0.2);
     overflow: hidden;
     z-index: 1;
+    padding-top: env(safe-area-inset-top);
     background-color: white;
     border-top-left-radius: 1.8rem;
     border-top-right-radius: 1.8rem;

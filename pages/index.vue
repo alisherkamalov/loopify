@@ -116,7 +116,9 @@ main.active {
     translate: 0px 0px;
     transition: all 0.5s ease;
 }
-
+.makeorderpage {
+    padding-top: env(safe-area-inset-top);
+}
 .moreinfopage.active {
     scale: 0;
     opacity: 0;
@@ -157,6 +159,7 @@ main.active {
     height: auto;
     position: relative;
     display: flex;
+    padding-top: env(safe-area-inset-top);
     flex-direction: column;
 }
 
@@ -165,6 +168,7 @@ main.active {
     width: 100%;
     height: auto;
     display: flex;
+    padding-top: env(safe-area-inset-top);
     flex-direction: column;
     background-color: var(--background);
 }

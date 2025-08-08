@@ -35,9 +35,11 @@ const lengthProducts = computed(() => {
     return Array.isArray(makeProductStore.products) ? makeProductStore.products.length : 1;
 });
 const closeMakeOrder = () => {
-    pagesStore.goToPage(0);
-    makeProductStore.setProducts([]);
+    pagesStore.goToPage(2);
     document.body.style.overflow = 'auto';
+    setTimeout(() => {
+        makeProductStore.setProducts([]);
+    }, 300);
 };
 const totalPriceFormatted = computed(() => {
     const products = [makeProductStore.products];
