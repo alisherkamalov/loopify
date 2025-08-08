@@ -1,7 +1,5 @@
 <template>
     <div class="basket-slide">
-            <div class="liquidGlass-tint"></div>
-            <div class="liquidGlass-shine"></div>
         <span class="headertext">{{ languageStore.currentLanguage.cart }} <span class="quantitycart">{{
                 displayedProducts.length }} {{ getProductWord(displayedProducts.length) }}</span></span>
         <div class="content">
@@ -152,6 +150,7 @@ onMounted(() => {
     height: 570px;
     align-items: center;
     position: relative;
+    background-color: var(--buttonbsbg);
     margin-top: 15px;
     border-radius: 15px;
 }
@@ -258,6 +257,11 @@ onMounted(() => {
     }
     .cartproduct {
         width: 97%;
+    }
+}
+@media (max-width: 500px) {
+    .cartproduct {
+        width: 95%;
     }
 }
 </style>

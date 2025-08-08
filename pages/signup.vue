@@ -95,6 +95,7 @@ main {
 
 .close {
     margin: 15px;
+    margin-top: env(safe-area-inset-top);
     background-color: var(--background);
 }
 

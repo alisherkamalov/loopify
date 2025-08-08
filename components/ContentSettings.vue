@@ -134,7 +134,7 @@ onMounted(() => {
     margin: 16px;
     z-index: 4;
     min-height: 852px;
-    background-color: white;
+    background-color: var(--background);
 }
 .slide-content {
     display: flex;

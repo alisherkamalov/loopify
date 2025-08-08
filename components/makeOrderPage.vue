@@ -75,12 +75,12 @@ const getProductWord = (count) => {
 <style scoped>
 header {
     width: 100%;
-    height: 80px;
     background-color: rgb(255, 255, 255, 0.1);
     display: flex;
     position: fixed;
     top: 0;
     z-index: 999;
+    padding-top: env(safe-area-inset-top);
     backdrop-filter: blur(15px);
     justify-content: space-between;
     align-items: center;
@@ -92,7 +92,7 @@ header {
     align-items: center;
     justify-content: center;
     margin-left: 15px;
-    height: 80px;
+    translate: 0px 1px;
 }
 
 .btnclose {
@@ -109,10 +109,11 @@ header {
 
 .info {
     display: flex;
-    margin-top: 15px;
+    margin-top: 25px;
     flex-direction: column;
     align-items: center;
     font-weight: 500;
+    margin-bottom: 15px;
     justify-content: center;
     color: var(--foreground);
 }
@@ -133,6 +134,7 @@ header {
     min-height: 100dvh;
     display: flex;
     overflow: hidden;
+    z-index: 1;
     flex-direction: column;
     transition: all 0.3s ease;
     background-color: var(--background);

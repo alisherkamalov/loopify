@@ -30,56 +30,11 @@ export default defineNuxtConfig({
         },
         workbox: {
           cleanupOutdatedCaches: true,
-          navigateFallback: "/offline.html",
-          runtimeCaching: [
-            {
-              urlPattern: ({ request }) => request.destination === "document",
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "html-cache",
-              },
-            },
-            {
-              urlPattern: ({ request }) => request.destination === "style",
-              handler: "StaleWhileRevalidate",
-              options: {
-                cacheName: "css-cache",
-              },
-            },
-            {
-              urlPattern: ({ request }) => request.destination === "script",
-              handler: "StaleWhileRevalidate",
-              options: {
-                cacheName: "js-cache",
-              },
-            },
-            {
-              urlPattern: ({ request }) => request.destination === "image",
-              handler: "CacheFirst",
-              options: {
-                cacheName: "image-cache",
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 30,
-                },
-              },
-            },
-            {
-              urlPattern: /\/api\/.*$/,
-              handler: "NetworkFirst",
-              method: "GET",
-              options: {
-                cacheName: "api-cache",
-                networkTimeoutSeconds: 3,
-              },
-            },
-          ],
         },
         includeAssets: [
           "/favicon.ico",
           "/icon192.png",
           "/icon512.png",
-          "/offline.html",
         ],
         injectRegister: "auto",
         devOptions: {

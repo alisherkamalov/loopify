@@ -108,6 +108,7 @@ main {
     left: 15px;
     top: 15px;
     z-index: 99;
+    margin-top: env(safe-area-inset-top);
     animation: opacityanimate 2s ease forwards;
     background-color: var(--background);
 }

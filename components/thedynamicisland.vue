@@ -152,6 +152,7 @@ const moreInfo = () => {
 .notification {
     position: absolute;
     top: 5px;
+    top: calc(env(safe-area-inset-top) + 5px);
     overflow: hidden !important;
     left: 50%;
     transform: translateX(-50%);
