@@ -65,8 +65,10 @@ import Slider from '~/components/sliderpage.vue'
 import bottomsheet from '~/components/bottomsheet.vue'
 import { useIslandStore } from '~/store/IslandStore'
 import TheFooter from '~/components/theFooter.vue'
+import { usePWAStore } from '~/store/isPWAStore'
 
 const focusStore = useFocusStore()
+const pwaStore = usePWAStore()
 const notificationStore = useIslandStore()
 const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()
@@ -95,7 +97,16 @@ onMounted(() => {
         .finally(() => {
             isLoading.value = false;
         });
+    const isPWA =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true
 
+    if (isPWA) {
+        pwaStore.setPwa(true)
+        return
+    } else {
+        pwaStore.setPwa(false)
+    }
     lastProductStore.setLastProduct([]);
     lastProductStore.setSlider(false);
 });
@@ -116,9 +127,11 @@ main.active {
     translate: 0px 0px;
     transition: all 0.5s ease;
 }
+
 .makeorderpage {
     padding-top: env(safe-area-inset-top);
 }
+
 .moreinfopage.active {
     scale: 0;
     opacity: 0;

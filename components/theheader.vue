@@ -32,6 +32,9 @@ import HeaderButton from './headerbutton.vue'
 import LangDropdown from './langdropdown.vue'
 import { useSheetStore } from '~/store/sheetStore'
 import { useRouter } from 'vue-router'
+import { usePWAStore } from '~/store/isPWAStore'
+
+const pwaStore = usePWAStore()
 const router = useRouter()
 const isMenu = ref(false)
 const focusStore = useFocusStore()
@@ -41,6 +44,10 @@ const openBottomSheet = () => {
   if (localStorage) {
     const token = localStorage.getItem('token')
     if (!token) {
+      if (pwaStore.isPwa) {
+        router.replace('/signin')
+        return
+      }
       router.push('/signin')
       return
     }

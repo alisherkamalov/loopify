@@ -1,7 +1,6 @@
+import { defineStore } from "pinia";
 
-import { defineStore } from 'pinia'
-
-export const useIslandStore = defineStore('island', {
+export const useIslandStore = defineStore("island", {
   state: () => ({
     isActive: false,
     isMore: false,
@@ -11,15 +10,15 @@ export const useIslandStore = defineStore('island', {
     isCart: false,
     isCartBottom: false,
     isIncrease: false,
-    notification: '',
-    morenotification: '',
-    error: '/dynamicisland/error.json',
-    addedtocart: '/dynamicisland/addtobasket.json',
-    auth: '/dynamicisland/faceid.json',
-    success: '/dynamicisland/success.json',
-    activelefttypeicon: '',
-    activerighttypeicon: '',
-    lastproduct: []
+    notification: "",
+    morenotification: "",
+    error: "/dynamicisland/error.json",
+    addedtocart: "/dynamicisland/addtobasket.json",
+    auth: "/dynamicisland/faceid.json",
+    success: "/dynamicisland/success.json",
+    activelefttypeicon: "",
+    activerighttypeicon: "",
+    lastproduct: [],
   }),
   actions: {
     setLastProduct(product) {
@@ -29,52 +28,34 @@ export const useIslandStore = defineStore('island', {
       this.isCart = isCart;
     },
     setLeftTypeIcon(typeicon) {
-      if (typeicon === 'error') {
-        this.activelefttypeicon = this.error;
-        return
-      }
-      else if (typeicon === 'addedtocart') {
-        this.activelefttypeicon = this.addedtocart;
-        return
-      }
-      else if (typeicon === 'success') {
-        this.activelefttypeicon = this.success;
-        return
-      }
-      else {
-        this.activelefttypeicon = '';
-        return
-      }
+      const icons = {
+        error: this.error,
+        addedtocart: this.addedtocart,
+        success: this.success,
+      };
+
+      this.activelefttypeicon = icons[typeicon] || "";
     },
+
     setRightTypeIcon(typeicon) {
-      if (typeicon === 'error') {
-        this.activerighttypeicon = this.error;
-        return
-      }
-      else if (typeicon === 'addedtocart') {
-        this.activelefttypeicon = this.addedtocart;
-        return
-      }
-      else if (typeicon === 'success') {
-        this.activelefttypeicon = this.success;
-        return
-      }
-      else {
-        this.activelefttypeicon = '';
-        return
-      }
+      const icons = {
+        error: this.error,
+        addedtocart: this.addedtocart,
+        success: this.success,
+      };
+      this.activerighttypeicon = icons[typeicon] || "";
     },
     deactivateIsland() {
-      this.isActive = false
-      this.notification = '';
+      this.isActive = false;
+      this.notification = "";
       this.isMore = false;
       this.isAuth = false;
       this.isText = false;
       this.isCart = false;
       this.isCartBottom = false;
       this.isIncrease = false;
-      this.activelefttypeicon = '';
-      this.activerighttypeicon = '';
+      this.activelefttypeicon = "";
+      this.activerighttypeicon = "";
     },
     setNotification(noti) {
       this.notification = noti;
@@ -102,6 +83,6 @@ export const useIslandStore = defineStore('island', {
     },
     setActive(isActive) {
       this.isActive = isActive;
-    }
-  }
-})
+    },
+  },
+});

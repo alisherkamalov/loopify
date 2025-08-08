@@ -1,6 +1,6 @@
 <template>
     <thedynamicisland />
-    <a-tooltip class="close" :title="languageStore.currentLanguage.back" @click="router.push('/signin')">
+    <a-tooltip class="close" :title="languageStore.currentLanguage.back" @click="closePage">
         <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
     </a-tooltip>
     <div class="containersignup">
@@ -16,7 +16,7 @@
                 variant="solo"></v-text-field>
             <button class="btnsignup" @click="registration()">{{ languageStore.currentLanguage.signup }}</button>
         </div>
-        <div class="signinbtn" @click="router.push('/signin')">{{ languageStore.currentLanguage.haveaccount }}</div>
+        <div class="signinbtn" @click="signIn">{{ languageStore.currentLanguage.haveaccount }}</div>
     </div>
 </template>
 <script setup>
@@ -29,12 +29,31 @@ import { useRouter } from 'vue-router';
 import thedynamicisland from '~/components/thedynamicisland.vue';
 import { useIslandStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
+import { usePWAStore } from '~/store/isPWAStore';
+
 const notificationStore = useIslandStore()
+const pwaStore = usePWAStore()
 const router = useRouter()
 const languageStore = useLanguageStore();
 const nickname = ref('');
 const email = ref('');
 const password = ref('');
+
+const closePage = () => {
+    if (pwaStore.isPwa) {
+        router.replace('/')
+        return
+    }
+    router.push('/')
+}
+
+const signIn = () => {
+    if (pwaStore.isPwa) {
+        router.replace('/signin')
+        return
+    }
+    router.push('/signin')
+}
 
 const registration = () => {
     const payload = {
@@ -53,7 +72,7 @@ const registration = () => {
                 notificationStore.setText(false);
             }, 2000);
             setTimeout(() => {
-                router.push('/signin')
+                signIn()
             }, 4000);
         })
         .catch(error => {
