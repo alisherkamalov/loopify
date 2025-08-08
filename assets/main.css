@@ -55,10 +55,6 @@ body {
     min-height: 100vh;
 }
 
-html {
-    padding-top: env(safe-area-inset-top);
-}
-
 ul {
     list-style: none;
 }
