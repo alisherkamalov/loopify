@@ -1,7 +1,7 @@
 <template>
     <a-tooltip @click.stop="closeSearch" :title="languageStore.currentLanguage.back" class="closebtn"
         :class="{ 'closebtn--active': focusStore.isFocused }">
-        <a-button color="white" shape="circle" :icon="h(CloseOutlined)" />
+        <a-button color="white" shape="circle" :icon="h(ArrowLeftOutlined)" />
     </a-tooltip>
     <div :class="{ active: focusStore.isFocused }">
         <input type="text" :class="{ active: focusStore.isFocused }" :placeholder="showPlaceholder ? place : ''"
@@ -11,7 +11,7 @@
 
 <script setup>
 import { h } from 'vue'
-import { CloseOutlined } from '@ant-design/icons-vue'
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 import { useFocusStore } from '~/store/focusStore'
 import { useLanguageStore } from '~/store/languagesStore';
 const languageStore = useLanguageStore();

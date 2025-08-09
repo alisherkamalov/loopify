@@ -1,10 +1,11 @@
 <template>
+    <div class="blacklight" :class="{ 'active': sheetStore.isOpen }"></div>
     <div class="bottomsheetloopify" :class="{ 'active': sheetStore.isOpen, 'isanimate': sheetStore.isAnimated }">
         <div class="content">
             <div class="close" @click="sheetStore.close">
                 <div class="relative">
                     <a-tooltip class="btnclose">
-                        <a-button color="black" shape="circle" :icon="h(CloseOutlined)" />
+                        <a-button color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
                     </a-tooltip>
                     <span class="closetext">
                         {{ languagesStore.currentLanguage.close }}
@@ -21,7 +22,7 @@ import ContentSettings from "~/components/ContentSettings.vue";
 import { useSheetStore } from "~/store/sheetStore";
 import { useLanguageStore } from "~/store/languagesStore";
 import { h } from 'vue'
-import { CloseOutlined } from '@ant-design/icons-vue'
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 const sheetStore = useSheetStore();
 const languagesStore = useLanguageStore();
 </script>
@@ -35,14 +36,29 @@ const languagesStore = useLanguageStore();
     top: 100dvh;
     background-color: rgb(0, 0, 0, 0.2);
     overflow: hidden;
-    z-index: 4;
+    z-index: 5;
     padding-top: env(safe-area-inset-top);
     background-color: var(--background);
     border-top-left-radius: 1.8rem;
     border-top-right-radius: 1.8rem;
     transition: all 0.5s ease;
 }
-
+.blacklight {
+    opacity: 0;
+    width: 100%;
+    height: 100dvh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    background-color: rgb(0, 0, 0, 0.2);
+    pointer-events: none;
+    transition: all 0.5s ease;
+}
+.blacklight.active {
+    opacity: 1;
+    pointer-events: all;
+}
 .btnclose {
     scale: 0.9;
     z-index: 5 !important;

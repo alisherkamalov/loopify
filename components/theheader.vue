@@ -6,7 +6,7 @@
       <SearchInput class="search" :place="languageStore.currentLanguage.search" />
       <div class="right" :style="{ display: focusStore.isFocused ? 'none' : 'flex' }">
         <HeaderButton class="profile" :text="languageStore.currentLanguage.profile" @click="openBottomSheet()" />
-        <HeaderButton class="basket" :text="languageStore.currentLanguage.basket" @click="router.push('/basket')" />
+        <HeaderButton class="basket" :text="languageStore.currentLanguage.basket" @click="openCart()" />
         <LangDropdown class="language" :language="'ru.png'" :variants="languageVariants"
           @language-changed="languageStore.setLanguage" />
       </div>
@@ -33,13 +33,21 @@ import LangDropdown from './langdropdown.vue'
 import { useSheetStore } from '~/store/sheetStore'
 import { useRouter } from 'vue-router'
 import { usePWAStore } from '~/store/isPWAStore'
+import { useSliderButtonsStore } from '~/store/sliderButtonsStore'
 
-const pwaStore = usePWAStore()
+const bottomsheetStore = useSheetStore()
+const sliderbuttonsStore = useSliderButtonsStore()
 const router = useRouter()
 const isMenu = ref(false)
 const focusStore = useFocusStore()
 const languageStore = useLanguageStore()
 const sheetStore = useSheetStore()
+const openCart = () => {
+  bottomsheetStore.open()
+  setTimeout(() => {
+    sliderbuttonsStore.selectSlide(1)
+  }, 300);
+}
 const openBottomSheet = () => {
   if (localStorage) {
     const token = localStorage.getItem('token')

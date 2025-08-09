@@ -28,13 +28,26 @@ import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 import { useProductPageStore } from '~/store/ProductPageStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useMakeProduct } from '~/store/MakeProductStore'
+import { useRegistrationProductsStore } from '~/store/registrationProductsStore'
+import { useHomePageStore } from '~/store/HomePageStore'
+import { useSheetStore } from '~/store/sheetStore'
 const pagesStore = useProductPageStore()
 const makeProductStore = useMakeProduct()
+const homeStore = useHomePageStore()
+const bottomsheetStore = useSheetStore()
+const registrationProducts = useRegistrationProductsStore()
 const languageStore = useLanguageStore()
 const lengthProducts = computed(() => {
     return Array.isArray(makeProductStore.products) ? makeProductStore.products.length : 1;
 });
 const closeMakeOrder = () => {
+    if (registrationProducts.isRegistration) {
+        homeStore.setOpen(false)
+        setTimeout(() => {
+            bottomsheetStore.open()
+        }, 300);
+        return
+    }
     pagesStore.setOpen(false)
     document.body.style.overflow = 'auto';
     setTimeout(() => {
@@ -42,14 +55,18 @@ const closeMakeOrder = () => {
     }, 300);
 };
 const totalPriceFormatted = computed(() => {
-    const products = [makeProductStore.products];
+    const products = Array.isArray(makeProductStore.products)
+        ? makeProductStore.products
+        : [makeProductStore.products];
 
     let total = 0;
 
     for (const product of products) {
-        const priceString = typeof product.price === 'string'
-            ? product.price.replace(/\s/g, '')
-            : '0';
+        const rawPrice = product.price ?? product.productId?.price ?? 0
+        const priceString = typeof rawPrice === 'string'
+            ? rawPrice.replace(/\s/g, '')
+            : String(rawPrice || '0')
+
         const price = parseInt(priceString, 10);
         if (!isNaN(price)) {
             total += price;
@@ -58,6 +75,7 @@ const totalPriceFormatted = computed(() => {
 
     return total.toLocaleString('ru-RU');
 });
+
 
 
 

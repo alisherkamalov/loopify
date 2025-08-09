@@ -45,11 +45,39 @@
     animation: opacityanimate 1s ease;
 }
 
+/* Для Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 var(--background);
+}
+
+/* Для WebKit */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+    border: 3px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
 
 html,
 body {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    overscroll-behavior-x: none;
+    touch-action: pan-y; 
     overflow: auto !important;
     height: 100dvh;
     min-height: 100vh;
@@ -179,9 +207,11 @@ body {
 }
 .page-one {
     overflow-y: auto;
+    background-color: #2c2c2c !important;
 }
 .page-two {
     overflow-y: auto;
+    background-color: #2c2c2c !important;
 }
 
 .logo {
@@ -220,7 +250,7 @@ body {
         --buttonbsbg: #1c1c1e;
         --bottomsheethadow: rgba(0, 0, 0, 0.3) 2px 2px 1px 0px inset,
             rgba(0, 0, 0, 0.3) -1px -1px 1px 1px inset;
-        --buttonbsbgactive: #2f2f31;
+        --buttonbsbgactive: #1c1c1e;
         --textfield-color: #ffffff;
         --cartbasket-color: #2f2f31;
         --blur: rgba(87, 87, 87, 0.5);

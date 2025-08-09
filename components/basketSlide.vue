@@ -1,7 +1,7 @@
 <template>
     <div class="basket-slide">
         <span class="headertext">{{ languageStore.currentLanguage.cart }} <span class="quantitycart">{{
-                displayedProducts.length }} {{ getProductWord(displayedProducts.length) }}</span></span>
+            displayedProducts.length }} {{ getProductWord(displayedProducts.length) }}</span></span>
         <div class="content">
             <div class="loading" v-if="isLoading">
                 <v-progress-circular indeterminate size="49"></v-progress-circular>
@@ -20,7 +20,17 @@
                             }}</span>
                     </div>
                 </div>
+                <div class="pay-cont"></div>
             </div>
+        </div>
+    </div>
+    <div class="pay-cart" v-if="displayedProducts.length > 0">
+        <div @click="payAllProducts" class="btn-pay" :style="{
+            scale: clickedPayBtn ? 0.9 : 1
+        }">
+            {{ languageStore.currentLanguage.forregister }}
+            <span class="goods">{{
+                displayedProducts.length }} шт., {{ totalPrice.toLocaleString() }} ₸</span>
         </div>
     </div>
 </template>
@@ -31,10 +41,19 @@ import { VProgressCircular } from 'vuetify/components';
 import { useLanguageStore } from '~/store/languagesStore';
 import axios from 'axios';
 import { useIslandStore } from '~/store/IslandStore';
+import { useRegistrationProductsStore } from '~/store/registrationProductsStore';
+import { useHomePageStore } from '~/store/HomePageStore';
+import { useSheetStore } from '~/store/sheetStore';
+import { useMakeProduct } from '~/store/MakeProductStore';
 
 const notificationStore = useIslandStore();
 const languageStore = useLanguageStore();
+const homestore = useHomePageStore()
+const bottomsheetStore = useSheetStore()
+const makeProductStore = useMakeProduct()
+const registrationProducts = useRegistrationProductsStore()
 const displayedProducts = ref([]);
+const clickedPayBtn = ref(false)
 const isLoading = ref(true);
 const city = ref('');
 const isOpenOrder = ref(false);
@@ -50,6 +69,28 @@ const getProductWord = (count) => {
     return languageStore.currentLanguage.cartthree;
 };
 
+const payAllProducts = async () => {
+    clickedPayBtn.value = true
+    await new Promise(resolve => setTimeout(resolve, 150))
+    clickedPayBtn.value = false
+
+    bottomsheetStore.close()
+    registrationProducts.setRegistration(true)
+    makeProductStore.setProducts([...displayedProducts.value])
+    setTimeout(() => {
+        homestore.setOpen(true)
+    }, 700);
+}
+
+const totalPrice = computed(() => {
+    return displayedProducts.value.reduce((sum, product) => {
+        let rawPrice = product?.productId?.price ?? 0
+
+        let cleaned = String(rawPrice).replace(/[^\d.]/g, '')
+        let num = parseFloat(cleaned) || 0
+        return sum + num
+    }, 0)
+})
 
 const loadCartItems = async () => {
     try {
@@ -142,17 +183,43 @@ onMounted(() => {
 </script>
 <style scoped>
 .basket-slide {
-    width: 95%;
+    width: calc(100% - 32px);
     display: flex;
     flex-direction: column;
     margin: auto;
     overflow: hidden;
-    height: 570px;
     align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    height: calc(100dvh - 282px);
     position: relative;
+    margin-top: 5px;
     background-color: var(--buttonbsbg);
-    margin-top: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.btn-pay {
+    width: calc(100% - 20px);
+    display: flex;
+    padding: 7px 0px;
+    flex-direction: column;
+    align-items: center;
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    line-height: 20px;
+    background-color: #1fa26a;
     border-radius: 15px;
+    transition: all 0.5s ease;
+}
+
+.goods {
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
 }
 
 .headertext {
@@ -163,16 +230,19 @@ onMounted(() => {
     font-weight: 500;
     z-index: 4;
 }
+
 .box {
     width: 1px;
     min-height: 10px;
 }
+
 .infoproduct {
     display: flex;
     width: 55%;
     z-index: 4;
     flex-direction: column;
 }
+
 .thereproduct {
     width: 100%;
     display: flex;
@@ -192,6 +262,11 @@ onMounted(() => {
     background-color: var(--cartbasket-color);
 }
 
+.pay-cont {
+    display: flex;
+    min-height: 100px;
+}
+
 .price {
     font-size: 20px;
     font-weight: 600;
@@ -206,12 +281,24 @@ onMounted(() => {
     position: relative;
 }
 
+.pay-cart {
+    display: flex;
+    min-height: 100px;
+    position: absolute;
+    align-items: center;
+    flex-direction: column;
+    bottom: 0;
+    z-index: 4;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: var(--background);
+    width: 100%;
+}
+
 .content {
     width: 98%;
-    min-height: 480px;
     display: flex;
     z-index: 4;
-    height: 100dvh;
     margin-bottom: 10px;
     overflow-x: hidden;
     flex-direction: column;
@@ -220,13 +307,16 @@ onMounted(() => {
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
+
 .content::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 2px;
 }
+
 .content::-webkit-scrollbar {
     width: 4px;
 }
+
 .loading {
     width: 100%;
     height: 100dvh;
@@ -240,25 +330,31 @@ onMounted(() => {
     color: var(--graycart-color);
     font-size: 15px;
 }
+
 @media (max-width:1100px) {
     .cartproduct {
         width: 98%;
     }
 }
+
 @media (max-width: 800px) {
     .headertext {
         width: 95%;
     }
+
     .content {
         width: 100%;
     }
+
     .basket-slide {
-        width: 100%;
+        width: calc(100% - 32px);
     }
+
     .cartproduct {
         width: 97%;
     }
 }
+
 @media (max-width: 500px) {
     .cartproduct {
         width: 95%;

@@ -15,7 +15,7 @@
       <slot name="page-one" />
     </div>
     <div class="blacklight" :style="{
-      backgroundColor: `rgba(0, 0, 0, ${Math.min(progress, 1) * 0.1})`,
+      backgroundColor: `rgba(0, 0, 0, ${Math.min(progress, 1) * 0.4})`,
       pointerEvents: (store.isOpen || isDragging) && progress > 0 ? 'auto' : 'none',
       transition: isDragging ? 'none' : 'background-color 0.3s ease'
     }" />
@@ -34,12 +34,16 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useHomePageStore } from '~/store/HomePageStore'
 import { useFocusStore } from '~/store/focusStore'
+import { useRegistrationProductsStore } from '~/store/registrationProductsStore'
+import { useSheetStore } from '~/store/sheetStore'
 const store = useHomePageStore()
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragX = ref(0)
 const pageWidth = ref(0)
 const pageTwo = ref(null)
+const bottomsheetStore = useSheetStore()
+const registrationProducts = useRegistrationProductsStore()
 const focusStore = useFocusStore()
 
 const progress = computed(() => {
@@ -92,7 +96,8 @@ const onDrag = (e) => {
 }
 const onPageTwoClosed = () => {
   setTimeout(() => {
-    
+    registrationProducts.setRegistration(false)
+    bottomsheetStore.open()
   }, 500);
 }
 const endDrag = () => {
@@ -143,7 +148,7 @@ onMounted(() => {
   margin: 0;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
-  background-color: white;
+  background-color: #2c2c2c;
   z-index: 1;
 }
 
@@ -182,7 +187,7 @@ onMounted(() => {
   transform: translate3d(0, 0, 0);
   margin: 0;
   height: 100dvh;
-  background-color: white;
+  background-color: #2c2c2c;
   transform: translateX(100vw);
 }
 

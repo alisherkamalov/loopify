@@ -27,7 +27,10 @@
                         </div>
                     </template>
                     <template #page-two>
-                        <ProductSlider>
+                        <div class="makeorderpage" v-if="registrationProducts.isRegistration">
+                            <MakeOrderPage />
+                        </div>
+                        <ProductSlider v-else>
                             <template #page-one>
                                 <div class="moreinfopage"
                                     :class="{ 'active': notificationStore.isCart, 'animate': pagesStore.isAnimate }">
@@ -78,10 +81,12 @@ import TheFooter from '~/components/theFooter.vue'
 import { setAndDispatch } from '@/utils/storageSync'
 import { usePWAStore } from '~/store/isPWAStore'
 import { useRouter } from 'vue-router'
+import { useRegistrationProductsStore } from '~/store/registrationProductsStore'
 
 const focusStore = useFocusStore()
 const pwaStore = usePWAStore()
 const router = useRouter()
+const registrationProducts = useRegistrationProductsStore()
 const notificationStore = useIslandStore()
 const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()

@@ -50,13 +50,14 @@
 import { useIslandStore } from '~/store/IslandStore'
 import { Vue3Lottie } from 'vue3-lottie'
 import { useLanguageStore } from '~/store/languagesStore'
-import { useLastProductStore } from '~/store/lastProductStore'
-import { useHomePageStore } from '~/store/HomePageStore'
+import { useSheetStore } from '~/store/sheetStore'
+import { useSliderButtonsStore } from '~/store/sliderButtonsStore'
+
 const IslandStore = useIslandStore()
 const dynamicIsland = ref(null)
-const lastProductStore = useLastProductStore()
+const bottomsheet = useSheetStore()
+const sliderbuttons = useSliderButtonsStore()
 const languageStore = useLanguageStore()
-const pageStore = useHomePageStore()
 const lastProductIsland = computed(() => IslandStore.lastproduct);
 let hideTimeout = null;
 
@@ -123,10 +124,12 @@ const moreInfo = () => {
         return
     }
     if (IslandStore.isActiveMore) {
-        lastProductStore.setLastProduct(IslandStore.lastproduct)
-        pageStore.setOpen(true)
+        bottomsheet.open()
         IslandStore.setMore(false)
         IslandStore.setActiveMore(false)
+        setTimeout(() => {
+            sliderbuttons.selectSlide(1)
+        }, 500);
         return
     }
     if (IslandStore.notification != '') {

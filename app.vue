@@ -29,6 +29,14 @@ useHead({
     },
   ]
 })
+onMounted(() => {
+  const preventHistorySwipe = (e) => {
+    if (e.touches?.[0]?.clientX < 30 && e.touches?.[0]?.clientX > 0) {
+      e.preventDefault()
+    }
+  }
+  document.addEventListener('touchstart', preventHistorySwipe, { passive: false })
+})
 
 </script>
 <style>

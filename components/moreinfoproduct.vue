@@ -2,7 +2,7 @@
     <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
     <div class="container" :class="{ active: lastProductStore.isSlider }">
         <a-tooltip class="btnclose">
-            <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(CloseOutlined)" />
+            <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
         </a-tooltip>
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
             :pagination="true" :key="`swiper-${lastProduct.name}`">
@@ -58,7 +58,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { h } from 'vue'
-import { CloseOutlined } from '@ant-design/icons-vue'
+import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
@@ -89,7 +89,7 @@ const closeProduct = () => {
 
 const makeOrder = () => {
     lastProductStore.setSlider(false)
-    makeProductStore.setProducts(lastProductStore.lastproduct)
+    makeProductStore.setProducts([lastProductStore.lastproduct])
     storeProduct.setOpen(true)
     storeHome.setGestureHelper(false)
     storeProduct.setGestureHelper(true)
@@ -123,6 +123,7 @@ const addProductToCart = async (productId) => {
         notificationStore.setCart(true);
             setTimeout(() => {
                 notificationStore.setCart(true);
+                storeHome.setOpen(false)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
@@ -144,6 +145,7 @@ const addProductToCart = async (productId) => {
             notificationStore.setCart(true);
             setTimeout(() => {
                 notificationStore.setCart(true);
+                storeHome.setOpen(false)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);

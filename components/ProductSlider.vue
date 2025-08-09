@@ -13,7 +13,7 @@
       <slot name="page-one" />
     </div>
     <div class="blacklight" :style="{
-      backgroundColor: `rgba(0, 0, 0, ${Math.min(progress, 1) * 0.1})`,
+      backgroundColor: `rgba(0, 0, 0, ${Math.min(progress, 1) * 0.4})`,
       pointerEvents: (store.isOpen || isDragging) && progress > 0 ? 'auto' : 'none',
       transition: isDragging ? 'none' : 'background-color 0.3s ease'
     }" />
@@ -39,7 +39,6 @@ const dragStartX = ref(0)
 const dragX = ref(0)
 const pageWidth = ref(0)
 const pageTwo = ref(null)
-
 
 const progress = computed(() => {
   if (isDragging.value) {
