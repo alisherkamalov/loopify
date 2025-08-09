@@ -38,6 +38,7 @@ function handleInput(event) {
 
 function handleFocus() {
     focusStore.isFocused = true
+
     const step3Elements = document.querySelectorAll('.slider-page.step-3');
     if (step3Elements.length >= 2) {
         step3Elements[1].style.overflow = 'hidden';

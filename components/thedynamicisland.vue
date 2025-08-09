@@ -108,6 +108,7 @@ const handleClickOutside = (event) => {
     }
 }
 const authComplete = () => {
+    IslandStore.setAnimation(false)
     IslandStore.setAuth(false);
 }
 onMounted(() => {

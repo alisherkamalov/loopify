@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 
 export const useIslandStore = defineStore("island", {
   state: () => ({
+    isAnimation: false,
     isActive: false,
     isMore: false,
     isActiveMore: false,
@@ -21,6 +22,9 @@ export const useIslandStore = defineStore("island", {
     lastproduct: [],
   }),
   actions: {
+    setAnimation(animate) {
+      this.isAnimation = animate
+    },
     setLastProduct(product) {
       this.lastproduct = product;
     },
@@ -33,8 +37,9 @@ export const useIslandStore = defineStore("island", {
         addedtocart: this.addedtocart,
         success: this.success,
       };
-
-      this.activelefttypeicon = icons[typeicon] || "";
+      if (!this.isAnimation) {
+        this.activelefttypeicon = icons[typeicon] || "";
+      }
     },
 
     setRightTypeIcon(typeicon) {
@@ -58,31 +63,47 @@ export const useIslandStore = defineStore("island", {
       this.activerighttypeicon = "";
     },
     setNotification(noti) {
-      this.notification = noti;
+      if (!this.isAnimation) {
+        this.notification = noti;
+      }
     },
     setMoreNotification(morenoti) {
-      this.morenotification = morenoti;
+      if (!this.isAnimation) {
+        this.morenotification = morenoti;
+      }
     },
     setMore(isMore) {
-      this.isMore = isMore;
+      if (!this.isAnimation) {
+        this.isMore = isMore;
+      }
     },
     setActiveMore(isActiveMore) {
-      this.isActiveMore = isActiveMore;
+      if (!this.isAnimation) {
+        this.isActiveMore = isActiveMore;
+      }
     },
     setAuth(isAuth) {
       this.isAuth = isAuth;
     },
     setIncrease(isIncrease) {
-      this.isIncrease = isIncrease;
+      if (!this.isAnimation) {
+        this.isIncrease = isIncrease;
+      }
     },
     setCartBottom(isCartBottom) {
-      this.isCartBottom = isCartBottom;
+      if (!this.isAnimation) {
+        this.isCartBottom = isCartBottom;
+      }
     },
     setText(isText) {
-      this.isText = isText;
+      if (!this.isAnimation) {
+        this.isText = isText;
+      }
     },
     setActive(isActive) {
-      this.isActive = isActive;
+      if (!this.isAnimation) {
+        this.isActive = isActive;
+      }
     },
   },
 });

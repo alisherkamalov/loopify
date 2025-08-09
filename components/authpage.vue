@@ -13,6 +13,8 @@ import { ref, onMounted } from 'vue';
 import { useIslandStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
 import { useAuthPageStore } from '~/store/AuthPageStore';
+import { setAndDispatch } from '@/utils/storageSync'
+
 const authenticated = ref(false);
 const dynamicIsland = useIslandStore();
 const languageStore = useLanguageStore();
@@ -58,8 +60,9 @@ async function authenticate() {
         dynamicIsland.deactivateIsland();
         const credential = await navigator.credentials.create({ publicKey });
         console.log('Успешная проверка:', credential);
-        localStorage.setItem('authenticated', 'true');
+        setAndDispatch('authenticated', 'true')
         authenticated.value = true;
+        dynamicIsland.setAnimation(true);
         dynamicIsland.setAuth(true);
         token.value = localStorage.getItem('token')
         if (token.value) {
@@ -67,9 +70,9 @@ async function authenticate() {
                 headers: { Authorization: `Bearer ${token.value}` }
             })
                 .then(response => {
-                    localStorage.setItem('userid', response.data._id)
-                    localStorage.setItem('username', response.data.nickname)
-                    localStorage.setItem('useremail', response.data.email)
+                    setAndDispatch('userid', response.data._id)
+                    setAndDispatch('username', response.data.nickname)
+                    setAndDispatch('useremail', response.data.email)
                 })
                 .catch(error => {
                     console.error('Ошибка запроса /me:', error);

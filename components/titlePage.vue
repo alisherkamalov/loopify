@@ -100,6 +100,8 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { Vue3Lottie } from 'vue3-lottie'
+import { setAndDispatch } from '@/utils/storageSync'
+
 const router = useRouter()
 const props = defineProps({
     currentLanguage: {
@@ -202,7 +204,7 @@ const shuffleArray = (array) => {
 const emit = defineEmits(['language-changed'])
 
 const setLanguage = (lang) => {
-    localStorage.setItem('languageCode', lang)
+    setAndDispatch('languageCode', lang)
     languageCode.value = lang
     emit('language-changed', lang)
 }

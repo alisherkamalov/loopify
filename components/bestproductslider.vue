@@ -22,6 +22,7 @@ import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useLastProductStore } from '~/store/lastProductStore'
 import { useHomePageStore } from '~/store/HomePageStore'
+import { useProductPageStore } from '~/store/ProductPageStore'
 const lastProductStore = useLastProductStore()
 
 const props = defineProps({
@@ -33,6 +34,7 @@ const props = defineProps({
 
 const allproductstore = useAllProductStore()
 const pagesStore = useHomePageStore()
+const storeProduct = useProductPageStore()
 const languageStore = useLanguageStore()
 const currentLanguage = computed(() => languageStore.currentLanguage)
 const isAnimating = ref(false)
@@ -40,7 +42,8 @@ const openmore = (idprod) => {
   lastProductStore.setLastProduct(idprod);
   lastProductStore.setSlider(true)
   pagesStore.setOpen(true)
-  
+  pagesStore.setGestureHelper(true)
+  storeProduct.setGestureHelper(false)
 }
 const slides = ref([])
 const current = ref(0)

@@ -27,6 +27,7 @@ import { useRouter } from 'vue-router';
 import thedynamicisland from '~/components/thedynamicisland.vue';
 import { useIslandStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
+import { setAndDispatch } from '@/utils/storageSync'
 import { usePWAStore } from '~/store/isPWAStore';
 
 const pwaStore = usePWAStore()
@@ -37,11 +38,7 @@ const email = ref('');
 const password = ref('');
 
 const closePage = () => {
-    if (pwaStore.isPwa) {
-        router.replace('/')
-        return
-    }
-    router.push('/')
+    router.replace('/')
 }
 
 const signUp = () => {
@@ -69,7 +66,7 @@ const authorization = () => {
                 notificationStore.setText(false);
             }, 2000);
             if (localStorage != 'undefined') {
-                localStorage.setItem('token', response.data.token)
+                setAndDispatch('token', response.data.token)
             }
             setTimeout(() => {
                 closePage()

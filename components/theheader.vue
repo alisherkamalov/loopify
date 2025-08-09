@@ -45,6 +45,7 @@ const openBottomSheet = () => {
     const token = localStorage.getItem('token')
     if (!token) {
       router.replace('/signin')
+      return
     }
   }
   document.body.style.overflow = 'hidden';

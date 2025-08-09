@@ -177,9 +177,13 @@ body {
 .swiper-slide {
     margin-right: 1px;
 }
-.page-one.active {
+.page-one {
     overflow-y: auto;
 }
+.page-two {
+    overflow-y: auto;
+}
+
 .logo {
     background-image: var(--logo-url);
     width: 150px;

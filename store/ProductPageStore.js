@@ -4,6 +4,7 @@ export const useProductPageStore = defineStore("productnavigation", {
     openProgress: 0,
     isReversing: false,
     isDragging: false,
+    isBackGestureEnabled: false,
   }),
   actions: {
     setOpen(state) {
@@ -15,5 +16,8 @@ export const useProductPageStore = defineStore("productnavigation", {
     setDragging(drag) {
       this.isDragging = drag;
     },
+    setGestureHelper(gesture) {
+      this.isBackGestureEnabled = gesture
+    }
   },
 });

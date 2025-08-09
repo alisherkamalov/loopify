@@ -97,6 +97,8 @@ const addProductToCart = async (productId,) => {
     const token = localStorage.getItem('token')
     if (!token) {
         dynamicIslandStore.setNotification(languageStore.currentLanguage.authonwebsite);
+        dynamicIslandStore.setLeftTypeIcon('error');
+        dynamicIslandStore.setText(true);
         dynamicIslandStore.setActive(true);
         setTimeout(() => {
             dynamicIslandStore.setActive(false);
@@ -115,8 +117,11 @@ const addProductToCart = async (productId,) => {
                 },
             }
         );
+        dynamicIslandStore.setLeftTypeIcon('addedtocart');
         dynamicIslandStore.setNotification(languageStore.currentLanguage.productaddedcart);
         dynamicIslandStore.setActive(true);
+        dynamicIslandStore.setCartBottom(true);
+        dynamicIslandStore.setText(true);
         setTimeout(() => {
             dynamicIslandStore.setActive(false);
         }, 3000);
@@ -128,9 +133,9 @@ const addProductToCart = async (productId,) => {
             dynamicIslandStore.setNotification(languageStore.currentLanguage.errorfetch);
         }
         dynamicIslandStore.setActive(true);
-        setTimeout(() => {
-            dynamicIslandStore.setActive(false);
-        }, 3000);
+        dynamicIslandStore.setText(true);
+        dynamicIslandStore.setCartBottom(true);
+        dynamicIslandStore.setLeftTypeIcon('error');
     }
 };
 
@@ -434,6 +439,7 @@ onBeforeUnmount(() => {
     pointer-events: all;
     width: 90%;
     height: 88dvh;
+    height: calc(88dvh - env(safe-area-inset-top));
 }
 .foundproducts.island {
     margin-top: 115px;

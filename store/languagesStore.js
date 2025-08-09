@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed, onMounted } from "vue";
 import { languages } from "~/lib/languages";
+import { setAndDispatch } from '@/utils/storageSync'
 
 export const useLanguageStore = defineStore("language", () => {
   const languageCode = ref("ru");
@@ -27,7 +28,7 @@ export const useLanguageStore = defineStore("language", () => {
   function setLanguage(code) {
     languageCode.value = code;
     if (typeof localStorage !== "undefined") {
-      localStorage.setItem("languageCode", code);
+      setAndDispatch("languageCode", code);
     }
   }
 

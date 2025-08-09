@@ -75,6 +75,7 @@ import ProductSlider from '~/components/ProductSlider.vue'
 import bottomsheet from '~/components/bottomsheet.vue'
 import { useIslandStore } from '~/store/IslandStore'
 import TheFooter from '~/components/theFooter.vue'
+import { setAndDispatch } from '@/utils/storageSync'
 import { usePWAStore } from '~/store/isPWAStore'
 import { useRouter } from 'vue-router'
 
@@ -107,9 +108,9 @@ onMounted(() => {
             headers: { Authorization: `Bearer ${token.value}` }
         })
             .then(response => {
-                localStorage.setItem('userid', response.data._id)
-                localStorage.setItem('username', response.data.nickname)
-                localStorage.setItem('useremail', response.data.email)
+                setAndDispatch('userid', response.data._id)
+                setAndDispatch('username', response.data.nickname)
+                setAndDispatch('useremail', response.data.email)
             })
             .catch(error => {
                 console.error('Ошибка запроса /me:', error);

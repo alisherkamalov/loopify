@@ -86,10 +86,12 @@ import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useHomePageStore } from '~/store/HomePageStore'
 import { useLanguageStore } from '~/store/languagesStore'
+import { useProductPageStore } from '~/store/ProductPageStore'
 const languageStore = useLanguageStore()
 const store = useHomePageStore()
 const notificationStore = useIslandStore()
 const lastProductStore = useLastProductStore()
+const storeProduct = useProductPageStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const activeFrameIndex = ref(-1);
@@ -144,6 +146,8 @@ const openProduct = (index) => {
     lastProductStore.setLastProduct(product);
     notificationStore.setLastProduct(product);
     store.setOpen(true)
+    store.setGestureHelper(true)
+    storeProduct.setGestureHelper(false)
 };
 
 const initVideo = (el, index) => {

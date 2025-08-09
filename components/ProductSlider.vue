@@ -22,7 +22,7 @@
       transform: isDragging ? `translateX(${dragX}px)` : '',
       transition: isDragging ? 'none' : 'transform 0.3s ease'
     }">
-      <div class="gesture-edge" @touchstart="startDrag" @mousedown="startDrag" />
+      <div class="gesture-edge" @touchstart="startDrag" @mousedown="startDrag" v-if="store.isBackGestureEnabled"/>
       <slot name="page-two" />
     </div>
   </div>
@@ -30,8 +30,10 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { useHomePageStore } from '~/store/HomePageStore'
 import { useProductPageStore } from '~/store/ProductPageStore'
 const store = useProductPageStore()
+const storeHome = useHomePageStore()
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragX = ref(0)
@@ -89,7 +91,8 @@ const onDrag = (e) => {
 }
 const onPageTwoClosed = () => {
   setTimeout(() => {
-    
+    store.setGestureHelper(false)
+    storeHome.setGestureHelper(true)
   }, 500);
 }
 const endDrag = () => {

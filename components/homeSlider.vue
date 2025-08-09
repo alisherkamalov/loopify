@@ -1,6 +1,8 @@
 <template>
   <div class="slide-navigation-ios">
-    <div class="page-one" :style="{
+    <div class="page-one" 
+    :class="{ 'hidden-overflow': focusStore.isFocused }"
+    :style="{
       transform: isDragging
         ? dragX < pageWidth
           ? `translateX(${(1 - dragX / pageWidth) * -40}vw)`
@@ -22,7 +24,7 @@
       transform: isDragging ? `translateX(${dragX}px)` : '',
       transition: isDragging ? 'none' : 'transform 0.3s ease'
     }">
-      <div class="gesture-edge" @touchstart="startDrag" @mousedown="startDrag" />
+      <div class="gesture-edge" @touchstart="startDrag" @mousedown="startDrag" v-if="store.isBackGestureEnabled"/>
       <slot name="page-two" />
     </div>
   </div>
@@ -31,13 +33,14 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useHomePageStore } from '~/store/HomePageStore'
+import { useFocusStore } from '~/store/focusStore'
 const store = useHomePageStore()
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragX = ref(0)
 const pageWidth = ref(0)
 const pageTwo = ref(null)
-
+const focusStore = useFocusStore()
 
 const progress = computed(() => {
   if (isDragging.value) {
@@ -129,6 +132,9 @@ onMounted(() => {
   overflow: hidden;
   position: relative;
 }
+.page-one.hidden-overflow {
+    overflow-y: hidden !important;
+}
 
 .page-one {
   width: 100vw;
@@ -146,7 +152,7 @@ onMounted(() => {
   top: 0;
   left: 0;
   height: 100%;
-  width: 40px;
+  width: 20px;
   z-index: 5;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);

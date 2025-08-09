@@ -1,7 +1,7 @@
 <template>
     <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
     <div class="container" :class="{ active: lastProductStore.isSlider }">
-        <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back">
+        <a-tooltip class="btnclose">
             <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(CloseOutlined)" />
         </a-tooltip>
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
@@ -80,7 +80,8 @@ const notificationStore = useIslandStore()
 const videoRefs = ref({});
 const closeProduct = () => {
     storeHome.setOpen(false)
-
+    storeHome.setGestureHelper(true)
+    storeProduct.setGestureHelper(false)
     setTimeout(() => {
         lastProductStore.setLastProduct([]);
     }, 500);
@@ -90,6 +91,8 @@ const makeOrder = () => {
     lastProductStore.setSlider(false)
     makeProductStore.setProducts(lastProductStore.lastproduct)
     storeProduct.setOpen(true)
+    storeHome.setGestureHelper(false)
+    storeProduct.setGestureHelper(true)
     document.body.style.overflow = 'hidden';
 }
 const addProductToCart = async (productId) => {

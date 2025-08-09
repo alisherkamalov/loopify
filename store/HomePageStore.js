@@ -4,6 +4,7 @@ export const useHomePageStore = defineStore("homenavigation", {
     openProgress: 0,
     isReversing: false,
     isDragging: false,
+    isBackGestureEnabled: true,
   }),
   actions: {
     setOpen(state) {
@@ -15,5 +16,8 @@ export const useHomePageStore = defineStore("homenavigation", {
     setDragging(drag) {
       this.isDragging = drag;
     },
+    setGestureHelper(gesture) {
+      this.isBackGestureEnabled = gesture
+    }
   },
 });

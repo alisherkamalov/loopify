@@ -109,18 +109,26 @@ const sliderbuttons = ref([
   { text: 'Выйти', class: 'logout' }
 ])
 
-const handleStorage = (event) => {
-  if (event.key === 'username') fullName.value = event.newValue || ''
-  if (event.key === 'useremail') email.value = event.newValue || ''
-}
+const updateHandler = (e) => {
+    if (e.key === 'username' || e.detail?.key === 'username') {
+      fullName.value = e.newValue || e.detail?.value || ''
+    }
+    if (e.key === 'useremail' || e.detail?.key === 'useremail') {
+      email.value = e.newValue || e.detail?.value || ''
+    }
+  }
 
 onMounted(() => {
-  window.addEventListener('storage', handleStorage)
+
+  window.addEventListener('storage', updateHandler)
+  window.addEventListener('localstorage-update', updateHandler)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('storage', handleStorage)
+  window.removeEventListener('storage', updateHandler)
+  window.removeEventListener('localstorage-update', updateHandler)
 })
+
 </script>
 
 
