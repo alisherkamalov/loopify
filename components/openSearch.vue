@@ -64,11 +64,11 @@ import axios from 'axios'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import Moreinfoproduct from '~/components/moreinfoproduct.vue'
 import { useLastProductStore } from '~/store/lastProductStore'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useHomePageStore } from '~/store/HomePageStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useIslandStore } from '~/store/IslandStore'
 
-const store = usePageStore()
+const store = useHomePageStore()
 const dynamicIslandStore = useIslandStore()
 const languageStore = useLanguageStore();
 const selectedDeviceType = ref(null)
@@ -137,7 +137,7 @@ const addProductToCart = async (productId,) => {
 
 const closeInfoProduct = () => {
     focusStore.setActiveProduct(null)
-    store.prevPage()
+    store.setOpen(false)
     setTimeout(() => {
         lastProductStore.setLastProduct([]);
     }, 500);
@@ -145,14 +145,13 @@ const closeInfoProduct = () => {
 
 const selectProduct = (product) => {
     if (focusStore.activeProduct === product) {
-        store.prevPage()
+        store.setOpen(false)
         focusStore.setActiveProduct(null);
-        store.prevPage()
         setTimeout(() => {
             lastProductStore.setLastProduct([]);
         }, 500);
     } else {
-        store.goToPage(2)
+        store.setOpen(true)
         lastProductStore.setLastProduct(product);
         focusStore.activeProduct && document.querySelector('.product--active')?.classList.remove('final-position');
     }

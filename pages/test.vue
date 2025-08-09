@@ -32,7 +32,6 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const store = useIosNavigationStore()
-const successPayStore = useSuccessPayStore()
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragX = ref(0)
@@ -90,7 +89,7 @@ const onDrag = (e) => {
 }
 const onPageTwoClosed = () => {
   setTimeout(() => {
-    successPayStore.setActive(false)
+    
   }, 500);
 }
 const endDrag = () => {

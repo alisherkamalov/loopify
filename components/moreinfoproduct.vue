@@ -63,21 +63,23 @@ import { Pagination } from 'swiper/modules';
 import { useLastProductStore } from '~/store/lastProductStore'
 import { VProgressCircular } from 'vuetify/components'
 import axios from 'axios'
+import { useLanguageStore } from '~/store/languagesStore'
+import { useProductPageStore } from '~/store/ProductPageStore'
 import { useIslandStore } from '~/store/IslandStore';
 import { useMakeProduct } from '~/store/MakeProductStore'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useHomePageStore } from '~/store/HomePageStore'
 
-const store = usePageStore()
+const storeHome = useHomePageStore()
+const storeProduct = useProductPageStore()
 const makeProductStore = useMakeProduct()
 const lastProductStore = useLastProductStore();
 const lastProduct = computed(() => lastProductStore.lastproduct);
-import { useLanguageStore } from '~/store/languagesStore'
 const languageStore = useLanguageStore()
 const videoStates = ref({});
 const notificationStore = useIslandStore()
 const videoRefs = ref({});
 const closeProduct = () => {
-    store.prevPage()
+    storeHome.setOpen(false)
 
     setTimeout(() => {
         lastProductStore.setLastProduct([]);
@@ -87,7 +89,7 @@ const closeProduct = () => {
 const makeOrder = () => {
     lastProductStore.setSlider(false)
     makeProductStore.setProducts(lastProductStore.lastproduct)
-    store.goToPage(3)
+    storeProduct.setOpen(true)
     document.body.style.overflow = 'hidden';
 }
 const addProductToCart = async (productId) => {
@@ -118,7 +120,6 @@ const addProductToCart = async (productId) => {
         notificationStore.setCart(true);
             setTimeout(() => {
                 notificationStore.setCart(true);
-                store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
@@ -140,7 +141,6 @@ const addProductToCart = async (productId) => {
             notificationStore.setCart(true);
             setTimeout(() => {
                 notificationStore.setCart(true);
-                store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);
@@ -156,7 +156,6 @@ const addProductToCart = async (productId) => {
             notificationStore.setCart(true);
             setTimeout(() => {
                 notificationStore.setCart(true);
-                store.goToPage(1)
             }, 500);
             setTimeout(() => {
                 notificationStore.setCart(false);

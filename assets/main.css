@@ -149,7 +149,6 @@ button:focus {
 .bottom-sheet__header {
     z-index: 4;
 }
-
 .bottom-sheet__overlay {
     background: transparent !important;
 }
@@ -178,7 +177,9 @@ body {
 .swiper-slide {
     margin-right: 1px;
 }
-
+.page-one.active {
+    overflow-y: auto;
+}
 .logo {
     background-image: var(--logo-url);
     width: 150px;

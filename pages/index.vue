@@ -7,36 +7,44 @@
         <div class="loading" :class="{ active: isLoading }">
             <v-progress-circular indeterminate size="49"></v-progress-circular>
         </div>
-
-        <Slider>
-            <template #page-0>
+        <AuthSlider>
+            <template #page-one>
                 <authpage />
             </template>
-            <template #page-1>
-                <div class="isauth" :class="{ active: pagesStore.isAnimate }">
-                    <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
+            <template #page-two>
+                <HomeSlider>
+                    <template #page-one>
+                        <div class="isauth" :class="{ active: pagesStore.isAnimate }">
+                            <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
 
-                    <TheHeader />
-                    <openSearch :currentLanguage="languageStore.currentLanguage" />
-                    <div class="content">
-                        <BestProductSlider :current-language="languageStore.currentLanguage" />
-                        <CardProduct :current-language="languageStore.currentLanguage" />
-                    </div>
-                    <TheFooter />
-                </div>
+                            <TheHeader />
+                            <openSearch :currentLanguage="languageStore.currentLanguage" />
+                            <div class="content">
+                                <BestProductSlider :current-language="languageStore.currentLanguage" />
+                                <CardProduct :current-language="languageStore.currentLanguage" />
+                            </div>
+                            <TheFooter />
+                        </div>
+                    </template>
+                    <template #page-two>
+                        <ProductSlider>
+                            <template #page-one>
+                                <div class="moreinfopage"
+                                    :class="{ 'active': notificationStore.isCart, 'animate': pagesStore.isAnimate }">
+                                    <Moreinfoproduct />
+                                </div>
+                            </template>
+                            <template #page-two>
+                                <div class="makeorderpage">
+                                    <MakeOrderPage />
+                                </div>
+                            </template>
+                        </ProductSlider>
+                    </template>
+                </HomeSlider>
             </template>
-            <template #page-2>
-                <div class="moreinfopage"
-                    :class="{ 'active': notificationStore.isCart, 'animate': pagesStore.isAnimate }">
-                    <Moreinfoproduct />
-                </div>
-            </template>
-            <template #page-3>
-                <div class="makeorderpage">
-                    <MakeOrderPage />
-                </div>
-            </template>
-        </Slider>
+        </AuthSlider>
+
         <!-- Если нет токена или данных, показываем страницу для входа -->
         <!-- <div v-else> -->
         <!-- <TitlePage :current-language="currentLanguage" @language-changed="changeLanguage" /> -->
@@ -57,24 +65,28 @@ import CardProduct from '~/components/cardproduct.vue'
 import { MakeOrderPage } from '#components'
 import axios from 'axios'
 import authpage from '~/components/authpage.vue'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useAuthPageStore } from '~/store/AuthPageStore'
 import DynamicIsland from '~/components/thedynamicisland.vue'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLastProductStore } from '~/store/lastProductStore'
-import Slider from '~/components/sliderpage.vue'
+import AuthSlider from '~/components/authSlider.vue'
+import HomeSlider from '~/components/homeSlider.vue'
+import ProductSlider from '~/components/ProductSlider.vue'
 import bottomsheet from '~/components/bottomsheet.vue'
 import { useIslandStore } from '~/store/IslandStore'
 import TheFooter from '~/components/theFooter.vue'
 import { usePWAStore } from '~/store/isPWAStore'
+import { useRouter } from 'vue-router'
 
 const focusStore = useFocusStore()
 const pwaStore = usePWAStore()
+const router = useRouter()
 const notificationStore = useIslandStore()
 const languageStore = useLanguageStore()
 const lastProductStore = useLastProductStore()
 const allproductstore = useAllProductStore()
 const isLoading = ref(true)
-const pagesStore = usePageStore()
+const pagesStore = useAuthPageStore()
 const token = ref(null)
 
 onMounted(() => {
@@ -89,7 +101,6 @@ onMounted(() => {
 
         observer.observe(document.body, { childList: true, subtree: true });
     }
-    pagesStore.remsoftenCurrentSlide()
     token.value = localStorage.getItem('token')
     if (token.value) {
         axios.get('https://backendlopify.vercel.app/me', {
@@ -103,7 +114,7 @@ onMounted(() => {
             .catch(error => {
                 console.error('Ошибка запроса /me:', error);
                 token.value = null;
-                pagesStore.goToPage(0)
+                pagesStore.setOpen(false)
                 return
             })
             .finally(() => {
@@ -111,7 +122,7 @@ onMounted(() => {
             })
     }
     else {
-        pagesStore.goToPage(1)
+        pagesStore.setOpen(true)
     }
     axios.get('https://backendlopify.vercel.app/products')
         .then(response => allproductstore.setAllProducts(response.data))

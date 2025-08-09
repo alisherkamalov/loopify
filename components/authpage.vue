@@ -12,12 +12,12 @@
 import { ref, onMounted } from 'vue';
 import { useIslandStore } from '~/store/IslandStore';
 import { useLanguageStore } from '~/store/languagesStore';
-import { usePageStore } from '~/store/PagesRoutesStore';
+import { useAuthPageStore } from '~/store/AuthPageStore';
 const authenticated = ref(false);
 const dynamicIsland = useIslandStore();
 const languageStore = useLanguageStore();
 const token = ref('')
-const pagesStore = usePageStore()
+const pagesStore = useAuthPageStore()
 onMounted(() => {
     document.body.style.overflow = 'hidden';
     dynamicIsland.deactivateIsland();
@@ -74,7 +74,7 @@ async function authenticate() {
                 .catch(error => {
                     console.error('Ошибка запроса /me:', error);
                     token.value = null;
-                    pagesStore.goToPage(0)
+                    pagesStore.setOpen(false)
                     return
                 })
                 .finally(() => {
@@ -82,7 +82,7 @@ async function authenticate() {
                 })
         }
         setTimeout(() => {
-            pagesStore.goToPage(1);
+            pagesStore.setOpen(true);
             document.body.style.overflow = 'auto';
         }, 500);
 
@@ -92,7 +92,7 @@ async function authenticate() {
             authenticated.value = true;
             dynamicIsland.setAuth(true);
             setTimeout(() => {
-                pagesStore.goToPage(1);
+                pagesStore.setOpen(true);
                 document.body.style.overflow = 'auto';
             }, 500);
             return;

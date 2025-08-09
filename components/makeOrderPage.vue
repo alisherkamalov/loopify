@@ -25,17 +25,17 @@
 <script setup>
 import { h } from 'vue'
 import { ArrowLeftOutlined } from '@ant-design/icons-vue'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useProductPageStore } from '~/store/ProductPageStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useMakeProduct } from '~/store/MakeProductStore'
-const pagesStore = usePageStore()
+const pagesStore = useProductPageStore()
 const makeProductStore = useMakeProduct()
 const languageStore = useLanguageStore()
 const lengthProducts = computed(() => {
     return Array.isArray(makeProductStore.products) ? makeProductStore.products.length : 1;
 });
 const closeMakeOrder = () => {
-    pagesStore.goToPage(2);
+    pagesStore.setOpen(false)
     document.body.style.overflow = 'auto';
     setTimeout(() => {
         makeProductStore.setProducts([]);

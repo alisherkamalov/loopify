@@ -44,12 +44,7 @@ const openBottomSheet = () => {
   if (localStorage) {
     const token = localStorage.getItem('token')
     if (!token) {
-      if (pwaStore.isPwa) {
-        router.replace('/signin')
-        return
-      }
-      router.push('/signin')
-      return
+      router.replace('/signin')
     }
   }
   document.body.style.overflow = 'hidden';

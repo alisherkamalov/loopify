@@ -1,6 +1,5 @@
 // store/sheetStore.ts
 import { defineStore } from "pinia";
-import { usePageStore } from "./PagesRoutesStore";
 
 export const useSheetStore = defineStore('sheet', {
   state: () => ({
@@ -10,15 +9,11 @@ export const useSheetStore = defineStore('sheet', {
   actions: {
     open() {
       this.isOpen = true
-      const pageStore = usePageStore();
-      pageStore.softenCurrentSlide();
       setTimeout(() => {
         this.isAnimated = true
       }, 400);
     },
     close() {
-      const pageStore = usePageStore();
-      pageStore.remsoftenCurrentSlide();
       this.isOpen = false
       setTimeout(() => {
         this.isAnimated = false

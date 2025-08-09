@@ -84,10 +84,10 @@ import { VProgressCircular } from 'vuetify/components'
 import { useIslandStore } from '~/store/IslandStore';
 import axios from 'axios'
 import { useAllProductStore } from '~/store/fetchProductsStore'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useHomePageStore } from '~/store/HomePageStore'
 import { useLanguageStore } from '~/store/languagesStore'
 const languageStore = useLanguageStore()
-const store = usePageStore()
+const store = useHomePageStore()
 const notificationStore = useIslandStore()
 const lastProductStore = useLastProductStore()
 const videoStates = ref({});
@@ -143,7 +143,7 @@ const openProduct = (index) => {
     const product = allproductstore.products[index];
     lastProductStore.setLastProduct(product);
     notificationStore.setLastProduct(product);
-    store.goToPage(2)
+    store.setOpen(true)
 };
 
 const initVideo = (el, index) => {

@@ -51,12 +51,12 @@ import { useIslandStore } from '~/store/IslandStore'
 import { Vue3Lottie } from 'vue3-lottie'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useLastProductStore } from '~/store/lastProductStore'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useHomePageStore } from '~/store/HomePageStore'
 const IslandStore = useIslandStore()
 const dynamicIsland = ref(null)
 const lastProductStore = useLastProductStore()
 const languageStore = useLanguageStore()
-const pageStore = usePageStore()
+const pageStore = useHomePageStore()
 const lastProductIsland = computed(() => IslandStore.lastproduct);
 let hideTimeout = null;
 
@@ -123,7 +123,7 @@ const moreInfo = () => {
     }
     if (IslandStore.isActiveMore) {
         lastProductStore.setLastProduct(IslandStore.lastproduct)
-        pageStore.goToPage(2)
+        pageStore.setOpen(true)
         IslandStore.setMore(false)
         IslandStore.setActiveMore(false)
         return

@@ -35,7 +35,7 @@ const languagesStore = useLanguageStore();
     top: 100dvh;
     background-color: rgb(0, 0, 0, 0.2);
     overflow: hidden;
-    z-index: 1;
+    z-index: 4;
     padding-top: env(safe-area-inset-top);
     background-color: var(--background);
     border-top-left-radius: 1.8rem;

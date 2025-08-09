@@ -30,8 +30,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useIosNavigationStore } from '~/store/iosRouteStore'
-const store = useIosNavigationStore()
+import { useHomePageStore } from '~/store/HomePageStore'
+const store = useHomePageStore()
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragX = ref(0)

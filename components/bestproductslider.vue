@@ -21,7 +21,7 @@ import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useLastProductStore } from '~/store/lastProductStore'
-import { usePageStore } from '~/store/PagesRoutesStore'
+import { useHomePageStore } from '~/store/HomePageStore'
 const lastProductStore = useLastProductStore()
 
 const props = defineProps({
@@ -32,14 +32,14 @@ const props = defineProps({
 })
 
 const allproductstore = useAllProductStore()
-const pagesStore = usePageStore()
+const pagesStore = useHomePageStore()
 const languageStore = useLanguageStore()
 const currentLanguage = computed(() => languageStore.currentLanguage)
 const isAnimating = ref(false)
 const openmore = (idprod) => {
   lastProductStore.setLastProduct(idprod);
   lastProductStore.setSlider(true)
-  pagesStore.goToPage(2)
+  pagesStore.setOpen(true)
   
 }
 const slides = ref([])
