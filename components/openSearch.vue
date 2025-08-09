@@ -423,6 +423,7 @@ onBeforeUnmount(() => {
     margin-left: auto;
     margin-right: auto;
     margin-top: 65px;
+    margin-top: calc(env(safe-area-inset-top) + 65px);
     padding-bottom: 15px;
     gap: 10px;
     opacity: 0;

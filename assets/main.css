@@ -117,7 +117,7 @@ button:focus {
     --background: #ffffff;
     --bottomsheetbgoverlay: #f2f2f7;
     --buttonbsbg: #ffffff;
-    --buttonbsbgactive: #929292;
+    --buttonbsbgactive: #e4e4e4;
     --foreground: #171717;
     --bottomsheetbg: rgba(255, 255, 255, 0.8);
     --bg-cont: #f0f0f0;
