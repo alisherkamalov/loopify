@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
     justify-content: center;
     align-items: center;
     border-radius: 16px;
-    background: linear-gradient(145deg, #f0f0f0, #ffffff);
+    background: var(--bg-cont);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
