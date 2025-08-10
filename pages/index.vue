@@ -64,7 +64,7 @@ import Moreinfoproduct from '~/components/moreinfoproduct.vue'
 import TheHeader from '~/components/theheader.vue'
 import openSearch from '~/components/openSearch.vue'
 import BestProductSlider from '~/components/bestproductslider.vue'
-import CardProduct from '~/components/cardproduct.vue'
+import CardProduct from '~/components/cartproduct.vue'
 import { MakeOrderPage } from '#components'
 import axios from 'axios'
 import authpage from '~/components/authpage.vue'
@@ -220,6 +220,7 @@ main.active {
     width: 100%;
     height: auto;
     display: flex;
+    flex: 1;
     padding-top: env(safe-area-inset-top);
     flex-direction: column;
     background-color: var(--background);

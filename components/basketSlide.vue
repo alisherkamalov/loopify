@@ -10,20 +10,22 @@
                 <div class="frame-cartproduct" v-for="(product, index) in displayedProducts" :key="product._id"
                     :class="{ removing: product.removing }">
 
-                    <div class="hidden-action-delete" :class="{ released: displayedProducts[index]?.released }"
+                    <div class="hidden-action-delete" @click="removeWithAnimation(product.productId._id)" :class="{ released: displayedProducts[index]?.released }"
                         :style="{ transform: `translateX(${Math.max(0, 40 + (product.offsetX / openWidth) * -40)}px)` }">
-                        <button class="remove-btn" @click="removeWithAnimation(product.productId._id)">Убрать</button>
+                        <button class="remove-btn">Убрать</button>
                     </div>
 
-                    <div class="hidden-action" :class="{ released: displayedProducts[index]?.released }"
+                    <div class="hidden-action" @click="payOneProduct(product)" :class="{ released: displayedProducts[index]?.released }"
                         :style="{ transform: `translateX(${Math.max(0, 40 + (product.offsetX / openWidth) * -40)}px)` }">
-                        <button class="pay-btn" @click="payOneProduct(product)">Оплатить</button>
+                        <button class="pay-btn">Оплатить</button>
                     </div>
 
                     <div class="cartproduct" :class="{ smooth: !isDraggingIndex(index) }"
                         :style="{ transform: `translateX(${product.offsetX}px)` }"
                         @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event, index)"
-                        @touchend="onTouchEnd(index)">
+                        @touchend="onTouchEnd(index)" @mousedown="onMouseDown($event, index)"
+                        @mousemove="onMouseMove($event, index)" @mouseup="onMouseUp(index)"
+                        @mouseleave="onMouseUp(index)" @pointerdown.stop>
 
                         <div class="photo">
                             <img :src="product.productId.photoUrl" alt="product image" class="photo-img">
@@ -42,7 +44,7 @@
             </div>
         </div>
     </div>
-    <div class="pay-cart" v-if="displayedProducts.length > 0">
+    <div class="pay-cart" v-if="displayedProducts.length > 0" :class="{ 'active': sliderStore.activeSlide === 1 }">
         <div @click="payAllProducts" class="btn-pay" :style="{
             scale: clickedPayBtn ? 0.9 : 1
         }">
@@ -65,7 +67,7 @@ import { useSheetStore } from '~/store/sheetStore';
 import { useMakeProduct } from '~/store/MakeProductStore';
 import { useSliderButtonsStore } from '~/store/sliderButtonsStore'
 import { useCartStore } from '~/store/cartStore'
-
+import { useLastProductStore } from '~/store/lastProductStore'
 
 const cartStore = useCartStore()
 const displayedProducts = computed(() => cartStore.items)
@@ -73,6 +75,7 @@ const isLoading = computed(() => cartStore.isLoading)
 const sliderStore = useSliderButtonsStore()
 const notificationStore = useIslandStore();
 const languageStore = useLanguageStore();
+const lastProductStore = useLastProductStore()
 const homestore = useHomePageStore()
 const bottomsheetStore = useSheetStore()
 const makeProductStore = useMakeProduct()
@@ -85,7 +88,7 @@ let startX = 0;
 let currentX = 0;
 let draggingIndex = null;
 const isDraggingIndex = (i) => draggingIndex === i
-const openWidth = -180;
+const openWidth = -200;
 
 const ensureProductProps = (product) => {
     if (product.offsetX === undefined) product.offsetX = 0;
@@ -120,6 +123,7 @@ const onTouchStart = (e, index) => {
 
 const onTouchMove = (e, index) => {
     if (draggingIndex !== index) return;
+    e.preventDefault();
     currentX = e.touches[0].clientX;
     let deltaX = currentX - startX;
 
@@ -133,6 +137,59 @@ const onTouchMove = (e, index) => {
 };
 
 const onTouchEnd = (index) => {
+    ensureProductProps(displayedProducts.value[index]);
+    const offset = displayedProducts.value[index].offsetX;
+
+    if (offset < openWidth / 2) {
+        displayedProducts.value[index].offsetX = openWidth;
+    } else {
+        displayedProducts.value[index].offsetX = 0;
+    }
+
+    displayedProducts.value[index].released = true;
+
+    setTimeout(() => {
+        if (!isDraggingIndex(index)) {
+            displayedProducts.value[index].released = false;
+        }
+    }, 260);
+
+    draggingIndex = null;
+    if (sliderStore.swiperInstance) {
+        sliderStore.swiperInstance.allowTouchMove = true;
+    }
+};
+
+const onMouseDown = (e, index) => {
+    e.preventDefault();
+    startX = e.clientX;
+    draggingIndex = index;
+    ensureProductProps(displayedProducts.value[index]);
+    displayedProducts.value[index].released = false;
+
+    if (sliderStore.swiperInstance) {
+        sliderStore.swiperInstance.allowTouchMove = false;
+    }
+};
+
+const onMouseMove = (e, index) => {
+    if (draggingIndex !== index) return;
+    e.preventDefault();
+    e.stopPropagation();
+    currentX = e.clientX;
+    let deltaX = currentX - startX;
+
+    let newOffset = (displayedProducts.value[index].offsetX ?? 0) + deltaX;
+    newOffset = Math.max(openWidth, Math.min(0, newOffset));
+    displayedProducts.value[index].offsetX = newOffset;
+    displayedProducts.value[index].released = false;
+
+    startX = currentX;
+};
+
+const onMouseUp = (index) => {
+    if (draggingIndex === null) return;
+
     ensureProductProps(displayedProducts.value[index]);
     const offset = displayedProducts.value[index].offsetX;
 
@@ -254,6 +311,10 @@ const payForProducts = async () => {
 
 const removeProductFromCart = async (productIdToDelete) => {
     try {
+        const productToRemove = cartStore.items.find(
+            product => product.productId._id === productIdToDelete
+        );
+
         await axios.delete(
             `https://backendlopify.vercel.app/basket/${productIdToDelete}`,
             {
@@ -263,10 +324,13 @@ const removeProductFromCart = async (productIdToDelete) => {
             }
         );
 
+        if (productToRemove) {
+            lastProductStore.setLastProduct(productToRemove);
+        }
+
         cartStore.items = cartStore.items.filter(
             product => product.productId._id !== productIdToDelete
         );
-
         notificationStore.setNotification(languageStore.currentLanguage.deleteproductbasket);
         notificationStore.setLeftTypeIcon('success');
         notificationStore.setActive(true);
@@ -328,6 +392,7 @@ onMounted(() => {
     top: 0;
     bottom: 0;
     width: 100px;
+    padding-left: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -360,6 +425,15 @@ onMounted(() => {
     font-size: 20px;
     font-weight: 500;
     z-index: 4;
+}
+
+.cartproduct,
+.hidden-action-delete,
+.hidden-action {
+    touch-action: pan-y;
+    user-select: none;
+    cursor: pointer;
+    -webkit-user-drag: none;
 }
 
 .box {
@@ -411,7 +485,7 @@ onMounted(() => {
 }
 
 .cartproduct {
-    width: 100%;
+    width: calc(100% + 1px);
     border-radius: 15px;
     display: flex;
     position: absolute;
@@ -457,12 +531,16 @@ onMounted(() => {
     flex-direction: column;
     bottom: 0;
     z-index: 4;
+    translate: 0px 300px;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     background-color: var(--background);
     width: 100%;
+    transition: all 0.5s ease;
 }
-
+.pay-cart.active {
+    translate: 0px 0px;
+}
 .content {
     width: 98%;
     display: flex;

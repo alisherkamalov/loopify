@@ -3,14 +3,9 @@
     <div class="bottomsheetloopify" :class="{ 'active': sheetStore.isOpen, 'isanimate': sheetStore.isAnimated }">
         <div class="content">
             <div class="close" @click="sheetStore.close">
-                <div class="relative">
-                    <a-tooltip class="btnclose">
-                        <a-button color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
-                    </a-tooltip>
-                    <span class="closetext">
-                        {{ languagesStore.currentLanguage.close }}
-                    </span>
-                </div>
+                <a-tooltip class="btnclose" @click.stop="sheetStore.close">
+                    <a-button color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
+                </a-tooltip>
             </div>
             <ContentSettings />
         </div>
@@ -43,6 +38,7 @@ const languagesStore = useLanguageStore();
     border-top-right-radius: 1.8rem;
     transition: all 0.5s ease;
 }
+
 .blacklight {
     opacity: 0;
     width: 100%;
@@ -55,15 +51,18 @@ const languagesStore = useLanguageStore();
     pointer-events: none;
     transition: all 0.5s ease;
 }
+
 .blacklight.active {
     opacity: 1;
     pointer-events: all;
 }
+
 .btnclose {
     scale: 0.9;
     z-index: 5 !important;
     background-color: transparent !important;
 }
+
 .relative {
     position: relative;
     z-index: 5;
@@ -73,12 +72,12 @@ const languagesStore = useLanguageStore();
     display: flex;
     overflow: hidden;
 }
+
 .close {
     position: absolute;
     left: 15px;
     z-index: 5;
     top: 15px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 6px, rgba(0, 0, 0, 0.1) 0px 0px 20px;
     align-items: center;
     font-size: 17px;
     display: flex;
@@ -92,10 +91,6 @@ const languagesStore = useLanguageStore();
     transition: all 0.1s ease;
 }
 
-.closetext {
-    z-index: 5;
-    margin-right: 10px;
-}
 
 .close:active {
     opacity: 0.5;
@@ -117,6 +112,7 @@ const languagesStore = useLanguageStore();
 .bottomsheetloopify.active {
     top: 0px;
 }
+
 .bottomsheetloopify.isanimate {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;

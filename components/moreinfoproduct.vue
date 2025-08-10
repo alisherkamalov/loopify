@@ -44,9 +44,6 @@
                 <button class="cardproduct__btn order" @click.stop="makeOrder">{{
                     languageStore.currentLanguage.makeinorder
                 }}</button>
-                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id)">
-                    {{ languageStore.currentLanguage.incart }}
-                </button>
             </div>
         </div>
     </div>
@@ -130,7 +127,7 @@ const addProductToCart = async (productId) => {
 
     try {
         await cartStore.addToCart(productId);
-
+        notificationStore.setLastProduct(productId)
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setText(false);
         notificationStore.setCart(true);
@@ -310,7 +307,7 @@ const toggleVideo = (index) => {
 }
 
 .cardproducts {
-    width: 95%;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -370,12 +367,12 @@ const toggleVideo = (index) => {
 .cardproduct__media {
     display: flex;
     width: 400px;
-    height: 400px;
+    height: 500px;
     margin-left: 40px;
     margin-right: 30px;
     justify-content: center;
     align-items: center;
-    border-radius: 50px;
+    border-radius: 15px;
     overflow: hidden;
 }
 
