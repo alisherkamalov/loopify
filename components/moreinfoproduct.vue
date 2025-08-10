@@ -44,6 +44,9 @@
                 <button class="cardproduct__btn order" @click.stop="makeOrder">{{
                     languageStore.currentLanguage.makeinorder
                 }}</button>
+                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct)">{{
+                    languageStore.currentLanguage.incart
+                }}</button>
             </div>
         </div>
     </div>

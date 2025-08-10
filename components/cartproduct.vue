@@ -2,7 +2,7 @@
     <div class="cardproducts">
         <div class="centercard">
             <div v-for="(product, index) in allproductstore.products" :key="product.title" class="frame-cardproduct"
-                :ref="el => frameRefs[index] = el">
+                :ref="el => frameRefs[index] = el" @click.stop="openProduct(index)">
                 <div class="cardproduct">
                     <a-tooltip class="btnclose" :title="languageStore.currentLanguage.back"
                         @click.stop="closeProduct(activeFrameIndex)" :class="{ active: activeFrameIndex === index }">
@@ -57,10 +57,6 @@
                                     :class="{ active: activeFrameIndex === index }">{{
                                         languageStore.currentLanguage.more
                                     }}</button>
-                                <button class="cardproduct__btn incart" :class="{ active: activeFrameIndex === index }"
-                                    @click.stop="addProductToCart(product)">
-                                    {{ languageStore.currentLanguage.incart }}
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -204,13 +200,15 @@ onBeforeUnmount(() => {
 <style scoped>
 .cardproducts {
     width: 100%;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     box-sizing: border-box;
 }
 
 .centercard {
     display: grid;
     gap: 20px;
+    justify-content: center;
     max-width: 1400px;
     margin: 0 auto;
     justify-content: center;
@@ -230,11 +228,6 @@ onBeforeUnmount(() => {
     overflow: hidden;
 }
 
-
-.frame-cardproduct:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
 
 .frame-cardproduct {
     height: 300px;
@@ -311,7 +304,7 @@ onBeforeUnmount(() => {
 }
 
 .cardproduct__btn {
-    width: 50%;
+    width: 100%;
     padding: 8px 12px;
     font-size: 0.85rem;
     font-weight: 500;
@@ -434,11 +427,9 @@ onBeforeUnmount(() => {
 
 .cardproduct__img.active {
     translate: 0px -50%;
-}
-
-@media (min-width: 1300px) {
+}@media (min-width: 1300px) {
     .centercard {
-        grid-template-columns: repeat(6, 180px);
+        grid-template-columns: repeat(6, 190px);
     }
     .frame-cardproduct {
         max-width: 200px;
@@ -446,40 +437,36 @@ onBeforeUnmount(() => {
         height: 400px;
     }
 }
-
-@media (max-width: 1299px) and (min-width: 1001px) {
+@media (max-width: 1299px) and (min-width: 776px) {
     .centercard {
         grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+        padding: 0 10px;
+        translate: -5px;
     }
     .frame-cardproduct {
-        width: calc((100% - (5 * 20px)) / 6);
-        aspect-ratio: 552 / 1000;
-        height: auto;
-    }
-}
-
-@media (max-width: 1000px) and (min-width: 776px) {
-    .centercard {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .frame-cardproduct {
-        width: calc((100% - (3 * 20px)) / 4);
-        aspect-ratio: 439 / 1000;
+        width: calc((100vw - (3 * 20px)) / 4);
+        aspect-ratio: 309.75 / 535;
         height: auto;
     }
 }
 
 @media (max-width: 775px) and (min-width: 300px) {
     .centercard {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        padding: 0 10px;
+        grid-template-columns: repeat(2, 1fr); /* две равные колонки */
+        gap: 5px;
+        padding: 0 5px; /* небольшой внутренний отступ */
+        max-width: 100%; /* не вылезаем за экран */
+        margin: 0 auto;
     }
     .frame-cardproduct {
-        width: calc((100% - 20px - 20px) / 2);
-        aspect-ratio: 3 / 5;
+        width: 100%;              /* теперь ширина от колонки */
+        aspect-ratio: 3 / 5;      /* сохраняем пропорции */
         height: auto;
     }
 }
+
+
 
 
 </style>

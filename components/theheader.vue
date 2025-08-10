@@ -51,7 +51,8 @@ const openCart = () => {
 const openBottomSheet = () => {
   if (localStorage) {
     const token = localStorage.getItem('token')
-    if (!token) {
+    const username = localStorage.getItem('username')
+    if (!token || !username) {
       router.replace('/signin')
       return
     }
