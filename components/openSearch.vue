@@ -67,6 +67,7 @@ import { useLastProductStore } from '~/store/lastProductStore'
 import { useHomePageStore } from '~/store/HomePageStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useIslandStore } from '~/store/IslandStore'
+import { useCartStore } from '~/store/cartStore'
 
 const store = useHomePageStore()
 const dynamicIslandStore = useIslandStore()
@@ -91,6 +92,7 @@ const sortingproducts = ref([
 const frameSearchRef = ref(null)
 const foundProductsRef = ref(null)
 const focusStore = useFocusStore()
+const cartStore = useCartStore()
 const isLoading = ref(false)
 const lastProductStore = useLastProductStore()
 const addProductToCart = async (productId,) => {
@@ -106,17 +108,7 @@ const addProductToCart = async (productId,) => {
         return;
     }
     try {
-        const response = await axios.post(
-            'https://backendlopify.vercel.app/basket',
-            {
-                productId: productId,
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            }
-        );
+        await cartStore.addToCart(productId);
         dynamicIslandStore.setLeftTypeIcon('addedtocart');
         dynamicIslandStore.setNotification(languageStore.currentLanguage.productaddedcart);
         dynamicIslandStore.setActive(true);

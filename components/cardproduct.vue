@@ -87,62 +87,50 @@ import { useAllProductStore } from '~/store/fetchProductsStore'
 import { useHomePageStore } from '~/store/HomePageStore'
 import { useLanguageStore } from '~/store/languagesStore'
 import { useProductPageStore } from '~/store/ProductPageStore'
+import { useRegistrationProductsStore } from '~/store/registrationProductsStore'
+import { useCartStore } from '~/store/cartStore'
+
+
+const cartStore = useCartStore()
 const languageStore = useLanguageStore()
 const store = useHomePageStore()
 const notificationStore = useIslandStore()
 const lastProductStore = useLastProductStore()
+const registrationProducts = useRegistrationProductsStore()
 const storeProduct = useProductPageStore()
 const videoStates = ref({});
 const videoRefs = ref({});
 const activeFrameIndex = ref(-1);
 const frameRefs = ref([]);
 const allproductstore = useAllProductStore()
-const addProductToCart = async (productId) => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-        notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
-        notificationStore.setActive(true);
-        notificationStore.setText(true);
-        notificationStore.setLeftTypeIcon('error');
-        return;
-    }
-    try {
-        notificationStore.setLastProduct(null);
-
-        notificationStore.setLastProduct(productId);
-
-        const response = await axios.post(
-            'https://backendlopify.vercel.app/basket',
-            {
-                productId: productId,
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            }
-        );
-        console.log(response.data)
-        notificationStore.setLeftTypeIcon('addedtocart');
-        notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
-        notificationStore.setActive(true);
-        notificationStore.setCartBottom(true);
-        notificationStore.setText(true);
-
-    } catch (error) {
-        if (error.response) {
-            notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
-        } else {
-            notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
-        }
-        notificationStore.setActive(true);
-        notificationStore.setText(true);
-        notificationStore.setCartBottom(true);
-        notificationStore.setLeftTypeIcon('error');
-    }
-};
+const addProductToCart = async (product) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    notificationStore.setNotification(languageStore.currentLanguage.authonwebsite)
+    notificationStore.setActive(true)
+    notificationStore.setText(true)
+    notificationStore.setLeftTypeIcon('error')
+    return
+  }
+  try {
+    await cartStore.addToCart(product._id)
+    notificationStore.setLastProduct(product)
+    notificationStore.setLeftTypeIcon('addedtocart')
+    notificationStore.setNotification(languageStore.currentLanguage.productaddedcart)
+    notificationStore.setActive(true)
+    notificationStore.setCartBottom(true)
+    notificationStore.setText(true)
+  } catch (error) {
+    notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart)
+    notificationStore.setActive(true)
+    notificationStore.setText(true)
+    notificationStore.setCartBottom(true)
+    notificationStore.setLeftTypeIcon('error')
+  }
+}
 const openProduct = (index) => {
     const product = allproductstore.products[index];
+    registrationProducts.setRegistration(false)
     lastProductStore.setLastProduct(product);
     notificationStore.setLastProduct(product);
     store.setOpen(true)

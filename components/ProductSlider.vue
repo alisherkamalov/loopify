@@ -32,11 +32,13 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useHomePageStore } from '~/store/HomePageStore'
 import { useProductPageStore } from '~/store/ProductPageStore'
+import { useRegistrationProductsStore } from '~/store/registrationProductsStore'
 const store = useProductPageStore()
 const storeHome = useHomePageStore()
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragX = ref(0)
+const registrationProducts = useRegistrationProductsStore()
 const pageWidth = ref(0)
 const pageTwo = ref(null)
 
@@ -92,6 +94,7 @@ const onPageTwoClosed = () => {
   setTimeout(() => {
     store.setGestureHelper(false)
     storeHome.setGestureHelper(true)
+    registrationProducts.setRegistration(false)
   }, 500);
 }
 const endDrag = () => {
@@ -145,9 +148,9 @@ onMounted(() => {
 
 .gesture-edge {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  height: 100%;
+  height: calc(100dvh - 60px);
   width: 40px;
   z-index: 5;
   backface-visibility: hidden;

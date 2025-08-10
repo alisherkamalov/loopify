@@ -38,7 +38,7 @@ const email = ref('');
 const password = ref('');
 
 const closePage = () => {
-    router.replace('/')
+    router.push('/')
 }
 
 const signUp = () => {
@@ -64,7 +64,7 @@ const authorization = () => {
             setTimeout(() => {
                 notificationStore.setActive(false);
                 notificationStore.setText(false);
-            }, 2000);
+            }, 3000);
             if (localStorage != 'undefined') {
                 setAndDispatch('token', response.data.token)
             }

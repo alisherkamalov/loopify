@@ -1,5 +1,6 @@
 // store/sheetStore.ts
 import { defineStore } from "pinia";
+import { useIslandStore } from "./IslandStore";
 
 export const useSheetStore = defineStore('sheet', {
   state: () => ({
@@ -14,8 +15,10 @@ export const useSheetStore = defineStore('sheet', {
       }, 400);
     },
     close() {
+      const IslandStore = useIslandStore()
       this.isOpen = false
       setTimeout(() => {
+        IslandStore.setActive(false)
         this.isAnimated = false
       }, 500);
     }

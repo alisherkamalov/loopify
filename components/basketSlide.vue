@@ -7,17 +7,35 @@
                 <v-progress-circular indeterminate size="49"></v-progress-circular>
             </div>
             <div class="thereproduct" v-else-if="displayedProducts.length > 0">
-                <div class="cartproduct" v-for="product in displayedProducts" :key="product._id">
-                    <div class="photo">
-                        <img :src="product.productId.photoUrl" alt="product image" class="photo-img">
+                <div class="frame-cartproduct" v-for="(product, index) in displayedProducts" :key="product._id"
+                    :class="{ removing: product.removing }">
+
+                    <div class="hidden-action-delete" :class="{ released: displayedProducts[index]?.released }"
+                        :style="{ transform: `translateX(${Math.max(0, 40 + (product.offsetX / openWidth) * -40)}px)` }">
+                        <button class="remove-btn" @click="removeWithAnimation(product.productId._id)">Убрать</button>
                     </div>
-                    <div class="infoproduct">
-                        <span class="price">{{ product.productId.price }} ₸ <span v-if="product.productId.discount"
-                                class="discount"></span></span>
-                        <span class="nameproduct">Loopify • {{
-                            languageStore.currentLanguage.devicetype[product.productId.deviceType] }} {{
-                                product.productId.name
-                            }}</span>
+
+                    <div class="hidden-action" :class="{ released: displayedProducts[index]?.released }"
+                        :style="{ transform: `translateX(${Math.max(0, 40 + (product.offsetX / openWidth) * -40)}px)` }">
+                        <button class="pay-btn" @click="payOneProduct(product)">Оплатить</button>
+                    </div>
+
+                    <div class="cartproduct" :class="{ smooth: !isDraggingIndex(index) }"
+                        :style="{ transform: `translateX(${product.offsetX}px)` }"
+                        @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event, index)"
+                        @touchend="onTouchEnd(index)">
+
+                        <div class="photo">
+                            <img :src="product.productId.photoUrl" alt="product image" class="photo-img">
+                        </div>
+                        <div class="infoproduct">
+                            <span class="price">{{ product.productId.price }} ₸</span>
+                            <span class="nameproduct">
+                                Loopify • {{ languageStore.currentLanguage.devicetype[product.productId.deviceType]
+                                }}
+                                {{ product.productId.name }}
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <div class="pay-cont"></div>
@@ -45,19 +63,108 @@ import { useRegistrationProductsStore } from '~/store/registrationProductsStore'
 import { useHomePageStore } from '~/store/HomePageStore';
 import { useSheetStore } from '~/store/sheetStore';
 import { useMakeProduct } from '~/store/MakeProductStore';
+import { useSliderButtonsStore } from '~/store/sliderButtonsStore'
+import { useCartStore } from '~/store/cartStore'
 
+
+const cartStore = useCartStore()
+const displayedProducts = computed(() => cartStore.items)
+const isLoading = computed(() => cartStore.isLoading)
+const sliderStore = useSliderButtonsStore()
 const notificationStore = useIslandStore();
 const languageStore = useLanguageStore();
 const homestore = useHomePageStore()
 const bottomsheetStore = useSheetStore()
 const makeProductStore = useMakeProduct()
 const registrationProducts = useRegistrationProductsStore()
-const displayedProducts = ref([]);
 const clickedPayBtn = ref(false)
-const isLoading = ref(true);
 const city = ref('');
 const isOpenOrder = ref(false);
 const address = ref('');
+let startX = 0;
+let currentX = 0;
+let draggingIndex = null;
+const isDraggingIndex = (i) => draggingIndex === i
+const openWidth = -180;
+
+const ensureProductProps = (product) => {
+    if (product.offsetX === undefined) product.offsetX = 0;
+    if (product.released === undefined) product.released = false;
+};
+
+const removeWithAnimation = (productIdToDelete) => {
+    const index = displayedProducts.value.findIndex(
+        p => p.productId._id === productIdToDelete
+    );
+    if (index === -1) return;
+
+    cartStore.items[index].removing = true;
+    setTimeout(() => {
+        removeProductFromCart(productIdToDelete);
+    }, 300);
+};
+
+
+
+const onTouchStart = (e, index) => {
+    startX = e.touches[0].clientX;
+    draggingIndex = index;
+    ensureProductProps(displayedProducts.value[index]);
+
+    displayedProducts.value[index].released = false;
+
+    if (sliderStore.swiperInstance) {
+        sliderStore.swiperInstance.allowTouchMove = false;
+    }
+};
+
+const onTouchMove = (e, index) => {
+    if (draggingIndex !== index) return;
+    currentX = e.touches[0].clientX;
+    let deltaX = currentX - startX;
+
+    let newOffset = (displayedProducts.value[index].offsetX ?? 0) + deltaX;
+    newOffset = Math.max(openWidth, Math.min(0, newOffset));
+    displayedProducts.value[index].offsetX = newOffset;
+
+    displayedProducts.value[index].released = false;
+
+    startX = currentX;
+};
+
+const onTouchEnd = (index) => {
+    ensureProductProps(displayedProducts.value[index]);
+    const offset = displayedProducts.value[index].offsetX;
+
+    if (offset < openWidth / 2) {
+        displayedProducts.value[index].offsetX = openWidth;
+    } else {
+        displayedProducts.value[index].offsetX = 0;
+    }
+
+    displayedProducts.value[index].released = true;
+
+    setTimeout(() => {
+        if (!isDraggingIndex(index)) {
+            displayedProducts.value[index].released = false;
+        }
+    }, 260);
+
+    draggingIndex = null;
+    if (sliderStore.swiperInstance) {
+        sliderStore.swiperInstance.allowTouchMove = true;
+    }
+};
+
+
+const payOneProduct = (product) => {
+    bottomsheetStore.close()
+    registrationProducts.setRegistration(true)
+    makeProductStore.setProducts([product])
+    setTimeout(() => {
+        homestore.setOpen(true)
+    }, 700);
+};
 
 const getProductWord = (count) => {
     const mod10 = count % 10;
@@ -91,22 +198,6 @@ const totalPrice = computed(() => {
         return sum + num
     }, 0)
 })
-
-const loadCartItems = async () => {
-    try {
-        isLoading.value = true;
-        const response = await axios.get('https://backendlopify.vercel.app/basket', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        displayedProducts.value = response.data;
-    } catch (error) {
-        console.error("Ошибка при загрузке корзины", error);
-        displayedProducts.value = [];
-    }
-    isLoading.value = false;
-};
 
 const payForProducts = async () => {
     try {
@@ -163,23 +254,32 @@ const payForProducts = async () => {
 
 const removeProductFromCart = async (productIdToDelete) => {
     try {
-        await axios.delete(`https://backendlopify.vercel.app/basket/${productIdToDelete}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
+        await axios.delete(
+            `https://backendlopify.vercel.app/basket/${productIdToDelete}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
             }
-        });
-        displayedProducts.value = displayedProducts.value.filter(product => product.productId._id !== productIdToDelete);
+        );
+
+        cartStore.items = cartStore.items.filter(
+            product => product.productId._id !== productIdToDelete
+        );
+
         notificationStore.setNotification(languageStore.currentLanguage.deleteproductbasket);
+        notificationStore.setLeftTypeIcon('success');
         notificationStore.setActive(true);
-        setTimeout(() => notificationStore.setActive(false), 3000);
+        notificationStore.setText(true);
+        notificationStore.setCartBottom(true);
     } catch (error) {
         console.error("Ошибка при удалении товара из корзины", error);
     }
 };
 
 onMounted(() => {
-    loadCartItems();
-});
+    cartStore.loadCart()
+})
 </script>
 <style scoped>
 .basket-slide {
@@ -222,6 +322,37 @@ onMounted(() => {
     font-size: 15px;
 }
 
+.hidden-action-delete {
+    position: absolute;
+    right: 100px;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    background-color: red;
+}
+
+.hidden-action {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    background-color: #1fa26a;
+}
+
+.pay-btn,
+.remove-btn {
+    color: white;
+}
+
 .headertext {
     width: 97%;
     margin-top: 10px;
@@ -249,22 +380,58 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    transition: all 0.5s ease;
 }
 
-.cartproduct {
+.frame-cartproduct {
     width: 100%;
     margin-top: 5px;
     border-radius: 15px;
     display: flex;
+    height: 130px;
+    z-index: 0;
     position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
+
+.frame-cartproduct.removing {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.hidden-action,
+.hidden-action-delete {
+    transition: none;
+}
+
+.frame-cartproduct .hidden-action.released,
+.frame-cartproduct .hidden-action-delete.released {
+    transition: transform 0.25s ease;
+}
+
+.cartproduct {
+    width: 100%;
+    border-radius: 15px;
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
     gap: 10px;
+    z-index: 2;
     padding: 15px 0px;
+    will-change: transform;
     background-color: var(--cartbasket-color);
+}
+
+.cartproduct.smooth {
+    transition: transform 0.25s ease;
 }
 
 .pay-cont {
     display: flex;
     min-height: 100px;
+    min-height: calc(env(safe-area-inset-bottom) + 100px);
 }
 
 .price {
@@ -284,6 +451,7 @@ onMounted(() => {
 .pay-cart {
     display: flex;
     min-height: 100px;
+    min-height: calc(env(safe-area-inset-bottom) + 100px);
     position: absolute;
     align-items: center;
     flex-direction: column;
@@ -305,6 +473,7 @@ onMounted(() => {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
+    transition: all 0.5s ease;
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 
@@ -332,7 +501,7 @@ onMounted(() => {
 }
 
 @media (max-width:1100px) {
-    .cartproduct {
+    .frame-cartproduct {
         width: 98%;
     }
 }
@@ -350,13 +519,13 @@ onMounted(() => {
         width: calc(100% - 32px);
     }
 
-    .cartproduct {
+    .frame-cartproduct {
         width: 97%;
     }
 }
 
 @media (max-width: 500px) {
-    .cartproduct {
+    .frame-cartproduct {
         width: 95%;
     }
 }

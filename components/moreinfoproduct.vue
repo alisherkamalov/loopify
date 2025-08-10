@@ -43,7 +43,7 @@
             <div class="bottom">
                 <button class="cardproduct__btn order" @click.stop="makeOrder">{{
                     languageStore.currentLanguage.makeinorder
-                    }}</button>
+                }}</button>
                 <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct._id)">
                     {{ languageStore.currentLanguage.incart }}
                 </button>
@@ -68,11 +68,13 @@ import { useProductPageStore } from '~/store/ProductPageStore'
 import { useIslandStore } from '~/store/IslandStore';
 import { useMakeProduct } from '~/store/MakeProductStore'
 import { useHomePageStore } from '~/store/HomePageStore'
+import { useCartStore } from '~/store/cartStore'
 
 const storeHome = useHomePageStore()
 const storeProduct = useProductPageStore()
 const makeProductStore = useMakeProduct()
 const lastProductStore = useLastProductStore();
+const cartStore = useCartStore()
 const lastProduct = computed(() => lastProductStore.lastproduct);
 const languageStore = useLanguageStore()
 const videoStates = ref({});
@@ -97,83 +99,72 @@ const makeOrder = () => {
 }
 const addProductToCart = async (productId) => {
     notificationStore.setText(false);
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+
     if (!token) {
         notificationStore.setNotification(languageStore.currentLanguage.authonwebsite);
         notificationStore.setActive(true);
-        setTimeout(() => {
-            notificationStore.setActive(false);
-        }, 3000);
+        setTimeout(() => notificationStore.setActive(false), 3000);
         return;
     }
+
+    const isAlreadyInCart = cartStore.cart?.some(item => item._id === productId);
+    if (isAlreadyInCart) {
+        notificationStore.setText(false);
+        notificationStore.setLeftTypeIcon('error');
+        notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
+        notificationStore.setCart(true);
+        setTimeout(() => {
+            notificationStore.setCart(true);
+            storeHome.setOpen(false);
+        }, 500);
+        setTimeout(() => notificationStore.setCart(false), 600);
+        setTimeout(() => {
+            notificationStore.setCartBottom(true);
+            notificationStore.setCart(false);
+            notificationStore.setActive(true);
+            notificationStore.setText(true);
+        }, 1100);
+        return;
+    }
+
     try {
-        const response = await axios.post(
-            'https://backendlopify.vercel.app/basket',
-            {
-                productId: productId,
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            }
-        );
+        await cartStore.addToCart(productId);
+
         notificationStore.setNotification(languageStore.currentLanguage.productaddedcart);
         notificationStore.setText(false);
         notificationStore.setCart(true);
-            setTimeout(() => {
-                notificationStore.setCart(true);
-                storeHome.setOpen(false)
-            }, 500);
-            setTimeout(() => {
-                notificationStore.setCart(false);
-            }, 600);
-            setTimeout(() => {
-                notificationStore.setCartBottom(true);
-                notificationStore.setCart(false);
-                notificationStore.setActive(true);
-                notificationStore.setText(true);
-            }, 1100);
+        setTimeout(() => {
+            notificationStore.setCart(true);
+            storeHome.setOpen(false);
+        }, 500);
+        setTimeout(() => notificationStore.setCart(false), 600);
+        setTimeout(() => {
+            notificationStore.setCartBottom(true);
+            notificationStore.setCart(false);
+            notificationStore.setActive(true);
+            notificationStore.setText(true);
+        }, 1100);
         notificationStore.setLeftTypeIcon('success');
-        console.log(response.data.message || 'Товар добавлен в корзину');
-
     } catch (error) {
         notificationStore.setText(false);
         notificationStore.setLeftTypeIcon('error');
-        if (error.response) {
-            notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
+        notificationStore.setNotification(languageStore.currentLanguage.errorproductaddedcart);
+        notificationStore.setCart(true);
+        setTimeout(() => {
             notificationStore.setCart(true);
-            setTimeout(() => {
-                notificationStore.setCart(true);
-                storeHome.setOpen(false)
-            }, 500);
-            setTimeout(() => {
-                notificationStore.setCart(false);
-            }, 600);
-            setTimeout(() => {
-                notificationStore.setCartBottom(true);
-                notificationStore.setCart(false);
-                notificationStore.setActive(true);
-                notificationStore.setText(true);
-            }, 1100);
-        } else {
-            notificationStore.setNotification(languageStore.currentLanguage.errorfetch);
-            notificationStore.setCart(true);
-            setTimeout(() => {
-                notificationStore.setCart(true);
-            }, 500);
-            setTimeout(() => {
-                notificationStore.setCart(false);
-            }, 600);
-            setTimeout(() => {
-                notificationStore.setCartBottom(true);
-                notificationStore.setCart(false);
-                notificationStore.setActive(true);
-                notificationStore.setText(true);
-            }, 1100);
-        }
+            storeHome.setOpen(false);
+        }, 500);
+        setTimeout(() => notificationStore.setCart(false), 600);
+        setTimeout(() => {
+            notificationStore.setCartBottom(true);
+            notificationStore.setCart(false);
+            notificationStore.setActive(true);
+            notificationStore.setText(true);
+        }, 1100);
     }
 };
+
 
 const initVideo = (el, index) => {
     if (!el || videoRefs.value[index]) return;
@@ -228,7 +219,7 @@ const toggleVideo = (index) => {
     width: 100%;
     gap: 35px;
     background-color: var(--background);
-    padding-top: 25px;
+    margin-top: 25px;
     min-height: 100dvh;
     margin-left: auto;
     margin-right: auto;

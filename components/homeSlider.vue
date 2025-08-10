@@ -96,8 +96,10 @@ const onDrag = (e) => {
 }
 const onPageTwoClosed = () => {
   setTimeout(() => {
+    if (registrationProducts.isRegistration) {
+      bottomsheetStore.open()
+    }
     registrationProducts.setRegistration(false)
-    bottomsheetStore.open()
   }, 500);
 }
 const endDrag = () => {
@@ -154,10 +156,10 @@ onMounted(() => {
 
 .gesture-edge {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  height: 100%;
-  width: 20px;
+  height: calc(100dvh - 60px);
+  width: 40px;
   z-index: 5;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);

@@ -214,6 +214,7 @@ header {
   display: none;
   width: 100%;
   height: 50px;
+  position: relative;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
