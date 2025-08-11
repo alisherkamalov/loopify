@@ -103,6 +103,9 @@ const addProductToCart = async (productId,) => {
         dynamicIslandStore.setText(true);
         dynamicIslandStore.setActive(true);
         setTimeout(() => {
+            dynamicIslandStore.setMore(false)
+            dynamicIslandStore.setActiveMore(false)
+            dynamicIslandStore.setText(true)
             dynamicIslandStore.setActive(false);
         }, 3000);
         return;
@@ -115,7 +118,10 @@ const addProductToCart = async (productId,) => {
         dynamicIslandStore.setCartBottom(true);
         dynamicIslandStore.setText(true);
         setTimeout(() => {
-            dynamicIslandStore.setActive(false);
+            dynamicIslandStore.setMore(false)
+            dynamicIslandStore.setActiveMore(false)
+            dynamicIslandStore.setActive(true)
+            dynamicIslandStore.setText(true)
         }, 3000);
 
     } catch (error) {

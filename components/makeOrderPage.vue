@@ -8,7 +8,7 @@
                 </a-tooltip>
             </div>
             <div class="info">
-                Оформление заказа
+                {{ languageStore.currentLanguage.makeinorderr }}
                 <span class="title">
                     {{ lengthProducts }} {{ getProductWord(lengthProducts) }}, {{ totalPriceFormatted }} ₸
                 </span>
@@ -17,8 +17,27 @@
 
             </div>
         </header>
-        <div class="content">
-            <div class="box"></div>
+        <div class="center-content">
+            <div class="content">
+                <div class="left-info">
+                    <div class="place-order">
+                        <span class="title">
+                            {{ languageStore.currentLanguage.makeinorderr }}
+                        </span>
+                        <span class="quantity-product">
+                            {{ lengthProducts }} {{ getProductWord(lengthProducts) }}
+                        </span>
+                        <div class="info-product">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="right-info">
+                    <div class="payment-cont">
+
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -113,6 +132,58 @@ header {
     translate: 0px 1px;
 }
 
+.left-info {
+    width: 60%;
+    overflow-x: hidden;
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+}
+
+.place-order {
+    width: 95%;
+    display: flex;
+    border-radius: 20px;
+    padding: 20px;
+    gap: 10px;
+    border: 1px solid transparent;
+    flex-direction: column;
+    min-height: 290px;
+    background-color: var(--background);
+}
+
+.place-order>.title {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.place-order>.quantity-product {
+    color: var(--graycart-color);
+    font-weight: 500;
+}
+
+.place-order>.info-product {
+    width: 100%;
+    display: flex;
+}
+
+.payment-cont {
+    width: 360px;
+    display: flex;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    height: 270px;
+    background-color: var(--background);
+}
+
+.right-info {
+    width: 40%;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+}
+
 .btnclose {
     background-color: transparent;
 }
@@ -135,11 +206,13 @@ header {
     justify-content: center;
     color: var(--foreground);
 }
+
 .box {
     width: 100%;
     display: flex;
     height: 1500px;
 }
+
 .title {
     font-size: 15px;
     color: var(--graycart-color);
@@ -147,9 +220,21 @@ header {
 
 .content {
     width: 100%;
+    max-width: 1300px;
     display: flex;
     height: 800px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-top: 20px;
     margin-top: calc(env(safe-area-inset-top) + 87.5px);
+}
+
+.center-content {
+    width: 100%;
+    display: flex;
+    min-height: 100dvh;
+    background-color: var(--cartbasket-color);
+    justify-content: center;
 }
 
 .container {
@@ -161,5 +246,25 @@ header {
     flex-direction: column;
     transition: all 0.3s ease;
     background-color: var(--background);
+}
+
+@media (max-width: 1160px) {
+    .content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .left-info {
+        width: 100%;
+        align-items: center;
+    }
+
+    .right-info {
+        width: 100%;
+    }
+
+    .payment-cont {
+        width: 95%;
+    }
 }
 </style>

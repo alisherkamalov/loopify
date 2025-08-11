@@ -168,6 +168,9 @@ main.active {
 }
 
 .makeorderpage {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100dvh;
     padding-top: env(safe-area-inset-top);
 }
 
