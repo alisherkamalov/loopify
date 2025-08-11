@@ -435,6 +435,7 @@ onBeforeUnmount(() => {
 }
 .foundproducts.island {
     margin-top: 115px;
+    margin-top: calc(env(safe-area-inset-top) + 115px);
 }
 .notfound {
     width: 100%;

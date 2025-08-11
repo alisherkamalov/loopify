@@ -1,9 +1,10 @@
 <template>
-    <div class="dynamicislandbox" :class="{ active: notificationStore.isActive }"></div>
-    <div class="container" :class="{ active: lastProductStore.isSlider }">
+    <div class="button-cont" @click="closeProduct()">
         <a-tooltip class="btnclose">
-            <a-button @click.stop="closeProduct()" color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
+            <a-button color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
         </a-tooltip>
+    </div>
+    <div class="container" :class="{ active: lastProductStore.isSlider }">
         <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
             :pagination="true" :key="`swiper-${lastProduct.name}`">
             <SwiperSlide>
@@ -43,10 +44,10 @@
             <div class="bottom">
                 <button class="cardproduct__btn order" @click.stop="makeOrder">{{
                     languageStore.currentLanguage.makeinorder
-                }}</button>
+                    }}</button>
                 <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct)">{{
                     languageStore.currentLanguage.incart
-                }}</button>
+                    }}</button>
             </div>
         </div>
     </div>
@@ -69,12 +70,16 @@ import { useIslandStore } from '~/store/IslandStore';
 import { useMakeProduct } from '~/store/MakeProductStore'
 import { useHomePageStore } from '~/store/HomePageStore'
 import { useCartStore } from '~/store/cartStore'
+import { useSheetStore } from '~/store/sheetStore'
+import { useSliderButtonsStore } from '~/store/sliderButtonsStore'
 
 const storeHome = useHomePageStore()
 const storeProduct = useProductPageStore()
 const makeProductStore = useMakeProduct()
 const lastProductStore = useLastProductStore();
 const cartStore = useCartStore()
+const bottomsheet = useSheetStore()
+const sliderbuttons = useSliderButtonsStore()
 const lastProduct = computed(() => lastProductStore.lastproduct);
 const languageStore = useLanguageStore()
 const videoStates = ref({});
@@ -125,6 +130,12 @@ const addProductToCart = async (productId) => {
             notificationStore.setActive(true);
             notificationStore.setText(true);
         }, 1100);
+        setTimeout(() => {
+            bottomsheet.open()
+        }, 1400);
+        setTimeout(() => {
+            sliderbuttons.selectSlide(1)
+        }, 1700);
         return;
     }
 
@@ -146,6 +157,12 @@ const addProductToCart = async (productId) => {
             notificationStore.setText(true);
         }, 1100);
         notificationStore.setLeftTypeIcon('success');
+        setTimeout(() => {
+            bottomsheet.open()
+        }, 1400);
+        setTimeout(() => {
+            sliderbuttons.selectSlide(1)
+        }, 1700);
     } catch (error) {
         notificationStore.setText(false);
         notificationStore.setLeftTypeIcon('error');
@@ -162,6 +179,12 @@ const addProductToCart = async (productId) => {
             notificationStore.setActive(true);
             notificationStore.setText(true);
         }, 1100);
+        setTimeout(() => {
+            bottomsheet.open()
+        }, 1400);
+        setTimeout(() => {
+            sliderbuttons.selectSlide(1)
+        }, 1700);
     }
 };
 
@@ -219,7 +242,7 @@ const toggleVideo = (index) => {
     width: 100%;
     gap: 35px;
     background-color: var(--background);
-    margin-top: 25px;
+    margin-top: 45px;
     min-height: 100dvh;
     margin-left: auto;
     margin-right: auto;
@@ -229,13 +252,16 @@ const toggleVideo = (index) => {
     padding-top: 25px;
 }
 
-
-.btnclose {
+.button-cont {
     position: absolute;
     left: 10px;
     top: 10px;
     top: calc(env(safe-area-inset-top) + 10px);
     z-index: 10;
+}
+
+.btnclose {
+
     background-color: var(--background);
 }
 
@@ -373,8 +399,7 @@ const toggleVideo = (index) => {
     height: 500px;
     margin-left: 40px;
     margin-right: 30px;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     border-radius: 15px;
     overflow: hidden;
 }
@@ -434,12 +459,15 @@ const toggleVideo = (index) => {
 @media (max-width:768px) {
     .container {
         flex-direction: column;
+        margin-top: 0px;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     .cardproduct__media {
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
+        width: 100%;
+        margin: 0px;
+        border-radius: 0px;
     }
 
     .cardproduct__content {

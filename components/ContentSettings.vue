@@ -137,6 +137,7 @@ onBeforeUnmount(() => {
   position: relative;
   overflow: hidden;
   color: var(--foreground);
+  background-color: var(--bg-cont);
   transition: all 0.3s ease;
   flex-shrink: 0;
 }

@@ -214,29 +214,15 @@ onBeforeUnmount(() => {
     justify-content: center;
 }
 
-
 .frame-cardproduct {
     height: 300px;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     border-radius: 16px;
-    background: linear-gradient(145deg, #f0f0f0, #ffffff);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-
-.frame-cardproduct {
-    height: 300px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 16px;
-    background: linear-gradient(145deg, #f0f0f0, #ffffff);
+    background: var(--background);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
@@ -280,7 +266,7 @@ onBeforeUnmount(() => {
     font-size: 0.95rem;
     font-weight: 600;
     line-height: 1.3;
-    color: #333;
+    color: var(--foreground);
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -315,12 +301,12 @@ onBeforeUnmount(() => {
 }
 
 .cardproduct__btn.more {
-    background: #f3f4f6;
-    color: #374151;
+    background: var(--morebtn);
+    color: var(--foreground);
 }
 
 .cardproduct__btn.more:hover {
-    background: #e5e7eb;
+    background: var(--morebtnactive);
 }
 
 .cardproduct__btn.incart {

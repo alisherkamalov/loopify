@@ -10,22 +10,37 @@
                 <div class="frame-cartproduct" v-for="(product, index) in displayedProducts" :key="product._id"
                     :class="{ removing: product.removing }">
 
-                    <div class="hidden-action-delete" @click="removeWithAnimation(product.productId._id)" :class="{ released: displayedProducts[index]?.released }"
+                    <div class="hidden-action-delete" @click="removeWithAnimation(product.productId._id)"
+                        :class="{ released: displayedProducts[index]?.released }"
                         :style="{ transform: `translateX(${Math.max(0, 40 + (product.offsetX / openWidth) * -40)}px)` }">
                         <button class="remove-btn">Убрать</button>
                     </div>
 
-                    <div class="hidden-action" @click="payOneProduct(product)" :class="{ released: displayedProducts[index]?.released }"
+                    <div class="hidden-action" @click="payOneProduct(product)"
+                        :class="{ released: displayedProducts[index]?.released }"
                         :style="{ transform: `translateX(${Math.max(0, 40 + (product.offsetX / openWidth) * -40)}px)` }">
                         <button class="pay-btn">Оплатить</button>
                     </div>
-
                     <div class="cartproduct" :class="{ smooth: !isDraggingIndex(index) }"
-                        :style="{ transform: `translateX(${product.offsetX}px)` }"
+                        :style="{ transform: `translateX(${product.offsetX}px)` }" v-if="isMobile"
                         @touchstart="onTouchStart($event, index)" @touchmove="onTouchMove($event, index)"
-                        @touchend="onTouchEnd(index)" @mousedown="onMouseDown($event, index)"
-                        @mousemove="onMouseMove($event, index)" @mouseup="onMouseUp(index)"
-                        @mouseleave="onMouseUp(index)" @pointerdown.stop>
+                        @touchend="onTouchEnd(index)">
+                        <div class="photo">
+                            <img :src="product.productId.photoUrl" alt="product image" class="photo-img">
+                        </div>
+                        <div class="infoproduct">
+                            <span class="price">{{ product.productId.price }} ₸</span>
+                            <span class="nameproduct">
+                                Loopify • {{ languageStore.currentLanguage.devicetype[product.productId.deviceType]
+                                }}
+                                {{ product.productId.name }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="cartproduct" :class="{ smooth: !isDraggingIndex(index) }"
+                        :style="{ transform: `translateX(${product.offsetX}px)` }" v-else
+                        @mousedown="onMouseDown($event, index)" @mousemove="onMouseMove($event, index)"
+                        @mouseup="onMouseUp(index)" @mouseleave="onMouseUp(index)" @pointerdown.stop>
 
                         <div class="photo">
                             <img :src="product.productId.photoUrl" alt="product image" class="photo-img">
@@ -84,8 +99,13 @@ const clickedPayBtn = ref(false)
 const city = ref('');
 const isOpenOrder = ref(false);
 const address = ref('');
+const isMobile = ref(false);
 let startX = 0;
+let startY = 0;
 let currentX = 0;
+let currentY = 0;
+let isHorizontalSwipe = false;
+const swipeThreshold = 10;
 let draggingIndex = null;
 const isDraggingIndex = (i) => draggingIndex === i
 const openWidth = -200;
@@ -107,10 +127,10 @@ const removeWithAnimation = (productIdToDelete) => {
     }, 300);
 };
 
-
-
 const onTouchStart = (e, index) => {
     startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isHorizontalSwipe = false;
     draggingIndex = index;
     ensureProductProps(displayedProducts.value[index]);
 
@@ -123,20 +143,45 @@ const onTouchStart = (e, index) => {
 
 const onTouchMove = (e, index) => {
     if (draggingIndex !== index) return;
-    e.preventDefault();
+
     currentX = e.touches[0].clientX;
-    let deltaX = currentX - startX;
+    currentY = e.touches[0].clientY;
 
-    let newOffset = (displayedProducts.value[index].offsetX ?? 0) + deltaX;
-    newOffset = Math.max(openWidth, Math.min(0, newOffset));
-    displayedProducts.value[index].offsetX = newOffset;
+    const deltaX = currentX - startX;
+    const deltaY = currentY - startY;
 
-    displayedProducts.value[index].released = false;
+    // Если мы ещё не определили направление
+    if (!isHorizontalSwipe && Math.abs(deltaX) > swipeThreshold) {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            // Горизонтальный свайп — блокируем скролл
+            isHorizontalSwipe = true;
+            e.preventDefault();
+        } else {
+            // Вертикальный свайп — даём скроллу работать
+            draggingIndex = null;
+            return;
+        }
+    }
 
-    startX = currentX;
+    if (isHorizontalSwipe) {
+        let newOffset = (displayedProducts.value[index].offsetX ?? 0) + deltaX;
+        newOffset = Math.max(openWidth, Math.min(0, newOffset));
+        displayedProducts.value[index].offsetX = newOffset;
+
+        displayedProducts.value[index].released = false;
+        startX = currentX;
+    }
 };
 
 const onTouchEnd = (index) => {
+    if (!isHorizontalSwipe) {
+        draggingIndex = null;
+        if (sliderStore.swiperInstance) {
+            sliderStore.swiperInstance.allowTouchMove = true;
+        }
+        return;
+    }
+
     ensureProductProps(displayedProducts.value[index]);
     const offset = displayedProducts.value[index].offsetX;
 
@@ -342,8 +387,11 @@ const removeProductFromCart = async (productIdToDelete) => {
 };
 
 onMounted(() => {
+    isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+        .test(navigator.userAgent);
+    console.log(isMobile.value)
     cartStore.loadCart()
-})
+});
 </script>
 <style scoped>
 .basket-slide {
@@ -538,9 +586,11 @@ onMounted(() => {
     width: 100%;
     transition: all 0.5s ease;
 }
+
 .pay-cart.active {
     translate: 0px 0px;
 }
+
 .content {
     width: 98%;
     display: flex;

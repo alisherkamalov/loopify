@@ -34,7 +34,6 @@
 .container {
     background-color: var(--background);
 }
-
 .isauth,
 .containersignin,
 .containersignup {
@@ -79,7 +78,8 @@ body {
     overscroll-behavior-x: none;
     touch-action: pan-y; 
     overflow: auto !important;
-    height: 100lvh;
+    height: 100dvh;
+    min-height: 100vh;
 }
 
 ul {
@@ -144,6 +144,8 @@ button:focus {
     --background: #ffffff;
     --bottomsheetbgoverlay: #f2f2f7;
     --buttonbsbg: #f8f8f8;
+    --morebtn: #e4e4e4;
+    --morebtnactive: #ececec;
     --buttonbsbgactive: #e4e4e4;
     --foreground: #171717;
     --bottomsheetbg: rgba(255, 255, 255, 0.8);
@@ -206,13 +208,17 @@ body {
 }
 .page-one {
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: var(--background) !important;
 }
 .page-two {
+    overflow-x: hidden;
     overflow-y: auto;
     background-color: var(--background) !important;
 }
-
+.page-two.active {
+    overflow: hidden !important;
+}
 .logo {
     background-image: var(--logo-url);
     width: 150px;
@@ -244,6 +250,8 @@ body {
         --border-color: #181818;
         --bg-cont: #363636;
         --foreground: #ededed;
+        --morebtn: #363636;
+        --morebtnactive: #494949;
         --bottomsheetbg: rgba(0, 0, 0, 0.2);
         --bottomsheetbgoverlay: #000000;
         --buttonbsbg: #1c1c1e;

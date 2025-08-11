@@ -18,7 +18,7 @@
             </div>
         </header>
         <div class="content">
-
+            <div class="box"></div>
         </div>
     </div>
 </template>
@@ -135,7 +135,11 @@ header {
     justify-content: center;
     color: var(--foreground);
 }
-
+.box {
+    width: 100%;
+    display: flex;
+    height: 1500px;
+}
 .title {
     font-size: 15px;
     color: var(--graycart-color);
@@ -149,9 +153,9 @@ header {
 
 .container {
     width: 100%;
-    min-height: 100dvh;
     display: flex;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     z-index: 999;
     flex-direction: column;
     transition: all 0.3s ease;
