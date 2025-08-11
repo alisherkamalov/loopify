@@ -97,7 +97,7 @@ header {
     display: flex;
     position: fixed;
     top: 0;
-    z-index: 999;
+    z-index: 9998;
     padding-top: env(safe-area-inset-top);
     backdrop-filter: blur(15px);
     justify-content: space-between;
@@ -149,6 +149,7 @@ header {
     width: 100%;
     display: flex;
     height: 800px;
+    margin-top: calc(env(safe-area-inset-top) + 87.5px);
 }
 
 .container {

@@ -1,56 +1,61 @@
 <template>
-    <div class="button-cont" @click="closeProduct()">
-        <a-tooltip class="btnclose">
-            <a-button color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
-        </a-tooltip>
-    </div>
-    <div class="container" :class="{ active: lastProductStore.isSlider }">
-        <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
-            :pagination="true" :key="`swiper-${lastProduct.name}`">
-            <SwiperSlide>
-                <img :src="lastProduct.photoUrl" loading="lazy" alt="Product Image" class="cardproduct__img" />
-            </SwiperSlide>
-            <SwiperSlide v-if="lastProduct.videoUrl" :key="`video-${index}`">
-                <div class="video-container">
-                    <video :ref="el => initVideo(el, index)" :src="lastProduct.videoUrl" class="cardproduct__video"
-                        muted loop preload="metadata" @loadeddata="handleVideoLoaded(index)"
-                        @waiting="videoStates[index].isLoading = true"
-                        @suspend="videoStates[index].isLoading = false"></video>
-                    <v-progress-circular v-if="videoStates[index]?.isLoading" indeterminate color="primary" size="64"
-                        width="5" class="video-loader"></v-progress-circular>
-                    <div class="video-control" @click.stop="toggleVideo(index)"
-                        :class="{ visible: videoStates[index]?.showControl }">
-                        <span class="iconstop">
-                            <svg v-if="videoStates[index]?.paused" xmlns="http://www.w3.org/2000/svg" width="24"
-                                height="24" viewBox="0 0 24 24">
-                                <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="M6 4v16m14-8L6 20m14-8L6 4" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-width="2"
-                                    d="M7 5v14M17 5v14" />
-                            </svg>
-                        </span>
+    <div class="main-container">
+        <div class="button-cont" @click="closeProduct()">
+            <a-tooltip class="btnclose">
+                <a-button color="black" shape="circle" :icon="h(ArrowLeftOutlined)" />
+            </a-tooltip>
+        </div>
+        <div class="container" :class="{ active: lastProductStore.isSlider }">
+            <Swiper v-if="lastProduct" class="cardproduct__media" :slides-per-view="1" :modules="[Pagination]"
+                :pagination="true" :key="`swiper-${lastProduct.name}`">
+                <SwiperSlide>
+                    <img :src="lastProduct.photoUrl" loading="lazy" alt="Product Image" class="cardproduct__img" />
+                </SwiperSlide>
+                <SwiperSlide v-if="lastProduct.videoUrl" :key="`video-${index}`">
+                    <div class="video-container">
+                        <video :ref="el => initVideo(el, index)" :src="lastProduct.videoUrl" class="cardproduct__video"
+                            muted loop preload="metadata" @loadeddata="handleVideoLoaded(index)"
+                            @waiting="videoStates[index].isLoading = true"
+                            @suspend="videoStates[index].isLoading = false"></video>
+                        <v-progress-circular v-if="videoStates[index]?.isLoading" indeterminate color="primary"
+                            size="64" width="5" class="video-loader"></v-progress-circular>
+                        <div class="video-control" @click.stop="toggleVideo(index)"
+                            :class="{ visible: videoStates[index]?.showControl }">
+                            <span class="iconstop">
+                                <svg v-if="videoStates[index]?.paused" xmlns="http://www.w3.org/2000/svg" width="24"
+                                    height="24" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M6 4v16m14-8L6 20m14-8L6 4" />
+                                </svg>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-width="2"
+                                        d="M7 5v14M17 5v14" />
+                                </svg>
+                            </span>
+                        </div>
                     </div>
+                </SwiperSlide>
+            </Swiper>
+            <div class="cardproduct__content">
+                <div class="top">
+                    <h3 class="cardproduct__title">{{ languageStore.currentLanguage.devicetype[lastProduct.deviceType]
+                        }} {{
+                            lastProduct.name }}</h3>
+                    <p class="cardproduct__price">{{ lastProduct.price }} ₸</p>
                 </div>
-            </SwiperSlide>
-        </Swiper>
-        <div class="cardproduct__content">
-            <div class="top">
-                <h3 class="cardproduct__title">{{ languageStore.currentLanguage.devicetype[lastProduct.deviceType] }} {{
-                    lastProduct.name }}</h3>
-                <p class="cardproduct__price">{{ lastProduct.price }} ₸</p>
-            </div>
-            <div class="bottom">
-                <button class="cardproduct__btn order" @click.stop="makeOrder">{{
-                    languageStore.currentLanguage.makeinorder
-                    }}</button>
-                <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct)">{{
-                    languageStore.currentLanguage.incart
-                    }}</button>
             </div>
         </div>
+        <div class="bottom">
+            <button class="cardproduct__btn order" @click.stop="makeOrder">
+                {{ languageStore.currentLanguage.makeinorder }}
+            </button>
+            <button class="cardproduct__btn incart" @click.stop="addProductToCart(lastProduct)">
+                {{ languageStore.currentLanguage.incart }}
+            </button>
+        </div>
     </div>
+
 </template>
 
 <script setup>
@@ -236,14 +241,23 @@ const toggleVideo = (index) => {
 .video-control.visible {
     opacity: 1 !important;
 }
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  position: relative;
+}
 
+.container {
+  flex: 1; /* Занимает все доступное пространство */
+  /* остальные стили */
+}
 .container {
     display: flex;
     width: 100%;
     gap: 35px;
     background-color: var(--background);
     margin-top: 45px;
-    min-height: 100dvh;
     margin-left: auto;
     margin-right: auto;
 }
@@ -321,14 +335,28 @@ const toggleVideo = (index) => {
     cursor: pointer;
     background: rgba(0, 0, 0, 0.3);
     opacity: 0;
-    will-change: opacity;
-    backface-visibility: hidden;
     transition: opacity 0.3s;
 }
 
-.video-control:hover {
+.video-control:hover,
+.video-control.visible {
     opacity: 1;
 }
+
+.iconstop {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.video-control:hover .iconstop {
+    transform: scale(1.1);
+}
+
 
 .video-control span {
     font-size: 40px;
@@ -423,7 +451,7 @@ const toggleVideo = (index) => {
     text-align: left;
     max-width: 90%;
     margin-top: 10px;
-    height: 250px;
+    min-height: 150px;
     display: flex;
     flex-direction: column;
 }
@@ -442,13 +470,12 @@ const toggleVideo = (index) => {
 }
 
 .cardproduct__btn {
-    margin-top: 10px;
     padding: 8px 0px;
     width: 100%;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 50px;
+    border-radius: 15px;
     cursor: pointer;
 }
 
@@ -462,12 +489,34 @@ const toggleVideo = (index) => {
         margin-top: 0px;
         overflow-x: hidden;
         overflow-y: auto;
+        gap: 10px;
+    }
+
+    .container.active {
+        padding-top: 0px;
     }
 
     .cardproduct__media {
         width: 100%;
         margin: 0px;
+        min-height: 500px;
         border-radius: 0px;
+    }
+
+    .bottom {
+        position: sticky;
+        left: 0;
+        right: 0;
+        bottom: env(safe-area-inset-bottom, 0);
+        display: flex;
+        gap: 10px;
+        background-color: var(--background);
+        padding: 10px;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1;
     }
 
     .cardproduct__content {

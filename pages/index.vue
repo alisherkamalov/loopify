@@ -211,6 +211,7 @@ main.active {
     height: auto;
     position: relative;
     display: flex;
+    height: 100dvh;
     overflow-x: hidden;
     overflow-y: auto;
     padding-top: env(safe-area-inset-top);

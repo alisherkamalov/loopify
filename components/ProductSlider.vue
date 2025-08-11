@@ -182,6 +182,7 @@ onMounted(() => {
   margin: 0;
   height: 100dvh;
   background-color: white;
+  overflow: hidden !important;
   transform: translateX(100vw);
 }
 

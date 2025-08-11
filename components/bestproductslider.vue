@@ -153,6 +153,7 @@ onBeforeUnmount(() => {
 
 .btn-more {
   width: 150px;
+  font-weight: 500;
 }
 
 .best-product-slider {

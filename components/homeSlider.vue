@@ -189,6 +189,7 @@ onMounted(() => {
   transform: translate3d(0, 0, 0);
   margin: 0;
   height: 100dvh;
+  overflow: hidden !important;
   background-color: #2c2c2c;
   transform: translateX(100vw);
 }

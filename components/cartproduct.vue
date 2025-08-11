@@ -241,6 +241,7 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 100%;
     display: flex;
+    border-radius: 15px;
     align-items: center;
     justify-content: center;
 }

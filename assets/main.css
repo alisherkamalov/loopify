@@ -216,9 +216,6 @@ body {
     overflow-y: auto;
     background-color: var(--background) !important;
 }
-.page-two.active {
-    overflow: hidden !important;
-}
 .logo {
     background-image: var(--logo-url);
     width: 150px;
