@@ -220,9 +220,8 @@ onBeforeUnmount(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
     border-radius: 16px;
-    background: var(--background);
+    background: var(--bg-cont);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
